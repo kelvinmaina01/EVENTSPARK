@@ -39,11 +39,12 @@ export function useRegistrationsByEvent(eventId: string | undefined) {
 export function useCreateRegistration() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ event_id, data }: { event_id: string; data: Record<string, string> }) => {
+    mutationFn: async ({ event_id, data, meta }: { event_id: string; data: Record<string, string>; meta?: Record<string, string> }) => {
       const { data: result, error } = await supabase
         .rpc("register_for_event", {
           p_event_id: event_id,
           p_data: data as unknown as Json,
+          p_meta: (meta || {}) as unknown as Json,
         });
       if (error) {
         throw error;
