@@ -1,17 +1,19 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useParams } from "react-router-dom";
-import { CalendarDays, MapPin, Video, Globe, Loader2, CheckCircle2, Zap } from "lucide-react";
+import { CalendarDays, MapPin, Video, Globe, Loader2, CheckCircle2, Zap, CalendarPlus, Download } from "lucide-react";
 import { useEventBySlug, Event } from "@/hooks/useEvents";
 import { useFormFields } from "@/hooks/useFormFields";
 import { useCreateRegistration } from "@/hooks/useRegistrations";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { Tables } from "@/integrations/supabase/types";
+import { supabase } from "@/integrations/supabase/client";
+import { getSessionId, getUtmFromUrl, buildIcs, downloadIcs, googleCalendarUrl } from "@/lib/tracking";
 
 type FormField = Tables<"form_fields">;
 
@@ -51,19 +53,60 @@ function formatEventDateTime(event: Event) {
 
 // ─── Extracted stable components ───
 
-const SuccessCard = ({ brandColor, eventName }: { brandColor: string; eventName: string }) => (
+const SuccessCard = ({ brandColor, event, isWaitlist = false }: { brandColor: string; event: Event; isWaitlist?: boolean }) => {
+  const start = event.event_date ? new Date(event.event_date) : null;
+  const end = event.event_end_date ? new Date(event.event_end_date) : undefined;
+  const handleIcs = () => {
+    if (!start) return;
+    const ics = buildIcs({
+      uid: event.id,
+      title: event.name,
+      description: event.description || "",
+      location: event.location_value || "",
+      start,
+      end,
+      url: typeof window !== "undefined" ? window.location.href : undefined,
+    });
+    downloadIcs(event.name.replace(/[^a-z0-9]+/gi, "-").toLowerCase(), ics);
+  };
+  const gcal = start ? googleCalendarUrl({
+    title: event.name,
+    start,
+    end,
+    description: event.description || "",
+    location: event.location_value || "",
+  }) : null;
+
+  return (
   <motion.div key="success" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-lg mx-auto">
     <Card className="border-border shadow-2xl">
       <CardContent className="p-8 text-center">
         <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", delay: 0.2 }}>
           <CheckCircle2 className="w-16 h-16 mx-auto mb-4" style={{ color: brandColor }} />
         </motion.div>
-        <h2 className="text-2xl font-display font-bold mb-2">You're Registered!</h2>
-        <p className="text-muted-foreground">Thank you for registering for <strong>{eventName}</strong>. You'll receive a confirmation email shortly.</p>
+        <h2 className="text-2xl font-display font-bold mb-2">{isWaitlist ? "You're on the waitlist!" : "You're Registered!"}</h2>
+        <p className="text-muted-foreground">
+          {isWaitlist
+            ? <>We'll let you know if a spot opens up for <strong>{event.name}</strong>.</>
+            : <>Thank you for registering for <strong>{event.name}</strong>. You'll receive a confirmation email shortly.</>}
+        </p>
+        {!isWaitlist && start && (
+          <div className="mt-6 flex flex-col sm:flex-row gap-2 justify-center">
+            {gcal && (
+              <a href={gcal} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 h-11 px-5 rounded-full bg-foreground text-background hover:bg-foreground/90 text-sm font-medium transition-colors">
+                <CalendarPlus className="w-4 h-4" /> Google Calendar
+              </a>
+            )}
+            <button onClick={handleIcs} className="inline-flex items-center justify-center gap-2 h-11 px-5 rounded-full bg-muted hover:bg-muted/80 text-foreground text-sm font-medium transition-colors">
+              <Download className="w-4 h-4" /> Apple / Outlook (.ics)
+            </button>
+          </div>
+        )}
       </CardContent>
     </Card>
   </motion.div>
-);
+  );
+};
 
 const EventInfo = ({ event, className = "" }: { event: Event; className?: string }) => {
   const [expanded, setExpanded] = useState(false);
@@ -185,6 +228,28 @@ const Register = () => {
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [consent, setConsent] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [onWaitlist, setOnWaitlist] = useState(false);
+  const [isFull, setIsFull] = useState(false);
+  const [waitlistEmail, setWaitlistEmail] = useState("");
+  const viewedRef = useRef(false);
+
+  // Track page view exactly once per event
+  useEffect(() => {
+    if (!event?.id || viewedRef.current) return;
+    viewedRef.current = true;
+    const utm = getUtmFromUrl();
+    supabase.from("event_page_views").insert({
+      event_id: event.id,
+      session_id: getSessionId(),
+      utm_source: utm.utm_source ?? null,
+      utm_medium: utm.utm_medium ?? null,
+      utm_campaign: utm.utm_campaign ?? null,
+      utm_content: utm.utm_content ?? null,
+      utm_term: utm.utm_term ?? null,
+      referrer: utm.referrer ?? null,
+      user_agent: typeof navigator !== "undefined" ? navigator.userAgent.slice(0, 500) : null,
+    } as any).then(() => {});
+  }, [event?.id]);
 
   const handleFieldChange = useCallback((label: string, value: string) => {
     setFormData(prev => ({ ...prev, [label]: value }));
@@ -223,11 +288,51 @@ const Register = () => {
       return;
     }
     try {
-      await createReg.mutateAsync({ event_id: event.id, data: formData });
+      const utm = getUtmFromUrl();
+      await createReg.mutateAsync({
+        event_id: event.id,
+        data: formData,
+        meta: {
+          session_id: getSessionId(),
+          ...utm,
+        } as any,
+      });
       setSubmitted(true);
     } catch (err: any) {
-      toast.error(err.message || "Registration failed");
+      const msg = err.message || "Registration failed";
+      if (/full capacity|registration limit/i.test(msg)) {
+        setIsFull(true);
+        const guessEmail = formData["Email Address"] || formData["email"] || formData["Email"] || "";
+        setWaitlistEmail(guessEmail);
+        toast.error("This event is full — join the waitlist instead.");
+      } else {
+        toast.error(msg);
+      }
     }
+  };
+
+  const handleWaitlist = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!event) return;
+    if (!waitlistEmail) { toast.error("Please enter your email"); return; }
+    const name = formData["Full Name"] || formData["Name"] || formData["full_name"] || null;
+    const { error } = await supabase.from("event_waitlist").insert({
+      event_id: event.id,
+      email: waitlistEmail.trim().toLowerCase(),
+      name,
+    } as any);
+    if (error) {
+      if (error.code === "23505") {
+        toast.success("You're already on the waitlist!");
+        setOnWaitlist(true);
+        setSubmitted(true);
+      } else {
+        toast.error(error.message);
+      }
+      return;
+    }
+    setOnWaitlist(true);
+    setSubmitted(true);
   };
 
   const brandColor = event.primary_color || "#7C3AED";
@@ -255,7 +360,31 @@ const Register = () => {
   if (submitted) {
     return wrapDark(
       <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-background text-foreground" style={{ background: isDark ? undefined : `linear-gradient(135deg, ${brandColor}15, ${brandColor}05)` }}>
-        <SuccessCard brandColor={brandColor} eventName={event.name} />
+        <SuccessCard brandColor={brandColor} event={event} isWaitlist={onWaitlist} />
+      </div>
+    );
+  }
+
+  if (isFull) {
+    return wrapDark(
+      <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-background text-foreground" style={{ background: isDark ? undefined : `linear-gradient(135deg, ${brandColor}15, ${brandColor}05)` }}>
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-lg">
+          <Card className="border-border shadow-2xl">
+            <CardContent className="p-8">
+              <h2 className="text-2xl font-display font-bold mb-2">Event is full</h2>
+              <p className="text-muted-foreground mb-6">Join the waitlist for <strong>{event.name}</strong> and we'll notify you if a spot opens up.</p>
+              <form onSubmit={handleWaitlist} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="wl-email">Email</Label>
+                  <Input id="wl-email" type="email" required value={waitlistEmail} onChange={e => setWaitlistEmail(e.target.value)} placeholder="you@example.com" />
+                </div>
+                <Button type="submit" className="w-full h-11 text-base text-white border-0" style={{ background: `linear-gradient(135deg, ${brandColor}, ${brandColor}CC)` }}>
+                  Join waitlist
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </motion.div>
       </div>
     );
   }
