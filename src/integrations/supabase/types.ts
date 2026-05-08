@@ -49,6 +49,72 @@ export type Database = {
           },
         ]
       }
+      event_page_views: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          referrer: string | null
+          session_id: string | null
+          user_agent: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          referrer?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          referrer?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+        }
+        Relationships: []
+      }
+      event_waitlist: {
+        Row: {
+          created_at: string
+          email: string
+          event_id: string
+          id: string
+          name: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          event_id: string
+          id?: string
+          name?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          event_id?: string
+          id?: string
+          name?: string | null
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           background_image_url: string | null
@@ -209,25 +275,49 @@ export type Database = {
       }
       registrations: {
         Row: {
+          attended_at: string | null
           created_at: string
           data: Json
           event_id: string
           id: string
+          referrer: string | null
+          session_id: string | null
           status: Database["public"]["Enums"]["registration_status"]
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
         }
         Insert: {
+          attended_at?: string | null
           created_at?: string
           data?: Json
           event_id: string
           id?: string
+          referrer?: string | null
+          session_id?: string | null
           status?: Database["public"]["Enums"]["registration_status"]
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
         }
         Update: {
+          attended_at?: string | null
           created_at?: string
           data?: Json
           event_id?: string
           id?: string
+          referrer?: string | null
+          session_id?: string | null
           status?: Database["public"]["Enums"]["registration_status"]
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
         }
         Relationships: [
           {
@@ -270,10 +360,12 @@ export type Database = {
         }
         Returns: boolean
       }
-      register_for_event: {
-        Args: { p_data: Json; p_event_id: string }
-        Returns: string
-      }
+      register_for_event:
+        | { Args: { p_data: Json; p_event_id: string }; Returns: string }
+        | {
+            Args: { p_data: Json; p_event_id: string; p_meta?: Json }
+            Returns: string
+          }
     }
     Enums: {
       app_role: "admin" | "editor" | "viewer"
