@@ -13,9 +13,12 @@ import Landing from "./pages/Landing";
 import Auth from "./pages/Auth";
 import Register from "./pages/Register";
 import CompanyPage from "./pages/CompanyPage";
+import EventsList from "./pages/EventsList";
+import Discover from "./pages/Discover";
 import Events from "./pages/dashboard/Events";
 import CreateEvent from "./pages/dashboard/CreateEvent";
 import EventDetail from "./pages/dashboard/EventDetail";
+import CheckIn from "./pages/dashboard/CheckIn";
 import Attendees from "./pages/dashboard/Attendees";
 import Analytics from "./pages/dashboard/Analytics";
 import Integrations from "./pages/dashboard/Integrations";
@@ -47,6 +50,10 @@ const App = () => (
               <Route path="/auth" element={<Auth />} />
               <Route path="/register/:slug" element={<Register />} />
               <Route path="/company/:companySlug" element={<CompanyPage />} />
+              <Route path="/events" element={<EventsList />} />
+              <Route path="/events/:slug" element={<EventsList />} />
+              <Route path="/discover" element={<Discover />} />
+              <Route path="/calendars" element={<Discover />} />
 
               {/* Dashboard (protected) */}
               <Route path="/dashboard" element={<Navigate to="/dashboard/events" replace />} />
@@ -58,6 +65,7 @@ const App = () => (
                       <Route path="events/create" element={<CreateEvent />} />
                       <Route path="events/:id" element={<EventDetail />} />
                       <Route path="events/:id/edit" element={<CreateEvent />} />
+                      <Route path="events/:id/checkin" element={<CheckIn />} />
                       <Route path="attendees" element={<Attendees />} />
                       <Route path="analytics" element={<Analytics />} />
                       <Route path="integrations" element={<Integrations />} />
