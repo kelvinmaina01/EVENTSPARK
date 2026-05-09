@@ -10,11 +10,16 @@ import { useFormFields, useAddFormField, useDeleteFormField } from "@/hooks/useF
 import { toast } from "sonner";
 import { useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import TemplatePreview from "@/components/TemplatePreview";
 import EventDetailHeader from "@/components/event-detail/EventDetailHeader";
 import EventQuickInfo from "@/components/event-detail/EventQuickInfo";
 import EventAttendeesTable from "@/components/event-detail/EventAttendeesTable";
 import EventQRCode from "@/components/event-detail/EventQRCode";
+import { Link } from "react-router-dom";
+import { ScanLine } from "lucide-react";
+import { getEventConfig, saveEventConfig, EventPostRegConfig } from "@/lib/eventConfig";
+import { useEffect } from "react";
 
 const EventDetail = () => {
   const { id } = useParams();
@@ -27,6 +32,16 @@ const EventDetail = () => {
   const deleteField = useDeleteFormField();
   const [newFieldLabel, setNewFieldLabel] = useState("");
   const [newFieldType, setNewFieldType] = useState("text");
+  const [postReg, setPostReg] = useState<EventPostRegConfig>({});
+
+  useEffect(() => { if (id) setPostReg(getEventConfig(id)); }, [id]);
+
+  const updatePostReg = (patch: Partial<EventPostRegConfig>) => {
+    if (!id) return;
+    const next = { ...postReg, ...patch };
+    setPostReg(next);
+    saveEventConfig(id, next);
+  };
 
   if (isLoading) {
     return <div className="flex items-center justify-center py-20"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>;
@@ -69,6 +84,15 @@ const EventDetail = () => {
     <div className="space-y-6">
       <EventDetailHeader event={event} onStatusChange={handleStatusChange} onDelete={handleDelete} />
       <EventQuickInfo event={event} onUpdate={handleUpdate} />
+
+      {/* Quick actions */}
+      <div className="flex flex-wrap gap-2">
+        <Button asChild className="rounded-full" variant="outline">
+          <Link to={`/dashboard/events/${event.id}/checkin`}>
+            <ScanLine className="w-4 h-4 mr-2" /> Check-in mode
+          </Link>
+        </Button>
+      </div>
 
       <Tabs defaultValue="branding">
         <TabsList className="bg-muted rounded-full p-1 w-full sm:w-auto">
@@ -193,6 +217,7 @@ const EventDetail = () => {
         </TabsContent>
 
         <TabsContent value="settings" className="mt-5">
+          <div className="space-y-5">
           <div className="bg-card rounded-xl p-5 sm:p-6 space-y-4">
             <h3 className="font-display font-semibold">Event settings</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -208,6 +233,72 @@ const EventDetail = () => {
             <Button variant="destructive" size="sm" className="mt-4 rounded-full" onClick={handleDelete}>
               <Trash2 className="w-4 h-4 mr-2" /> Delete event
             </Button>
+          </div>
+
+          {/* Thank-you / resource delivery */}
+          <div className="bg-card rounded-xl p-5 sm:p-6 space-y-4">
+            <div>
+              <h3 className="font-display font-semibold">Thank-you page & resource delivery</h3>
+              <p className="text-xs text-muted-foreground mt-1">
+                Customize what registrants see right after registering. Resource link
+                appears as a CTA on the success card and (later) in the confirmation email.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Title</Label>
+                <Input
+                  placeholder="You're Registered!"
+                  className="rounded-full"
+                  value={postReg.thankYouTitle || ""}
+                  onChange={(e) => updatePostReg({ thankYouTitle: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Resource CTA label</Label>
+                <Input
+                  placeholder="Download the deck"
+                  className="rounded-full"
+                  value={postReg.resourceLabel || ""}
+                  onChange={(e) => updatePostReg({ resourceLabel: e.target.value })}
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Message</Label>
+              <Textarea
+                placeholder="Thanks for joining us! Here's what to expect…"
+                rows={3}
+                value={postReg.thankYouMessage || ""}
+                onChange={(e) => updatePostReg({ thankYouMessage: e.target.value })}
+              />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Resource URL</Label>
+                <Input
+                  type="url"
+                  placeholder="https://… (PDF, video, Discord invite)"
+                  className="rounded-full"
+                  value={postReg.resourceUrl || ""}
+                  onChange={(e) => updatePostReg({ resourceUrl: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Redirect after registration (optional URL)</Label>
+                <Input
+                  type="url"
+                  placeholder="https://your-site.com/welcome"
+                  className="rounded-full"
+                  value={postReg.redirectUrl || ""}
+                  onChange={(e) => updatePostReg({ redirectUrl: e.target.value })}
+                />
+              </div>
+            </div>
+            <p className="text-[11px] text-muted-foreground">
+              Saved locally for now. Hooks into <code>/api/events/:id/post-registration-config</code> when backend lands.
+            </p>
+          </div>
           </div>
         </TabsContent>
       </Tabs>

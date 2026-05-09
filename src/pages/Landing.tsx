@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Logo } from "@/components/Logo";
+import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
@@ -790,13 +791,7 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-12 px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-          <Logo size="md" />
-          <p className="text-sm text-muted-foreground">© 2026 eventspark. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
 
       {/* Dev picker */}
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 z-[9999]">

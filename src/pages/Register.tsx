@@ -14,6 +14,7 @@ import { motion } from "framer-motion";
 import { Tables } from "@/integrations/supabase/types";
 import { supabase } from "@/integrations/supabase/client";
 import { getSessionId, getUtmFromUrl, buildIcs, downloadIcs, googleCalendarUrl } from "@/lib/tracking";
+import { getEventConfig } from "@/lib/eventConfig";
 
 type FormField = Tables<"form_fields">;
 
@@ -56,6 +57,13 @@ function formatEventDateTime(event: Event) {
 const SuccessCard = ({ brandColor, event, isWaitlist = false }: { brandColor: string; event: Event; isWaitlist?: boolean }) => {
   const start = event.event_date ? new Date(event.event_date) : null;
   const end = event.event_end_date ? new Date(event.event_end_date) : undefined;
+  const cfg = getEventConfig(event.id);
+  useEffect(() => {
+    if (!isWaitlist && cfg.redirectUrl) {
+      const t = setTimeout(() => { window.location.href = cfg.redirectUrl!; }, 4000);
+      return () => clearTimeout(t);
+    }
+  }, [isWaitlist, cfg.redirectUrl]);
   const handleIcs = () => {
     if (!start) return;
     const ics = buildIcs({
@@ -84,12 +92,25 @@ const SuccessCard = ({ brandColor, event, isWaitlist = false }: { brandColor: st
         <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", delay: 0.2 }}>
           <CheckCircle2 className="w-16 h-16 mx-auto mb-4" style={{ color: brandColor }} />
         </motion.div>
-        <h2 className="text-2xl font-display font-bold mb-2">{isWaitlist ? "You're on the waitlist!" : "You're Registered!"}</h2>
-        <p className="text-muted-foreground">
+        <h2 className="text-2xl font-display font-bold mb-2">
+          {isWaitlist ? "You're on the waitlist!" : (cfg.thankYouTitle || "You're Registered!")}
+        </h2>
+        <p className="text-muted-foreground whitespace-pre-line">
           {isWaitlist
             ? <>We'll let you know if a spot opens up for <strong>{event.name}</strong>.</>
-            : <>Thank you for registering for <strong>{event.name}</strong>. You'll receive a confirmation email shortly.</>}
+            : (cfg.thankYouMessage || <>Thank you for registering for <strong>{event.name}</strong>. You'll receive a confirmation email shortly.</>)}
         </p>
+        {!isWaitlist && cfg.resourceUrl && (
+          <a
+            href={cfg.resourceUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center justify-center gap-2 h-11 px-5 mt-5 rounded-full text-sm font-semibold text-white"
+            style={{ background: `linear-gradient(135deg, ${brandColor}, ${brandColor}CC)` }}
+          >
+            {cfg.resourceLabel || "Get your resources"}
+          </a>
+        )}
         {!isWaitlist && start && (
           <div className="mt-6 flex flex-col sm:flex-row gap-2 justify-center">
             {gcal && (
