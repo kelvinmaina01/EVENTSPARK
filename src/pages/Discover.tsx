@@ -29,7 +29,7 @@ function Row({ title, subtitle, items }: { title: string; subtitle?: string; ite
           View All <ArrowRight className="w-3.5 h-3.5" />
         </button>
       </div>
-      <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 overflow-x-auto scrollbar-hide">
+      <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 overflow-x-auto ">
         <div className="flex gap-4 pb-2 min-w-max">
           {items.map((ev) => <Card key={ev.id} ev={ev} />)}
         </div>
