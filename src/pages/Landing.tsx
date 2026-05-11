@@ -369,12 +369,15 @@ const Landing = () => {
           <Link to="/">
             <Logo size="md" />
           </Link>
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" className="text-sm font-medium" asChild>
-              <Link to="/auth">Log in</Link>
+          <div className="flex items-center gap-1 sm:gap-2">
+            <Button variant="ghost" className="text-sm font-medium rounded-full" asChild>
+              <Link to="/discover">Discover Events</Link>
             </Button>
-            <Button className="hidden sm:inline-flex text-sm font-semibold" asChild>
-              <Link to="/auth">Sign up</Link>
+            <Button variant="ghost" className="text-sm font-medium rounded-full" asChild>
+              <Link to="/auth">Sign In</Link>
+            </Button>
+            <Button className="hidden sm:inline-flex text-sm font-semibold rounded-full" asChild>
+              <Link to="/auth">Get Started</Link>
             </Button>
           </div>
         </div>
@@ -482,8 +485,8 @@ const Landing = () => {
                 Whatever your event — from workshops to conferences — build branded
                 registration pages, track attendees, and grow your community. No code required.
               </p>
-              <Button size="lg" className="text-base font-semibold px-8 h-12" asChild>
-                <Link to="/auth">Get started <ArrowRight className="ml-2 w-4 h-4" /></Link>
+              <Button size="lg" className="text-base font-semibold px-8 h-12 rounded-full" asChild>
+                <Link to="/auth">Create Your First Event <ArrowRight className="ml-2 w-4 h-4" /></Link>
               </Button>
             </motion.div>
           </div>
