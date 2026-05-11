@@ -14,6 +14,7 @@ import Auth from "./pages/Auth";
 import Register from "./pages/Register";
 import CompanyPage from "./pages/CompanyPage";
 import EventsList from "./pages/EventsList";
+import EventPublicDetail from "./pages/EventPublicDetail";
 import Discover from "./pages/Discover";
 import Events from "./pages/dashboard/Events";
 import CreateEvent from "./pages/dashboard/CreateEvent";
@@ -51,7 +52,7 @@ const App = () => (
               <Route path="/register/:slug" element={<Register />} />
               <Route path="/company/:companySlug" element={<CompanyPage />} />
               <Route path="/events" element={<EventsList />} />
-              <Route path="/events/:slug" element={<EventsList />} />
+              <Route path="/events/:slug" element={<EventPublicDetail />} />
               <Route path="/discover" element={<Discover />} />
               <Route path="/calendars" element={<Discover />} />
 

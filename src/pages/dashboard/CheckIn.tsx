@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Camera, CheckCircle2, Search, UserCheck, X } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { Html5Qrcode, Html5QrcodeSupportedFormats } from "html5-qrcode";
 
 // MOCK: persist check-ins to localStorage so we can iterate without a migration.
 // TODO: replace with: POST /api/events/:id/checkin { registration_id }
@@ -29,6 +30,12 @@ export default function CheckIn() {
   const [manualCode, setManualCode] = useState("");
   const [checked, setChecked] = useState<Set<string>>(new Set());
   const [last, setLast] = useState<{ name: string; ok: boolean } | null>(null);
+  const scannerRef = useRef<Html5Qrcode | null>(null);
+  const lastScanRef = useRef<{ code: string; t: number }>({ code: "", t: 0 });
+  const regsRef = useRef(regs);
+  const checkedRef = useRef(checked);
+  useEffect(() => { regsRef.current = regs; }, [regs]);
+  useEffect(() => { checkedRef.current = checked; }, [checked]);
 
   useEffect(() => {
     if (id) setChecked(loadCheckedIn(id));
@@ -72,23 +79,80 @@ export default function CheckIn() {
     e.preventDefault();
     const code = manualCode.trim().toLowerCase();
     if (!code) return;
-    // Code can be a registration id, an email, or a name fragment.
-    const match = regs.find((r) => {
+    processCode(code);
+    setManualCode("");
+  };
+
+  // Process a scanned/typed code: match registration id, email, or any field value (substring).
+  const processCode = (raw: string) => {
+    const code = raw.trim().toLowerCase();
+    if (!code) return;
+    const list = regsRef.current;
+    const match = list.find((r) => {
       if (r.id.toLowerCase() === code) return true;
       const data = (r.data || {}) as Record<string, string>;
-      return Object.values(data).some((v) => String(v).toLowerCase() === code);
+      return Object.values(data).some((v) => {
+        const s = String(v).toLowerCase();
+        return s === code || s.includes(code);
+      });
     });
     if (!match) {
       toast.error("No matching registration found");
-      setLast({ name: code, ok: false });
+      setLast({ name: raw, ok: false });
       return;
     }
     const data = (match.data || {}) as Record<string, string>;
     const name = data["Full Name"] || data["Name"] || "Guest";
-    if (!checked.has(match.id)) toggle(match.id, name);
-    else toast.message(`${name} is already checked in`);
-    setManualCode("");
+    if (!checkedRef.current.has(match.id)) toggle(match.id, name);
+    else { setLast({ name, ok: true }); toast.message(`${name} is already checked in`); }
   };
+
+  // Start/stop the QR scanner when the panel opens/closes.
+  useEffect(() => {
+    if (!scannerOpen) {
+      const inst = scannerRef.current;
+      if (inst) {
+        inst.stop().catch(() => {}).finally(() => { inst.clear(); scannerRef.current = null; });
+      }
+      return;
+    }
+    let cancelled = false;
+    const elementId = "qr-reader-region";
+    const start = async () => {
+      // Wait one frame so the DOM node exists.
+      await new Promise((r) => requestAnimationFrame(r));
+      if (cancelled) return;
+      try {
+        const inst = new Html5Qrcode(elementId, {
+          formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE],
+          verbose: false,
+        });
+        scannerRef.current = inst;
+        await inst.start(
+          { facingMode: "environment" },
+          { fps: 10, qrbox: { width: 240, height: 240 }, aspectRatio: 1.6 },
+          (decoded) => {
+            const now = Date.now();
+            // debounce identical scans within 2s
+            if (lastScanRef.current.code === decoded && now - lastScanRef.current.t < 2000) return;
+            lastScanRef.current = { code: decoded, t: now };
+            processCode(decoded);
+          },
+          () => { /* ignore decode errors */ },
+        );
+      } catch (err: any) {
+        toast.error(err?.message || "Couldn't start camera. Check permissions.");
+      }
+    };
+    start();
+    return () => {
+      cancelled = true;
+      const inst = scannerRef.current;
+      if (inst) {
+        inst.stop().catch(() => {}).finally(() => { inst.clear(); scannerRef.current = null; });
+      }
+    };
+  }, [scannerOpen]);
 
   return (
     <div className="space-y-6">
@@ -135,17 +199,13 @@ export default function CheckIn() {
             <div className="bg-card rounded-2xl p-5 sm:p-6 grid md:grid-cols-2 gap-5">
               <div>
                 <h3 className="font-display font-semibold mb-3">Camera scanner</h3>
-                <div className="aspect-video rounded-xl bg-foreground text-background grid place-items-center relative overflow-hidden">
-                  <div className="absolute inset-6 border-2 border-primary/70 rounded-xl" />
-                  <div className="text-center px-4">
-                    <Camera className="w-10 h-10 mx-auto mb-2 opacity-70" />
-                    <p className="text-sm opacity-70">Camera preview placeholder</p>
-                    <p className="text-[11px] opacity-50 mt-1">
-                      TODO: hook up html5-qrcode or BarcodeDetector — endpoint
-                      will POST to <code>/api/events/:id/checkin</code>.
-                    </p>
-                  </div>
+                <div className="rounded-xl bg-foreground overflow-hidden relative">
+                  <div id="qr-reader-region" className="w-full [&_video]:w-full [&_video]:h-auto [&_video]:rounded-xl" />
+                  <div className="pointer-events-none absolute inset-6 border-2 border-primary/70 rounded-xl" />
                 </div>
+                <p className="text-[11px] text-muted-foreground mt-2">
+                  Point the camera at an attendee QR code. Allow camera access if prompted.
+                </p>
               </div>
               <div>
                 <h3 className="font-display font-semibold mb-3">Manual check-in</h3>
