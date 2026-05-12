@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { format } from "date-fns";
-import { Calendar, MapPin, Users, Share2, Heart, ArrowLeft, Globe, Ticket, ChevronRight, Clock } from "lucide-react";
+import { MapPin, Users, Share2, Heart, ArrowLeft, Globe, Ticket, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import PublicHeader from "@/components/PublicHeader";
 import Footer from "@/components/layout/Footer";
