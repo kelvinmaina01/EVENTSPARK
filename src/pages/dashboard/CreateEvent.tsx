@@ -19,6 +19,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
+import MediaUploadZone, { MediaValue } from "@/components/event-creation/MediaUploadZone";
 
 const steps = [
   { number: 1, title: "Event Details", subtitle: "Name, date, location & description" },
@@ -102,6 +103,7 @@ const CreateEvent = () => {
   const [initialized, setInitialized] = useState(false);
   const [flyerUrl, setFlyerUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [media, setMedia] = useState<MediaValue>(null);
   const [colorMode, setColorMode] = useState<"light" | "dark">("light");
   const [showSuccess, setShowSuccess] = useState(false);
   const [createdEventId, setCreatedEventId] = useState<string | null>(null);
@@ -153,6 +155,9 @@ const CreateEvent = () => {
       }
 
       setFlyerUrl(existingEvent.background_image_url || null);
+      if (existingEvent.background_image_url) {
+        setMedia({ kind: "image", url: existingEvent.background_image_url });
+      }
       setInitialized(true);
     }
   }, [isEditMode, existingEvent, initialized]);
