@@ -10,7 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import {
   ArrowLeft, ArrowRight, Check, Layout, Columns2, Monitor,
-  Loader2, Sparkles, MapPin, Video, Globe, Upload, X, PartyPopper, ExternalLink, Eye, Copy, Info
+  Loader2, Sparkles, MapPin, Video, Globe, PartyPopper, ExternalLink, Eye, Copy, Info
 } from "lucide-react";
 import { useCreateEvent, useUpdateEvent, useEvent } from "@/hooks/useEvents";
 import TemplatePreview from "@/components/TemplatePreview";
