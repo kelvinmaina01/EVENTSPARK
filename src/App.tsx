@@ -24,6 +24,7 @@ import Attendees from "./pages/dashboard/Attendees";
 import Analytics from "./pages/dashboard/Analytics";
 import Integrations from "./pages/dashboard/Integrations";
 import SettingsPage from "./pages/dashboard/SettingsPage";
+import Calendar from "./pages/dashboard/Calendar";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -67,6 +68,7 @@ const App = () => (
                       <Route path="events/:id" element={<EventDetail />} />
                       <Route path="events/:id/edit" element={<CreateEvent />} />
                       <Route path="events/:id/checkin" element={<CheckIn />} />
+                      <Route path="calendar" element={<Calendar />} />
                       <Route path="attendees" element={<Attendees />} />
                       <Route path="analytics" element={<Analytics />} />
                       <Route path="integrations" element={<Integrations />} />
