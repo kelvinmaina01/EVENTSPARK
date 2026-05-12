@@ -645,8 +645,8 @@ const CreateEvent = () => {
               <Card>
                 <CardContent className="p-6 space-y-4">
                   <div>
-                    <h3 className="font-display font-semibold text-base mb-0.5">Cover Image</h3>
-                    <p className="text-xs text-muted-foreground">Upload a flyer or banner for your event page.</p>
+                    <h3 className="font-display font-semibold text-base mb-0.5">Cover Media</h3>
+                    <p className="text-xs text-muted-foreground">Image, video, or paste a YouTube/Vimeo URL — all auto-fit the cover frame.</p>
                   </div>
 
                   {/* Image size recommendation */}
@@ -664,25 +664,37 @@ const CreateEvent = () => {
                     </div>
                   )}
 
-                  {flyerUrl ? (
-                    <div className="relative inline-block">
-                      <img src={flyerUrl} alt="Flyer" className="max-h-40 rounded-lg border border-border object-cover" />
-                      <Button variant="destructive" size="icon" className="absolute -top-2 -right-2 h-6 w-6 rounded-full" onClick={() => setFlyerUrl(null)}>
-                        <X className="w-3 h-3" />
-                      </Button>
-                    </div>
-                  ) : (
-                    <label className="flex flex-col items-center justify-center h-32 rounded-lg border-2 border-dashed border-border bg-muted/30 cursor-pointer hover:bg-muted/50 transition-colors">
-                      {uploading ? <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /> : (
-                        <>
-                          <Upload className="w-6 h-6 text-muted-foreground mb-1" />
-                          <span className="text-sm text-muted-foreground">Click to upload image</span>
-                          <span className="text-xs text-muted-foreground/60">PNG, JPG up to 5MB</span>
-                        </>
-                      )}
-                      <input type="file" accept="image/*" className="hidden" onChange={handleFlyerUpload} disabled={uploading} />
-                    </label>
-                  )}
+                  <MediaUploadZone
+                    value={media}
+                    onChange={(v) => {
+                      setMedia(v);
+                      // For now we still persist images via the existing supabase pipeline.
+                      // Video / embed URLs are kept frontend-only until backend wiring.
+                      if (v?.kind === "image") setFlyerUrl(v.url);
+                      else if (!v) setFlyerUrl(null);
+                    }}
+                    onImageFile={async (file) => {
+                      try {
+                        setUploading(true);
+                        const ext = file.name.split(".").pop();
+                        const path = `flyers/${Date.now()}.${ext}`;
+                        const { error: uploadError } = await supabase.storage
+                          .from("event-assets")
+                          .upload(path, file);
+                        if (uploadError) throw uploadError;
+                        const { data: urlData } = supabase.storage
+                          .from("event-assets")
+                          .getPublicUrl(path);
+                        toast.success("Image uploaded!");
+                        return urlData.publicUrl;
+                      } catch (err: any) {
+                        toast.error(err.message || "Upload failed");
+                        return null;
+                      } finally {
+                        setUploading(false);
+                      }
+                    }}
+                  />
                 </CardContent>
               </Card>
 
