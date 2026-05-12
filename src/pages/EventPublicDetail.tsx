@@ -10,6 +10,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { fetchEventBySlug, fetchUpcomingEvents, MockEvent } from "@/lib/mockEvents";
 import { toast } from "sonner";
+import LocationCard from "@/components/event-public/LocationCard";
 
 export default function EventPublicDetail() {
   const { slug } = useParams();
@@ -152,23 +153,11 @@ export default function EventPublicDetail() {
             </section>
 
             {/* Location */}
-            <section>
-              <h2 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-3">Location</h2>
-              <div className="bg-card rounded-2xl p-4 flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-primary/10 grid place-items-center shrink-0">
-                  <MapPin className="w-5 h-5 text-primary" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="font-semibold">{event.location}</p>
-                  <p className="text-sm text-muted-foreground">{event.city}</p>
-                </div>
-                <Button variant="outline" size="sm" className="rounded-full shrink-0" asChild>
-                  <a href={`https://maps.google.com/?q=${encodeURIComponent(event.location)}`} target="_blank" rel="noreferrer">
-                    Open <ChevronRight className="w-3.5 h-3.5 ml-0.5" />
-                  </a>
-                </Button>
-              </div>
-            </section>
+            <LocationCard
+              venue={event.location}
+              address={event.city}
+              mode={event.location === "Online" || event.city === "Online" ? "virtual" : "physical"}
+            />
 
             {/* Attendees preview */}
             <section>
