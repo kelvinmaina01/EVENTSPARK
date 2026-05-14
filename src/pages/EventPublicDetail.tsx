@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { format } from "date-fns";
 import { MapPin, Users, Share2, Heart, ArrowLeft, Globe, Ticket, Clock, Play } from "lucide-react";
@@ -11,6 +11,55 @@ import { Badge } from "@/components/ui/badge";
 import { fetchEventBySlug, fetchUpcomingEvents, MockEvent } from "@/lib/mockEvents";
 import { toast } from "sonner";
 import LocationCard from "@/components/event-public/LocationCard";
+
+// Native <video> with a robust autoplay fallback. Browsers block autoplay unless
+// the element is muted; we start muted, then surface an "Unmute" affordance once
+// playback begins. If autoplay is fully blocked, we show a Play overlay.
+function FallbackVideo({ src, muted, onUnmute }: { src: string; muted: boolean; onUnmute: () => void }) {
+  const ref = useRef<HTMLVideoElement>(null);
+  const [needsTap, setNeedsTap] = useState(false);
+
+  useEffect(() => {
+    const v = ref.current;
+    if (!v) return;
+    v.muted = true; // required for cross-browser autoplay
+    const p = v.play();
+    if (p && typeof p.catch === "function") {
+      p.catch(() => setNeedsTap(true));
+    }
+  }, [src]);
+
+  return (
+    <div className="relative w-full h-full">
+      <video
+        ref={ref}
+        src={src}
+        className="w-full h-full object-cover"
+        playsInline
+        autoPlay
+        muted={muted}
+        loop
+        controls
+      />
+      {needsTap && (
+        <button
+          onClick={() => { ref.current?.play().then(() => setNeedsTap(false)).catch(() => {}); }}
+          className="absolute inset-0 grid place-items-center bg-black/40 text-white text-sm font-medium"
+        >
+          Tap to play
+        </button>
+      )}
+      {!muted ? null : (
+        <button
+          onClick={() => { if (ref.current) ref.current.muted = false; onUnmute(); }}
+          className="absolute bottom-3 right-3 rounded-full bg-black/70 text-white text-xs px-3 py-1.5 hover:bg-black/85"
+        >
+          Unmute
+        </button>
+      )}
+    </div>
+  );
+}
 
 export default function EventPublicDetail() {
   const { slug } = useParams();
