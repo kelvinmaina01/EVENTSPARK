@@ -19,6 +19,7 @@ export default function EventPublicDetail() {
   const [loading, setLoading] = useState(true);
   const [registered, setRegistered] = useState(false);
   const [playing, setPlaying] = useState(false);
+  const [videoMuted, setVideoMuted] = useState(true); // Start muted so autoplay isn't blocked
 
   useEffect(() => {
     let active = true;
@@ -101,15 +102,16 @@ export default function EventPublicDetail() {
             >
               {playing && event.videoUrl ? (
                 event.videoUrl.includes("youtube") || event.videoUrl.includes("vimeo") ? (
+                  // Browsers block autoplay unless muted — start muted, user can unmute via player controls.
                   <iframe
-                    src={`${event.videoUrl}${event.videoUrl.includes("?") ? "&" : "?"}autoplay=1&rel=0&modestbranding=1`}
+                    src={`${event.videoUrl}${event.videoUrl.includes("?") ? "&" : "?"}autoplay=1&mute=1&muted=1&rel=0&modestbranding=1&playsinline=1`}
                     title={event.title}
                     className="w-full h-full"
-                    allow="autoplay; encrypted-media; picture-in-picture"
+                    allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
                     allowFullScreen
                   />
                 ) : (
-                  <video src={event.videoUrl} controls autoPlay className="w-full h-full object-cover" />
+                  <FallbackVideo src={event.videoUrl} muted={videoMuted} onUnmute={() => setVideoMuted(false)} />
                 )
               ) : (
                 <>
