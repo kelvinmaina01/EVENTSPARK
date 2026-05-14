@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useEvent } from "@/hooks/useEvents";
 import { useRegistrationsByEvent } from "@/hooks/useRegistrations";
+import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Camera, CheckCircle2, Search, UserCheck, X } from "lucide-react";
@@ -9,37 +11,26 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Html5Qrcode, Html5QrcodeSupportedFormats } from "html5-qrcode";
 
-// MOCK: persist check-ins to localStorage so we can iterate without a migration.
-// TODO: replace with: POST /api/events/:id/checkin { registration_id }
-function loadCheckedIn(eventId: string): Set<string> {
-  try {
-    const raw = localStorage.getItem(`eventspark:checkin:${eventId}`);
-    return new Set(raw ? JSON.parse(raw) : []);
-  } catch { return new Set(); }
-}
-function saveCheckedIn(eventId: string, set: Set<string>) {
-  localStorage.setItem(`eventspark:checkin:${eventId}`, JSON.stringify([...set]));
-}
-
 export default function CheckIn() {
   const { id } = useParams();
   const { data: event } = useEvent(id);
   const { data: regs = [] } = useRegistrationsByEvent(id);
+  const qc = useQueryClient();
   const [search, setSearch] = useState("");
   const [scannerOpen, setScannerOpen] = useState(false);
   const [manualCode, setManualCode] = useState("");
-  const [checked, setChecked] = useState<Set<string>>(new Set());
   const [last, setLast] = useState<{ name: string; ok: boolean } | null>(null);
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const lastScanRef = useRef<{ code: string; t: number }>({ code: "", t: 0 });
   const regsRef = useRef(regs);
-  const checkedRef = useRef(checked);
   useEffect(() => { regsRef.current = regs; }, [regs]);
-  useEffect(() => { checkedRef.current = checked; }, [checked]);
 
-  useEffect(() => {
-    if (id) setChecked(loadCheckedIn(id));
-  }, [id]);
+  // Derive checked-in set from registration.attended_at (server-side persistence).
+  const checked = useMemo(() => {
+    const s = new Set<string>();
+    regs.forEach((r) => { if ((r as any).attended_at) s.add(r.id); });
+    return s;
+  }, [regs]);
 
   const list = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -63,16 +54,22 @@ export default function CheckIn() {
     pct: regs.length ? Math.round((checked.size / regs.length) * 100) : 0,
   };
 
-  const toggle = (regId: string, name: string) => {
+  const toggle = async (regId: string, name: string) => {
     if (!id) return;
-    const next = new Set(checked);
-    let ok = true;
-    if (next.has(regId)) { next.delete(regId); ok = false; }
-    else { next.add(regId); }
-    setChecked(next);
-    saveCheckedIn(id, next);
-    setLast({ name, ok });
-    toast.success(ok ? `Checked in: ${name}` : `Undid check-in: ${name}`);
+    const wasIn = checked.has(regId);
+    const nextValue = wasIn ? null : new Date().toISOString();
+    const { error } = await supabase
+      .from("registrations")
+      .update({ attended_at: nextValue })
+      .eq("id", regId);
+    if (error) {
+      toast.error(error.message || "Couldn't update check-in");
+      setLast({ name, ok: false });
+      return;
+    }
+    qc.invalidateQueries({ queryKey: ["registrations", id] });
+    setLast({ name, ok: !wasIn });
+    toast.success(wasIn ? `Undid check-in: ${name}` : `Checked in: ${name}`);
   };
 
   const handleManual = (e: React.FormEvent) => {
@@ -103,7 +100,7 @@ export default function CheckIn() {
     }
     const data = (match.data || {}) as Record<string, string>;
     const name = data["Full Name"] || data["Name"] || "Guest";
-    if (!checkedRef.current.has(match.id)) toggle(match.id, name);
+    if (!(match as any).attended_at) toggle(match.id, name);
     else { setLast({ name, ok: true }); toast.message(`${name} is already checked in`); }
   };
 
