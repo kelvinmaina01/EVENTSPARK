@@ -24,6 +24,8 @@ export default function CheckIn() {
   const lastScanRef = useRef<{ code: string; t: number }>({ code: "", t: 0 });
   const regsRef = useRef(regs);
   useEffect(() => { regsRef.current = regs; }, [regs]);
+  // Track in-flight check-in mutations per registration id to disable controls.
+  const [pending, setPending] = useState<Set<string>>(new Set());
 
   // Derive checked-in set from registration.attended_at (server-side persistence).
   const checked = useMemo(() => {
@@ -56,18 +58,21 @@ export default function CheckIn() {
 
   const toggle = async (regId: string, name: string) => {
     if (!id) return;
+    if (pending.has(regId)) return;
     const wasIn = checked.has(regId);
     const nextValue = wasIn ? null : new Date().toISOString();
+    setPending((p) => { const n = new Set(p); n.add(regId); return n; });
     const { error } = await supabase
       .from("registrations")
       .update({ attended_at: nextValue })
       .eq("id", regId);
+    setPending((p) => { const n = new Set(p); n.delete(regId); return n; });
     if (error) {
       toast.error(error.message || "Couldn't update check-in");
       setLast({ name, ok: false });
       return;
     }
-    qc.invalidateQueries({ queryKey: ["registrations", id] });
+    await qc.invalidateQueries({ queryKey: ["registrations", id] });
     setLast({ name, ok: !wasIn });
     toast.success(wasIn ? `Undid check-in: ${name}` : `Checked in: ${name}`);
   };
@@ -240,6 +245,7 @@ export default function CheckIn() {
           {list.length === 0 && <p className="text-sm text-muted-foreground py-8 text-center">No registrations yet.</p>}
           {list.map((r) => {
             const isIn = checked.has(r.id);
+            const isPending = pending.has(r.id);
             return (
               <div key={r.id} className="flex items-center justify-between py-3">
                 <div className="min-w-0">
@@ -251,8 +257,15 @@ export default function CheckIn() {
                   variant={isIn ? "outline" : "default"}
                   className="rounded-full"
                   onClick={() => toggle(r.id, r.name)}
+                  disabled={isPending}
                 >
-                  {isIn ? <><CheckCircle2 className="w-4 h-4 mr-1.5 text-success" /> Checked in</> : "Check in"}
+                  {isPending ? (
+                    <><span className="w-3.5 h-3.5 mr-1.5 rounded-full border-2 border-current border-t-transparent animate-spin" /> Saving…</>
+                  ) : isIn ? (
+                    <><CheckCircle2 className="w-4 h-4 mr-1.5 text-success" /> Checked in</>
+                  ) : (
+                    "Check in"
+                  )}
                 </Button>
               </div>
             );

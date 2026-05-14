@@ -136,10 +136,28 @@ export default function Calendar() {
                       <Eye className="w-3.5 h-3.5 mr-1" /> View
                     </Link>
                   </Button>
-                  <Button variant="outline" className="rounded-full" size="sm" onClick={() => navigate(`/dashboard/events`)}>
+                  <Button
+                    variant="outline"
+                    className="rounded-full"
+                    size="sm"
+                    onClick={() => {
+                      // Mock events have no real id yet — route to events list which lets users pick/edit.
+                      navigate(`/dashboard/events`);
+                      setSelected(null);
+                    }}
+                  >
                     <Pencil className="w-3.5 h-3.5 mr-1" /> Edit
                   </Button>
-                  <Button variant="outline" className="rounded-full" size="sm" onClick={() => navigate(`/dashboard/events`)}>
+                  <Button
+                    variant="outline"
+                    className="rounded-full"
+                    size="sm"
+                    onClick={() => {
+                      // Stub: jump to events list — check-in screen will be wired once mock events have backend ids.
+                      navigate(`/dashboard/events`);
+                      setSelected(null);
+                    }}
+                  >
                     <QrCode className="w-3.5 h-3.5 mr-1" /> Check-in
                   </Button>
                 </div>
@@ -204,6 +222,13 @@ function MonthView({ cursor, events, onPick }: { cursor: Date; events: MockEvent
                   {format(day, "d")}
                 </span>
               </div>
+              {dayEvents.length > 0 && (
+                <div className="flex items-center gap-0.5 mt-0.5 px-1">
+                  {dayEvents.slice(0, 3).map((e) => (
+                    <span key={e.id} className="w-1.5 h-1.5 rounded-full bg-primary/70" />
+                  ))}
+                </div>
+              )}
               <div className="space-y-1 mt-1">
                 {dayEvents.slice(0, 2).map((e) => (
                   <button
