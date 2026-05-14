@@ -16,6 +16,7 @@ export type MockEvent = {
   category: "Tech" | "AI" | "Climate" | "Crypto" | "Arts" | "Wellness" | "Community";
   source?: string;       // e.g. "YouTube", "In Person"
   featured?: boolean;
+  videoUrl?: string;     // YouTube/Vimeo embed URL or direct mp4 — plays inside the cover frame
 };
 
 const COVERS = [
@@ -46,6 +47,7 @@ export const MOCK_EVENTS: MockEvent[] = [
     cover: COVERS[0],
     hosts: [{ name: "Brandon", avatar: AVATARS[0] }, { name: "Priya", avatar: AVATARS[1] }],
     attendees: 142, status: "going", category: "AI", featured: true,
+    videoUrl: "https://www.youtube.com/embed/aircAruvnKk",
   },
   {
     id: "m2", slug: "founders-coffee",
