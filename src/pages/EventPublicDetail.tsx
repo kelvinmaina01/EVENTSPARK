@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { format } from "date-fns";
-import { MapPin, Users, Share2, Heart, ArrowLeft, Globe, Ticket, Clock } from "lucide-react";
+import { MapPin, Users, Share2, Heart, ArrowLeft, Globe, Ticket, Clock, Play } from "lucide-react";
 import { motion } from "framer-motion";
 import PublicHeader from "@/components/PublicHeader";
 import Footer from "@/components/layout/Footer";
@@ -18,6 +18,7 @@ export default function EventPublicDetail() {
   const [more, setMore] = useState<MockEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [registered, setRegistered] = useState(false);
+  const [playing, setPlaying] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -93,13 +94,40 @@ export default function EventPublicDetail() {
         <div className="grid lg:grid-cols-[1fr,380px] gap-8 lg:gap-12 items-start">
           {/* Left column */}
           <div className="space-y-8">
-            {/* Cover */}
+            {/* Cover — image OR embedded video */}
             <motion.div
               initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-              className="relative aspect-[16/10] rounded-3xl overflow-hidden bg-muted"
+              className="relative aspect-[16/10] rounded-3xl overflow-hidden bg-muted group"
             >
-              <img src={event.cover} alt={event.title} className="w-full h-full object-cover" />
-              {event.featured && (
+              {playing && event.videoUrl ? (
+                event.videoUrl.includes("youtube") || event.videoUrl.includes("vimeo") ? (
+                  <iframe
+                    src={`${event.videoUrl}${event.videoUrl.includes("?") ? "&" : "?"}autoplay=1&rel=0&modestbranding=1`}
+                    title={event.title}
+                    className="w-full h-full"
+                    allow="autoplay; encrypted-media; picture-in-picture"
+                    allowFullScreen
+                  />
+                ) : (
+                  <video src={event.videoUrl} controls autoPlay className="w-full h-full object-cover" />
+                )
+              ) : (
+                <>
+                  <img src={event.cover} alt={event.title} className="w-full h-full object-cover" />
+                  {event.videoUrl && (
+                    <button
+                      onClick={() => setPlaying(true)}
+                      aria-label="Play event video"
+                      className="absolute inset-0 grid place-items-center bg-black/20 hover:bg-black/30 transition-colors"
+                    >
+                      <span className="w-16 h-16 rounded-full bg-white/95 grid place-items-center shadow-xl group-hover:scale-110 transition-transform">
+                        <Play className="w-7 h-7 text-foreground ml-0.5" fill="currentColor" />
+                      </span>
+                    </button>
+                  )}
+                </>
+              )}
+              {event.featured && !playing && (
                 <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground border-0 rounded-full px-3 py-1">
                   Featured
                 </Badge>
