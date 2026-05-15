@@ -133,7 +133,7 @@ export default function Calendar() {
                 <div className="grid grid-cols-3 gap-2 pt-2">
                   <Button variant="outline" className="rounded-full" size="sm" asChild>
                     <Link to={`/events/${selected.slug}`}>
-                      <Eye className="w-3.5 h-3.5 mr-1" /> View
+                      <Eye className="w-3.5 h-3.5 mr-1" /> View Page
                     </Link>
                   </Button>
                   <Button
@@ -141,8 +141,7 @@ export default function Calendar() {
                     className="rounded-full"
                     size="sm"
                     onClick={() => {
-                      // Mock events have no real id yet — route to events list which lets users pick/edit.
-                      navigate(`/dashboard/events`);
+                      navigate(`/dashboard/events/${selected.id}`);
                       setSelected(null);
                     }}
                   >
@@ -153,8 +152,7 @@ export default function Calendar() {
                     className="rounded-full"
                     size="sm"
                     onClick={() => {
-                      // Stub: jump to events list — check-in screen will be wired once mock events have backend ids.
-                      navigate(`/dashboard/events`);
+                      navigate(`/dashboard/events/${selected.id}/checkin`);
                       setSelected(null);
                     }}
                   >
@@ -264,7 +262,7 @@ function WeekView({ cursor, events, onPick }: { cursor: Date; events: MockEvent[
     return Array.from({ length: 7 }, (_, i) => addDays(start, i));
   }, [cursor]);
 
-  const hours = Array.from({ length: 14 }, (_, i) => 7 + i); // 7am – 8pm
+  const hours = Array.from({ length: 18 }, (_, i) => 6 + i); // 6am – 11pm
 
   return (
     <div className="bg-card rounded-2xl overflow-hidden">
