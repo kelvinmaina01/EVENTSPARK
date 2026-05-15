@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { format } from "date-fns";
-import { MapPin, Users, Share2, Heart, ArrowLeft, Globe, Ticket, Clock } from "lucide-react";
+import { MapPin, Users, Share2, Heart, ArrowLeft, Globe, Ticket, Clock, Play, Twitter, Linkedin, Instagram, Link2 } from "lucide-react";
 import { motion } from "framer-motion";
 import PublicHeader from "@/components/PublicHeader";
 import Footer from "@/components/layout/Footer";
@@ -12,12 +12,63 @@ import { fetchEventBySlug, fetchUpcomingEvents, MockEvent } from "@/lib/mockEven
 import { toast } from "sonner";
 import LocationCard from "@/components/event-public/LocationCard";
 
+// Native <video> with a robust autoplay fallback. Browsers block autoplay unless
+// the element is muted; we start muted, then surface an "Unmute" affordance once
+// playback begins. If autoplay is fully blocked, we show a Play overlay.
+function FallbackVideo({ src, muted, onUnmute }: { src: string; muted: boolean; onUnmute: () => void }) {
+  const ref = useRef<HTMLVideoElement>(null);
+  const [needsTap, setNeedsTap] = useState(false);
+
+  useEffect(() => {
+    const v = ref.current;
+    if (!v) return;
+    v.muted = true; // required for cross-browser autoplay
+    const p = v.play();
+    if (p && typeof p.catch === "function") {
+      p.catch(() => setNeedsTap(true));
+    }
+  }, [src]);
+
+  return (
+    <div className="relative w-full h-full">
+      <video
+        ref={ref}
+        src={src}
+        className="w-full h-full object-cover"
+        playsInline
+        autoPlay
+        muted={muted}
+        loop
+        controls
+      />
+      {needsTap && (
+        <button
+          onClick={() => { ref.current?.play().then(() => setNeedsTap(false)).catch(() => {}); }}
+          className="absolute inset-0 grid place-items-center bg-black/40 text-white text-sm font-medium"
+        >
+          Tap to play
+        </button>
+      )}
+      {!muted ? null : (
+        <button
+          onClick={() => { if (ref.current) ref.current.muted = false; onUnmute(); }}
+          className="absolute bottom-3 right-3 rounded-full bg-black/70 text-white text-xs px-3 py-1.5 hover:bg-black/85"
+        >
+          Unmute
+        </button>
+      )}
+    </div>
+  );
+}
+
 export default function EventPublicDetail() {
   const { slug } = useParams();
   const [event, setEvent] = useState<MockEvent | null>(null);
   const [more, setMore] = useState<MockEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [registered, setRegistered] = useState(false);
+  const [playing, setPlaying] = useState(false);
+  const [videoMuted, setVideoMuted] = useState(true); // Start muted so autoplay isn't blocked
 
   useEffect(() => {
     let active = true;
@@ -93,13 +144,41 @@ export default function EventPublicDetail() {
         <div className="grid lg:grid-cols-[1fr,380px] gap-8 lg:gap-12 items-start">
           {/* Left column */}
           <div className="space-y-8">
-            {/* Cover */}
+            {/* Cover — image OR embedded video */}
             <motion.div
               initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-              className="relative aspect-[16/10] rounded-3xl overflow-hidden bg-muted"
+              className="relative aspect-[16/10] rounded-3xl overflow-hidden bg-muted group"
             >
-              <img src={event.cover} alt={event.title} className="w-full h-full object-cover" />
-              {event.featured && (
+              {playing && event.videoUrl ? (
+                event.videoUrl.includes("youtube") || event.videoUrl.includes("vimeo") ? (
+                  // Browsers block autoplay unless muted — start muted, user can unmute via player controls.
+                  <iframe
+                    src={`${event.videoUrl}${event.videoUrl.includes("?") ? "&" : "?"}autoplay=1&mute=1&muted=1&rel=0&modestbranding=1&playsinline=1`}
+                    title={event.title}
+                    className="w-full h-full"
+                    allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+                    allowFullScreen
+                  />
+                ) : (
+                  <FallbackVideo src={event.videoUrl} muted={videoMuted} onUnmute={() => setVideoMuted(false)} />
+                )
+              ) : (
+                <>
+                  <img src={event.cover} alt={event.title} className="w-full h-full object-cover" />
+                  {event.videoUrl && (
+                    <button
+                      onClick={() => setPlaying(true)}
+                      aria-label="Play event video"
+                      className="absolute inset-0 grid place-items-center bg-black/20 hover:bg-black/30 transition-colors"
+                    >
+                      <span className="w-16 h-16 rounded-full bg-white/95 grid place-items-center shadow-xl group-hover:scale-110 transition-transform">
+                        <Play className="w-7 h-7 text-foreground ml-0.5" fill="currentColor" />
+                      </span>
+                    </button>
+                  )}
+                </>
+              )}
+              {event.featured && !playing && (
                 <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground border-0 rounded-full px-3 py-1">
                   Featured
                 </Badge>
@@ -119,12 +198,40 @@ export default function EventPublicDetail() {
               <h2 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-3">Hosted by</h2>
               <div className="flex flex-wrap gap-3">
                 {event.hosts.map((h) => (
-                  <div key={h.name} className="flex items-center gap-2.5 bg-card rounded-full pl-1 pr-4 py-1">
+                  <div key={h.name} className="flex items-center gap-2.5 bg-card rounded-full pl-1 pr-2 py-1">
                     <Avatar className="w-8 h-8">
                       <AvatarImage src={h.avatar} alt={h.name} />
                       <AvatarFallback>{h.name[0]}</AvatarFallback>
                     </Avatar>
-                    <span className="text-sm font-medium">{h.name}</span>
+                    <span className="text-sm font-medium pr-1">{h.name}</span>
+                    {h.socials && (
+                      <div className="flex items-center gap-0.5">
+                        {h.socials.twitter && (
+                          <a href={h.socials.twitter} target="_blank" rel="noreferrer" aria-label={`${h.name} on Twitter`}
+                            className="w-7 h-7 grid place-items-center rounded-full text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors">
+                            <Twitter className="w-3.5 h-3.5" />
+                          </a>
+                        )}
+                        {h.socials.linkedin && (
+                          <a href={h.socials.linkedin} target="_blank" rel="noreferrer" aria-label={`${h.name} on LinkedIn`}
+                            className="w-7 h-7 grid place-items-center rounded-full text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors">
+                            <Linkedin className="w-3.5 h-3.5" />
+                          </a>
+                        )}
+                        {h.socials.instagram && (
+                          <a href={h.socials.instagram} target="_blank" rel="noreferrer" aria-label={`${h.name} on Instagram`}
+                            className="w-7 h-7 grid place-items-center rounded-full text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors">
+                            <Instagram className="w-3.5 h-3.5" />
+                          </a>
+                        )}
+                        {h.socials.website && (
+                          <a href={h.socials.website} target="_blank" rel="noreferrer" aria-label={`${h.name} website`}
+                            className="w-7 h-7 grid place-items-center rounded-full text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors">
+                            <Link2 className="w-3.5 h-3.5" />
+                          </a>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

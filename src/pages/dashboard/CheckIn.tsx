@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useEvent } from "@/hooks/useEvents";
 import { useRegistrationsByEvent } from "@/hooks/useRegistrations";
+import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Camera, CheckCircle2, Search, UserCheck, X } from "lucide-react";
@@ -9,37 +11,28 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Html5Qrcode, Html5QrcodeSupportedFormats } from "html5-qrcode";
 
-// MOCK: persist check-ins to localStorage so we can iterate without a migration.
-// TODO: replace with: POST /api/events/:id/checkin { registration_id }
-function loadCheckedIn(eventId: string): Set<string> {
-  try {
-    const raw = localStorage.getItem(`eventspark:checkin:${eventId}`);
-    return new Set(raw ? JSON.parse(raw) : []);
-  } catch { return new Set(); }
-}
-function saveCheckedIn(eventId: string, set: Set<string>) {
-  localStorage.setItem(`eventspark:checkin:${eventId}`, JSON.stringify([...set]));
-}
-
 export default function CheckIn() {
   const { id } = useParams();
   const { data: event } = useEvent(id);
   const { data: regs = [] } = useRegistrationsByEvent(id);
+  const qc = useQueryClient();
   const [search, setSearch] = useState("");
   const [scannerOpen, setScannerOpen] = useState(false);
   const [manualCode, setManualCode] = useState("");
-  const [checked, setChecked] = useState<Set<string>>(new Set());
   const [last, setLast] = useState<{ name: string; ok: boolean } | null>(null);
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const lastScanRef = useRef<{ code: string; t: number }>({ code: "", t: 0 });
   const regsRef = useRef(regs);
-  const checkedRef = useRef(checked);
   useEffect(() => { regsRef.current = regs; }, [regs]);
-  useEffect(() => { checkedRef.current = checked; }, [checked]);
+  // Track in-flight check-in mutations per registration id to disable controls.
+  const [pending, setPending] = useState<Set<string>>(new Set());
 
-  useEffect(() => {
-    if (id) setChecked(loadCheckedIn(id));
-  }, [id]);
+  // Derive checked-in set from registration.attended_at (server-side persistence).
+  const checked = useMemo(() => {
+    const s = new Set<string>();
+    regs.forEach((r) => { if ((r as any).attended_at) s.add(r.id); });
+    return s;
+  }, [regs]);
 
   const list = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -63,16 +56,35 @@ export default function CheckIn() {
     pct: regs.length ? Math.round((checked.size / regs.length) * 100) : 0,
   };
 
-  const toggle = (regId: string, name: string) => {
+  const toggle = async (regId: string, name: string) => {
     if (!id) return;
-    const next = new Set(checked);
-    let ok = true;
-    if (next.has(regId)) { next.delete(regId); ok = false; }
-    else { next.add(regId); }
-    setChecked(next);
-    saveCheckedIn(id, next);
-    setLast({ name, ok });
-    toast.success(ok ? `Checked in: ${name}` : `Undid check-in: ${name}`);
+    if (pending.has(regId)) return;
+    const wasIn = checked.has(regId);
+    const nextValue = wasIn ? null : new Date().toISOString();
+    setPending((p) => { const n = new Set(p); n.add(regId); return n; });
+    // Optimistic update: flip attended_at in the cache immediately so the UI
+    // reflects the change without waiting on the network. We snapshot the
+    // previous value so we can roll back if the request fails.
+    const queryKey = ["registrations", id] as const;
+    const previous = qc.getQueryData<any[]>(queryKey);
+    qc.setQueryData<any[]>(queryKey, (old) =>
+      (old || []).map((r) => (r.id === regId ? { ...r, attended_at: nextValue } : r)),
+    );
+    const { error } = await supabase
+      .from("registrations")
+      .update({ attended_at: nextValue })
+      .eq("id", regId);
+    setPending((p) => { const n = new Set(p); n.delete(regId); return n; });
+    if (error) {
+      // Roll back the optimistic write so the button reverts immediately.
+      if (previous) qc.setQueryData(queryKey, previous);
+      toast.error(error.message || "Couldn't update check-in");
+      setLast({ name, ok: false });
+      return;
+    }
+    await qc.invalidateQueries({ queryKey: ["registrations", id] });
+    setLast({ name, ok: !wasIn });
+    toast.success(wasIn ? `Undid check-in: ${name}` : `Checked in: ${name}`);
   };
 
   const handleManual = (e: React.FormEvent) => {
@@ -103,7 +115,7 @@ export default function CheckIn() {
     }
     const data = (match.data || {}) as Record<string, string>;
     const name = data["Full Name"] || data["Name"] || "Guest";
-    if (!checkedRef.current.has(match.id)) toggle(match.id, name);
+    if (!(match as any).attended_at) toggle(match.id, name);
     else { setLast({ name, ok: true }); toast.message(`${name} is already checked in`); }
   };
 
@@ -243,6 +255,7 @@ export default function CheckIn() {
           {list.length === 0 && <p className="text-sm text-muted-foreground py-8 text-center">No registrations yet.</p>}
           {list.map((r) => {
             const isIn = checked.has(r.id);
+            const isPending = pending.has(r.id);
             return (
               <div key={r.id} className="flex items-center justify-between py-3">
                 <div className="min-w-0">
@@ -254,8 +267,15 @@ export default function CheckIn() {
                   variant={isIn ? "outline" : "default"}
                   className="rounded-full"
                   onClick={() => toggle(r.id, r.name)}
+                  disabled={isPending}
                 >
-                  {isIn ? <><CheckCircle2 className="w-4 h-4 mr-1.5 text-success" /> Checked in</> : "Check in"}
+                  {isPending ? (
+                    <><span className="w-3.5 h-3.5 mr-1.5 rounded-full border-2 border-current border-t-transparent animate-spin" /> Saving…</>
+                  ) : isIn ? (
+                    <><CheckCircle2 className="w-4 h-4 mr-1.5 text-success" /> Checked in</>
+                  ) : (
+                    "Check in"
+                  )}
                 </Button>
               </div>
             );

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Logo } from "@/components/Logo";
 import Footer from "@/components/layout/Footer";
+import BrandsMarquee from "@/components/landing/BrandsMarquee";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
@@ -566,6 +567,9 @@ const Landing = () => {
           </div>
         </div>
       </section>
+
+      {/* Brands marquee — social proof */}
+      <BrandsMarquee />
 
       {/* Features */}
       <section id="features" className="py-20 lg:py-28 bg-card">
