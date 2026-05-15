@@ -1,73 +1,203 @@
-# Welcome to your Lovable project
+<div align="center">
 
-## Project info
+# 🎆 Events Spark App
+*The modern platform for creating, managing, and discovering unforgettable events*
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+![Events Spark Logo](src/assets/logo-glyph.png)
 
-## How can I edit this code?
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
 
-There are several ways of editing your application.
+</div>
 
-**Use Lovable**
+## ✨ Features
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+### 🎯 Event Management
+- **Create Stunning Events** with rich media support (images, videos, YouTube/Vimeo embeds)
+- **Advanced Media Upload** with drag-and-drop interface and video poster extraction
+- **Custom Event Pages** with beautiful, responsive designs
+- **Event Templates** for quick setup of common event types
 
-Changes made via Lovable will be committed automatically to this repo.
+### 📊 Analytics & Insights
+- **Real-time Analytics** dashboard with comprehensive event metrics
+- **Attendee Management** with check-in capabilities
+- **Revenue Tracking** and performance insights
+- **Interactive Charts** powered by Recharts
 
-**Use your preferred IDE**
+### 🔍 Discovery & Engagement
+- **Public Event Discovery** platform
+- **Company Profiles** showcasing organizations
+- **Calendar Integration** for seamless scheduling
+- **Social Features** for event sharing and engagement
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### 🛠️ Developer Experience
+- **TypeScript First** for type-safe development
+- **Component Library** built with shadcn/ui and Radix UI
+- **Modern Tooling** with Vite, ESLint, and Vitest
+- **Responsive Design** with Tailwind CSS
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## 🚀 Quick Start
 
-Follow these steps:
+### Prerequisites
+- Node.js 18+ 
+- npm or yarn
+- Supabase account (for backend services)
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### Installation
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+```bash
+# Clone the repository
+git clone https://github.com/your-username/events-spark-app.git
+cd events-spark-app
 
-# Step 3: Install the necessary dependencies.
-npm i
+# Install dependencies
+npm install
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your Supabase credentials
+
+# Start the development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Open [http://localhost:5173](http://localhost:5173) to view the application.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 🏗️ Architecture
 
-**Use GitHub Codespaces**
+### Tech Stack
+- **Frontend**: React 18 + TypeScript + Vite
+- **UI Components**: shadcn/ui + Radix UI + Tailwind CSS
+- **Backend**: Supabase (Database, Auth, Storage)
+- **State Management**: TanStack Query
+- **Routing**: React Router DOM
+- **Forms**: React Hook Form + Zod
+- **Animations**: Framer Motion
+- **Media**: Cloudinary (stubbable)
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Project Structure
+```
+src/
+├── components/          # Reusable UI components
+│   ├── event-creation/  # Event creation components
+│   ├── event-detail/    # Event detail views
+│   ├── event-public/    # Public event components
+│   ├── layout/          # Layout components
+│   └── ui/              # shadcn/ui components
+├── pages/               # Route components
+│   ├── dashboard/       # Protected dashboard
+│   └── [public]         # Public pages
+├── lib/                 # Utilities & constants
+├── hooks/               # Custom React hooks
+├── contexts/            # React contexts
+└── assets/              # Images & media
+```
 
-## What technologies are used for this project?
+## 🎨 UI Components
 
-This project is built with:
+### Media Upload Zone
+Advanced media handling component supporting:
+- **Image Upload** with drag-and-drop
+- **Video Upload** with automatic poster extraction
+- **URL Embeds** for YouTube and Vimeo
+- **File Validation** and size limits
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### Dashboard Layout
+Comprehensive dashboard featuring:
+- **Event Management** interface
+- **Analytics Dashboard** with charts
+- **Attendee Management** system
+- **Settings & Integrations**
 
-## How can I deploy this project?
+## 📱 Screenshots
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+### Event Creation
+![Event Creation](src/assets/dashboard-preview.png)
 
-## Can I connect a custom domain to my Lovable project?
+### Analytics Dashboard
+![Analytics](src/assets/feature-analytics.png)
 
-Yes, you can!
+### Attendee Management
+![Attendees](src/assets/feature-attendees.png)
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 🔧 Configuration
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+### Environment Variables
+Create a `.env` file with:
+```env
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+VITE_CLOUDINARY_CLOUD_NAME=your_cloudinary_name
+VITE_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
+```
+
+### Supabase Setup
+1. Create a new Supabase project
+2. Run the migration scripts from `supabase/migrations/`
+3. Set up authentication providers
+4. Configure storage buckets for media uploads
+
+## 🧪 Testing
+
+```bash
+# Run tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run linting
+npm run lint
+```
+
+## 📦 Build & Deploy
+
+```bash
+# Build for production
+npm run build
+
+# Build for development
+npm run build:dev
+
+# Preview production build
+npm run preview
+```
+
+### Deployment Options
+- **Vercel** - Zero-config deployment
+- **Netlify** - Static site hosting
+- **AWS Amplify** - Full-stack hosting
+- **Docker** - Containerized deployment
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- [shadcn/ui](https://ui.shadcn.com/) for beautiful UI components
+- [Supabase](https://supabase.com/) for the backend infrastructure
+- [Vite](https://vitejs.dev/) for the blazing-fast build tool
+- [Tailwind CSS](https://tailwindcss.com/) for utility-first styling
+
+## 📞 Support
+
+- 📧 Email: support@eventsspark.com
+- 🐛 Issues: [GitHub Issues](https://github.com/your-username/events-spark-app/issues)
+- 📖 Documentation: [Wiki](https://github.com/your-username/events-spark-app/wiki)
+
+---
+
+<div align="center">
+Made with ❤️ by the Events Spark Team
+</div>

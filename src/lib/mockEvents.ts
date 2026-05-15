@@ -167,3 +167,138 @@ export const CATEGORIES: { name: MockEvent["category"]; emoji: string; count: nu
   { name: "Wellness",  emoji: "🧘", count: 540 },
   { name: "Community", emoji: "🤝", count: 2305 },
 ];
+
+export const EXPANDED_CATEGORIES = [
+  { name: "Tech", icon: "Monitor", bgIcon: "Monitor", count: 4000 },
+  { name: "Food & Drink", icon: "Utensils", bgIcon: "Utensils", count: 433 },
+  { name: "AI", icon: "Brain", bgIcon: "Brain", count: 3000 },
+  { name: "Arts & Culture", icon: "Palette", bgIcon: "Palette", count: 1000 },
+  { name: "Climate", icon: "Globe", bgIcon: "Globe", count: 651 },
+  { name: "Fitness", icon: "Dumbbell", bgIcon: "Dumbbell", count: 1000 },
+  { name: "Wellness", icon: "Heart", bgIcon: "Heart", count: 1000 },
+  { name: "Crypto", icon: "Coins", bgIcon: "Coins", count: 658 },
+  { name: "Business", icon: "Briefcase", bgIcon: "Briefcase", count: 2500 },
+  { name: "Education", icon: "BookOpen", bgIcon: "BookOpen", count: 1800 },
+  { name: "Music", icon: "Music", bgIcon: "Music", count: 2200 },
+  { name: "Sports", icon: "Trophy", bgIcon: "Trophy", count: 1500 },
+];
+
+export const FEATURED_CALENDARS = [
+  {
+    name: "OpenClaw Meetups",
+    icon: "🦞",
+    description: "Discover community meetups for OpenClaw around the world.",
+    events: 45
+  },
+  {
+    name: "Reading Rhythms Global",
+    icon: "🎵",
+    description: "Not a book club. A reading party. Read with friends to live music...",
+    events: 128
+  },
+  {
+    name: "Build Club",
+    icon: "🏗️",
+    description: "The most collaborative AI community in the world (50+ cities worldwide).",
+    events: 89
+  },
+  {
+    name: "South Park Commons",
+    icon: "🔷",
+    description: "South Park Commons helps you get from -1 to 0. To learn more...",
+    events: 234
+  },
+  {
+    name: "Design Buddies",
+    icon: "🐰",
+    description: "Events for all creatives across SF/LA, online, and the world!",
+    events: 167
+  },
+  {
+    name: "Cursor Community",
+    icon: "👆",
+    description: "Cursor community meetups, hackathons, workshops taking...",
+    events: 92
+  },
+  {
+    name: "Google DeepMind",
+    icon: "🤖",
+    description: "Connect with the Google DeepMind Developer Experience team...",
+    events: 78
+  },
+  {
+    name: "Y Combinator",
+    icon: "🚀",
+    description: "Startup events, founder meetups, and demo days from YC alumni...",
+    events: 156
+  },
+  {
+    name: "TechCrunch Events",
+    icon: "📰",
+    description: "Industry conferences, startup competitions, and networking events...",
+    events: 203
+  }
+];
+
+export const LOCAL_EVENTS = [
+  {
+    id: "local1",
+    slug: "nairobi-tech-meetup",
+    title: "Nairobi Tech Community Meetup",
+    date: "2024-03-20T18:00:00Z",
+    location: "iHub, Nairobi",
+    category: "Tech",
+    cover: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&q=80",
+    attendees: 89
+  },
+  {
+    id: "local2",
+    slug: "ai-workshop-nairobi",
+    title: "Machine Learning Workshop for Beginners",
+    date: "2024-03-22T14:00:00Z",
+    location: "Nairobi Garage, Kilimani",
+    category: "AI",
+    cover: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=400&q=80",
+    attendees: 45
+  },
+  {
+    id: "local3",
+    slug: "wellness-yoga-session",
+    title: "Weekend Wellness: Yoga & Meditation",
+    date: "2024-03-23T09:00:00Z",
+    location: "Karura Forest, Nairobi",
+    category: "Wellness",
+    cover: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&q=80",
+    attendees: 67
+  },
+  {
+    id: "local4",
+    slug: "startup-pitch-night",
+    title: "Startup Pitch Night: Nairobi Edition",
+    date: "2024-03-24T17:00:00Z",
+    location: "The Nairobi Innovation Hub",
+    category: "Business",
+    cover: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=400&q=80",
+    attendees: 123
+  },
+  {
+    id: "local5",
+    slug: "food-festival-nairobi",
+    title: "Nairobi Street Food Festival",
+    date: "2024-03-25T12:00:00Z",
+    location: "Uhuru Gardens, Nairobi",
+    category: "Food & Drink",
+    cover: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&q=80",
+    attendees: 234
+  },
+  {
+    id: "local6",
+    slug: "crypto-meetup-kenya",
+    title: "Kenya Crypto & Blockchain Meetup",
+    date: "2024-03-26T18:30:00Z",
+    location: "Nairobi Securities Exchange",
+    category: "Crypto",
+    cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400&q=80",
+    attendees: 78
+  }
+];

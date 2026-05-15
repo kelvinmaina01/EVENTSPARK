@@ -16,6 +16,8 @@ import CompanyPage from "./pages/CompanyPage";
 import EventsList from "./pages/EventsList";
 import EventPublicDetail from "./pages/EventPublicDetail";
 import Discover from "./pages/Discover";
+import Pricing from "./pages/Pricing";
+import QRCode from "./pages/QRCode";
 import Events from "./pages/dashboard/Events";
 import CreateEvent from "./pages/dashboard/CreateEvent";
 import EventDetail from "./pages/dashboard/EventDetail";
@@ -56,6 +58,8 @@ const App = () => (
               <Route path="/events/:slug" element={<EventPublicDetail />} />
               <Route path="/discover" element={<Discover />} />
               <Route path="/calendars" element={<Discover />} />
+              <Route path="/pricing" element={<Pricing />} />
+              <Route path="/qr" element={<QRCode />} />
 
               {/* Dashboard (protected) */}
               <Route path="/dashboard" element={<Navigate to="/dashboard/events" replace />} />

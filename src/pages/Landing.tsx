@@ -71,6 +71,38 @@ const LOGO_URLS = [
   { src: "https://cdn.jsdelivr.net/gh/gilbarbara/logos@main/logos/stripe.svg", name: "Stripe" },
 ];
 
+// Company logos for marquee - diverse global companies
+const COMPANY_LOGOS = [
+  // Silicon Valley / US Tech Giants
+  { name: "Google", logo: "https://cdn.jsdelivr.net/gh/gilbarbara/logos@main/logos/google-icon.svg" },
+  { name: "Microsoft", logo: "https://cdn.jsdelivr.net/gh/gilbarbara/logos@main/logos/microsoft-icon.svg" },
+  { name: "Apple", logo: "https://cdn.jsdelivr.net/gh/gilbarbara/logos@main/logos/apple-icon.svg" },
+  { name: "Meta", logo: "https://cdn.jsdelivr.net/gh/gilbarbara/logos@main/logos/meta-icon.svg" },
+  { name: "Amazon", logo: "https://cdn.jsdelivr.net/gh/gilbarbara/logos@main/logos/amazon-icon.svg" },
+  
+  // African Companies
+  { name: "Safaricom", logo: "https://upload.wikimedia.org/wikipedia/commons/5/5b/Safaricom_logo.svg" },
+  { name: "Andela", logo: "https://upload.wikimedia.org/wikipedia/commons/9/9e/Andela_logo.png" },
+  { name: "Flutterwave", logo: "https://upload.wikimedia.org/wikipedia/commons/4/4c/Flutterwave_logo.png" },
+  { name: "Paystack", logo: "https://upload.wikimedia.org/wikipedia/commons/0/0b/Paystack_Logo.png" },
+  
+  // Asian Companies
+  { name: "Alibaba", logo: "https://cdn.jsdelivr.net/gh/gilbarbara/logos@main/logos/alibaba-icon.svg" },
+  { name: "Tencent", logo: "https://cdn.jsdelivr.net/gh/gilbarbara/logos@main/logos/tencent-icon.svg" },
+  { name: "Samsung", logo: "https://cdn.jsdelivr.net/gh/gilbarbara/logos@main/logos/samsung-icon.svg" },
+  { name: "Toyota", logo: "https://cdn.jsdelivr.net/gh/gilbarbara/logos@main/logos/toyota-icon.svg" },
+  
+  // European Companies
+  { name: "Spotify", logo: "https://cdn.jsdelivr.net/gh/gilbarbara/logos@main/logos/spotify-icon.svg" },
+  { name: "Siemens", logo: "https://cdn.jsdelivr.net/gh/gilbarbara/logos@main/logos/siemens-icon.svg" },
+  
+  // Additional Companies
+  { name: "HubSpot", logo: "https://cdn.jsdelivr.net/gh/gilbarbara/logos@main/logos/hubspot-icon.svg" },
+  { name: "Anthropic", logo: "https://upload.wikimedia.org/wikipedia/commons/2/23/Anthropic_logo.png" },
+  { name: "Eleven Labs", logo: "https://upload.wikimedia.org/wikipedia/commons/4/4c/ElevenLabs_logo.png" },
+  { name: "Google Developer Groups", logo: "https://upload.wikimedia.org/wikipedia/commons/4/4e/Google_Developer_Groups_logo.png" },
+];
+
 type BentoAccents = { integrationCircle: string; attendeeBorder: string; analyticsBars: string; analyticsAccent: string; pageButton: string };
 
 function IllustrationPages({ accents }: { accents: BentoAccents }) {
@@ -686,6 +718,53 @@ const Landing = () => {
                 </Card>
               </motion.div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Companies Section */}
+      <section className="py-16 lg:py-20 bg-muted/30">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-3xl sm:text-4xl font-display mb-4 text-foreground tracking-[-0.02em] leading-tight">
+              Teams from top companies manage their events<br />using <span className="text-pink-500">Events Spark</span>
+            </h2>
+          </motion.div>
+
+          {/* Marquee Animation */}
+          <div className="relative overflow-hidden">
+            <div className="flex animate-marquee">
+              {/* First set of logos */}
+              <div className="flex items-center gap-12 lg:gap-16 px-4">
+                {COMPANY_LOGOS.map((company, index) => (
+                  <div key={`first-${index}`} className="flex items-center justify-center min-w-[120px] lg:min-w-[140px] h-16 lg:h-20 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
+                    <img 
+                      src={company.logo} 
+                      alt={company.name} 
+                      className={`max-h-full max-w-full object-contain ${company.name === 'Apple' ? 'max-h-[60%] max-w-[60%]' : ''}`}
+                    />
+                  </div>
+                ))}
+              </div>
+              {/* Duplicate set for seamless loop */}
+              <div className="flex items-center gap-12 lg:gap-16 px-4">
+                {COMPANY_LOGOS.map((company, index) => (
+                  <div key={`second-${index}`} className="flex items-center justify-center min-w-[120px] lg:min-w-[140px] h-16 lg:h-20 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
+                    <img 
+                      src={company.logo} 
+                      alt={company.name} 
+                      className={`max-h-full max-w-full object-contain ${company.name === 'Apple' ? 'max-h-[60%] max-w-[60%]' : ''}`}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>
