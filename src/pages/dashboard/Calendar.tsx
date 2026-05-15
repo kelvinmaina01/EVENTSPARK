@@ -7,44 +7,149 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronLeft, ChevronRight, Plus, CalendarDays, Clock, Users,
-  Eye, Pencil, QrCode, X,
+  Eye, Pencil, QrCode, X, Mail, Users2, Share2, Sparkles, CalendarPlus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { useProfile } from "@/hooks/useProfile";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { fetchUpcomingEvents, fetchPastEvents, MockEvent } from "@/lib/mockEvents";
 import { CALENDAR_SYNC_ENDPOINT } from "@/lib/mediaConstants";
 
 type View = "month" | "week" | "agenda";
 
+const TIPS = [
+  { icon: CalendarDays, title: "Welcome to eventspark Calendars", body: "Calendars let you easily share and manage your events. Every event on eventspark is part of a calendar — let's see how they work." },
+  { icon: Users2, title: "Work with Your Team", body: "Easily add your teammates as calendar admins. They'll have manage access to events on the calendar." },
+  { icon: Share2, title: "Share Your Calendar Page", body: "Customize and share your beautiful Calendar showcasing your upcoming events. Guests can browse your schedule and subscribe." },
+  { icon: Mail, title: "Send Newsletters", body: "As guests subscribe to your Calendar, you can send them newsletters to keep them in the loop." },
+  { icon: Sparkles, title: "Highlight Community Events", body: "Your Calendar can feature events from other Calendars. You can even include events hosted on other websites." },
+];
+
 export default function Calendar() {
   const navigate = useNavigate();
+  const { data: profile } = useProfile();
   const [events, setEvents] = useState<MockEvent[]>([]);
   const [view, setView] = useState<View>("month");
   const [cursor, setCursor] = useState<Date>(new Date());
   const [selected, setSelected] = useState<MockEvent | null>(null);
+  const [tipIndex, setTipIndex] = useState(0);
+  const [tipDismissed, setTipDismissed] = useState(false);
 
   useEffect(() => {
     Promise.all([fetchUpcomingEvents(), fetchPastEvents()]).then(([u, p]) => setEvents([...u, ...p]));
+    setTipDismissed(localStorage.getItem("calendar-tip-dismissed") === "1");
   }, []);
+
+  const dismissTip = () => { localStorage.setItem("calendar-tip-dismissed", "1"); setTipDismissed(true); };
+  const Tip = TIPS[tipIndex];
+  const isLastTip = tipIndex === TIPS.length - 1;
+  const displayName = profile?.full_name || profile?.company || "My Calendar";
+  const initials = displayName.split(" ").map((s) => s[0]).slice(0, 2).join("").toUpperCase();
 
   const monthLabel = format(cursor, "MMMM yyyy");
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="font-display text-3xl font-bold tracking-[-0.02em]">Calendar</h1>
+          <h1 className="font-display text-3xl font-bold tracking-[-0.02em]">Calendars</h1>
           <p className="text-muted-foreground text-sm mt-1">All your events in one place.</p>
         </div>
-        <div className="flex items-center gap-2">
+      </div>
+
+      {/* Onboarding tip carousel */}
+      {!tipDismissed && (
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={tipIndex}
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.2 }}
+            className="bg-card rounded-2xl p-4 sm:p-5 flex items-start gap-4 sm:gap-5 relative"
+          >
+            <button onClick={dismissTip} aria-label="Dismiss"
+              className="absolute top-3 right-3 w-7 h-7 grid place-items-center rounded-full text-muted-foreground hover:bg-muted">
+              <X className="w-4 h-4" />
+            </button>
+            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-muted grid place-items-center shrink-0">
+              <Tip.icon className="w-8 h-8 text-muted-foreground" />
+            </div>
+            <div className="flex-1 min-w-0 pr-6">
+              <h3 className="font-display font-bold text-base sm:text-lg">{Tip.title}</h3>
+              <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">{Tip.body}</p>
+              <div className="flex items-center justify-between mt-4 gap-3">
+                <div className="flex items-center gap-1.5">
+                  {TIPS.map((_, i) => (
+                    <button key={i} onClick={() => setTipIndex(i)} aria-label={`Tip ${i + 1}`}
+                      className={`h-1 rounded-full transition-all ${i === tipIndex ? "w-6 bg-foreground" : "w-4 bg-muted-foreground/30 hover:bg-muted-foreground/50"}`} />
+                  ))}
+                </div>
+                <Button size="sm" className="rounded-full"
+                  onClick={() => isLastTip ? dismissTip() : setTipIndex((i) => i + 1)}>
+                  {isLastTip ? "Create Calendar" : "Next"}
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        </AnimatePresence>
+      )}
+
+      {/* My Calendars */}
+      <section>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-display text-lg font-bold tracking-[-0.01em]">My Calendars</h2>
+          <Button size="sm" variant="ghost" className="rounded-full" onClick={() => navigate("/dashboard/events/create")}>
+            <Plus className="w-4 h-4 mr-1" /> Create
+          </Button>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <button onClick={() => setView("agenda")}
+            className="text-left bg-card rounded-2xl p-4 flex items-center gap-3 hover:bg-muted/40 transition-colors">
+            <Avatar className="w-12 h-12">
+              <AvatarImage src={profile?.avatar_url || undefined} />
+              <AvatarFallback className="bg-primary/10 text-primary font-bold text-sm">{initials || "ME"}</AvatarFallback>
+            </Avatar>
+            <div className="min-w-0">
+              <p className="font-semibold truncate">{displayName}</p>
+              <p className="text-xs text-muted-foreground">{events.length} Events</p>
+            </div>
+          </button>
+          <button onClick={() => navigate("/dashboard/events/create")}
+            className="text-left bg-card rounded-2xl p-4 flex items-center gap-3 hover:bg-muted/40 transition-colors">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-200 to-lime-200 grid place-items-center shrink-0">
+              <CalendarPlus className="w-5 h-5 text-foreground/70" />
+            </div>
+            <div className="min-w-0">
+              <p className="font-semibold truncate">My Calendar</p>
+              <p className="text-xs text-muted-foreground">No Subscribers</p>
+            </div>
+          </button>
+        </div>
+      </section>
+
+      {/* Subscribed Calendars */}
+      <section>
+        <h2 className="font-display text-lg font-bold tracking-[-0.01em] mb-3">Subscribed Calendars</h2>
+        <div className="bg-card rounded-2xl p-6 max-w-sm">
+          <div className="w-12 h-12 rounded-xl bg-muted grid place-items-center mb-3">
+            <CalendarDays className="w-5 h-5 text-muted-foreground" />
+          </div>
+          <p className="font-semibold">No Subscriptions</p>
+          <p className="text-sm text-muted-foreground mt-1">You have not subscribed to any calendars.</p>
+        </div>
+      </section>
+
+      {/* Schedule */}
+      <div className="space-y-4 pt-2">
+        <div className="flex items-center justify-between">
+          <h2 className="font-display text-lg font-bold tracking-[-0.01em]">Schedule</h2>
           <Button asChild className="rounded-full" size="sm">
             <Link to="/dashboard/events/create">
               <Plus className="w-4 h-4 mr-1.5" /> Create Event
             </Link>
           </Button>
         </div>
-      </div>
 
       {/* Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-3 bg-card rounded-2xl p-2 sm:p-3">
@@ -103,6 +208,7 @@ export default function Calendar() {
       <p className="text-[11px] text-muted-foreground/60 text-center">
         Sync calendars via <code className="font-mono">{CALENDAR_SYNC_ENDPOINT}</code> — coming soon.
       </p>
+      </div>
 
       {/* Drawer */}
       <Sheet open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
