@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { format } from "date-fns";
-import { MapPin, Users, Share2, Heart, ArrowLeft, Globe, Ticket, Clock, Play } from "lucide-react";
+import { MapPin, Users, Share2, Heart, ArrowLeft, Globe, Ticket, Clock, Play, Twitter, Linkedin, Instagram, Link2 } from "lucide-react";
 import { motion } from "framer-motion";
 import PublicHeader from "@/components/PublicHeader";
 import Footer from "@/components/layout/Footer";
@@ -198,12 +198,40 @@ export default function EventPublicDetail() {
               <h2 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-3">Hosted by</h2>
               <div className="flex flex-wrap gap-3">
                 {event.hosts.map((h) => (
-                  <div key={h.name} className="flex items-center gap-2.5 bg-card rounded-full pl-1 pr-4 py-1">
+                  <div key={h.name} className="flex items-center gap-2.5 bg-card rounded-full pl-1 pr-2 py-1">
                     <Avatar className="w-8 h-8">
                       <AvatarImage src={h.avatar} alt={h.name} />
                       <AvatarFallback>{h.name[0]}</AvatarFallback>
                     </Avatar>
-                    <span className="text-sm font-medium">{h.name}</span>
+                    <span className="text-sm font-medium pr-1">{h.name}</span>
+                    {h.socials && (
+                      <div className="flex items-center gap-0.5">
+                        {h.socials.twitter && (
+                          <a href={h.socials.twitter} target="_blank" rel="noreferrer" aria-label={`${h.name} on Twitter`}
+                            className="w-7 h-7 grid place-items-center rounded-full text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors">
+                            <Twitter className="w-3.5 h-3.5" />
+                          </a>
+                        )}
+                        {h.socials.linkedin && (
+                          <a href={h.socials.linkedin} target="_blank" rel="noreferrer" aria-label={`${h.name} on LinkedIn`}
+                            className="w-7 h-7 grid place-items-center rounded-full text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors">
+                            <Linkedin className="w-3.5 h-3.5" />
+                          </a>
+                        )}
+                        {h.socials.instagram && (
+                          <a href={h.socials.instagram} target="_blank" rel="noreferrer" aria-label={`${h.name} on Instagram`}
+                            className="w-7 h-7 grid place-items-center rounded-full text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors">
+                            <Instagram className="w-3.5 h-3.5" />
+                          </a>
+                        )}
+                        {h.socials.website && (
+                          <a href={h.socials.website} target="_blank" rel="noreferrer" aria-label={`${h.name} website`}
+                            className="w-7 h-7 grid place-items-center rounded-full text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors">
+                            <Link2 className="w-3.5 h-3.5" />
+                          </a>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

@@ -62,12 +62,22 @@ export default function CheckIn() {
     const wasIn = checked.has(regId);
     const nextValue = wasIn ? null : new Date().toISOString();
     setPending((p) => { const n = new Set(p); n.add(regId); return n; });
+    // Optimistic update: flip attended_at in the cache immediately so the UI
+    // reflects the change without waiting on the network. We snapshot the
+    // previous value so we can roll back if the request fails.
+    const queryKey = ["registrations", id] as const;
+    const previous = qc.getQueryData<any[]>(queryKey);
+    qc.setQueryData<any[]>(queryKey, (old) =>
+      (old || []).map((r) => (r.id === regId ? { ...r, attended_at: nextValue } : r)),
+    );
     const { error } = await supabase
       .from("registrations")
       .update({ attended_at: nextValue })
       .eq("id", regId);
     setPending((p) => { const n = new Set(p); n.delete(regId); return n; });
     if (error) {
+      // Roll back the optimistic write so the button reverts immediately.
+      if (previous) qc.setQueryData(queryKey, previous);
       toast.error(error.message || "Couldn't update check-in");
       setLast({ name, ok: false });
       return;

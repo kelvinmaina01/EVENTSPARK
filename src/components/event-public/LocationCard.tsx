@@ -89,30 +89,35 @@ export default function LocationCard({ venue, address, mode = "physical", joinLi
 
   const link = joinLink || JOIN_LINK_PLACEHOLDER;
   const virtualCard = (
-    <div className="bg-card rounded-3xl p-5 flex items-start gap-4">
+    <a
+      href={link}
+      target="_blank"
+      rel="noreferrer"
+      className="bg-card rounded-3xl p-5 flex items-start gap-4 hover:bg-muted/40 transition-colors cursor-pointer group"
+    >
       <div className="w-11 h-11 rounded-xl bg-primary/10 grid place-items-center shrink-0">
         <Video className="w-5 h-5 text-primary" />
       </div>
       <div className="min-w-0 flex-1 space-y-2">
         <div className="flex items-center gap-2 flex-wrap">
-          <p className="font-semibold">Online Event</p>
+          <p className="font-semibold group-hover:text-primary transition-colors">Online Event</p>
           <Badge variant="secondary" className="rounded-full text-[10px] uppercase tracking-wider">
             <Globe className="w-3 h-3 mr-1" /> Virtual
           </Badge>
         </div>
         <p className="text-sm text-muted-foreground break-all">{link}</p>
         <div className="flex flex-wrap gap-2 pt-1">
-          <Button asChild size="sm" className="rounded-full">
-            <a href={link} target="_blank" rel="noreferrer">
-              Join Event <ExternalLink className="w-3.5 h-3.5 ml-1.5" />
-            </a>
+          <Button size="sm" className="rounded-full pointer-events-none">
+            Join Event <ExternalLink className="w-3.5 h-3.5 ml-1.5" />
           </Button>
           <Button
             type="button"
             size="sm"
             variant="outline"
             className="rounded-full"
-            onClick={() => {
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
               navigator.clipboard.writeText(link);
               toast.success("Link copied");
             }}
@@ -121,7 +126,7 @@ export default function LocationCard({ venue, address, mode = "physical", joinLi
           </Button>
         </div>
       </div>
-    </div>
+    </a>
   );
 
   return (
