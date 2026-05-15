@@ -44,17 +44,17 @@ export default function BrandsMarquee() {
             "linear-gradient(to right, transparent, black 8%, black 92%, transparent)",
         }}
       >
-        <div className="flex gap-12 sm:gap-16 w-max animate-[marquee_40s_linear_infinite] hover:[animation-play-state:paused]">
+        <div className="flex items-center gap-10 sm:gap-14 w-max animate-[marquee_40s_linear_infinite] hover:[animation-play-state:paused]">
           {row.map((logo, i) => (
             <div
               key={`${logo.name}-${i}`}
-              className="shrink-0 h-12 sm:h-14 flex items-center justify-center"
+              className="shrink-0 w-[140px] sm:w-[160px] h-16 sm:h-20 flex items-center justify-center"
               title={logo.name}
             >
               <img
                 src={logo.src}
                 alt={logo.name}
-                className="h-full w-auto object-contain opacity-70 hover:opacity-100 grayscale hover:grayscale-0 transition-all"
+                className="max-h-full max-w-full w-auto h-auto object-contain opacity-70 hover:opacity-100 grayscale hover:grayscale-0 transition-all"
                 loading="lazy"
               />
             </div>
