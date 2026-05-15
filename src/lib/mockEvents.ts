@@ -10,7 +10,11 @@ export type MockEvent = {
   location: string;
   city?: string;
   cover: string;         // image url
-  hosts: { name: string; avatar: string }[];
+  hosts: {
+    name: string;
+    avatar: string;
+    socials?: { twitter?: string; linkedin?: string; instagram?: string; website?: string };
+  }[];
   attendees: number;
   status: "going" | "invited" | "interested" | "hosting" | "none";
   category: "Tech" | "AI" | "Climate" | "Crypto" | "Arts" | "Wellness" | "Community";
@@ -32,6 +36,19 @@ const COVERS = [
 
 const AVATARS = [1, 5, 8, 9, 12, 16, 22, 33].map((i) => `https://i.pravatar.cc/100?img=${i}`);
 
+const SOCIALS = {
+  brandon:   { twitter: "https://twitter.com/brandon",   linkedin: "https://linkedin.com/in/brandon",   website: "https://brandon.dev" },
+  priya:     { twitter: "https://twitter.com/priya",     linkedin: "https://linkedin.com/in/priya",     instagram: "https://instagram.com/priya" },
+  marcus:    { twitter: "https://twitter.com/marcus",    linkedin: "https://linkedin.com/in/marcus" },
+  stellar:   { twitter: "https://twitter.com/StellarOrg", website: "https://stellar.org" },
+  privacy:   { twitter: "https://twitter.com/privacylab", website: "https://privacylab.org" },
+  mjengo:    { instagram: "https://instagram.com/mjengo", website: "https://mjengo.co" },
+  meetup:    { website: "https://meetup.com" },
+  ecoguild:  { twitter: "https://twitter.com/ecoguild", website: "https://ecoguild.org" },
+  raymmar:   { twitter: "https://twitter.com/raymmar", linkedin: "https://linkedin.com/in/raymmar" },
+  francisco: { twitter: "https://twitter.com/francisco", linkedin: "https://linkedin.com/in/francisco" },
+};
+
 function dayOffset(d: number, hour = 18) {
   const x = new Date();
   x.setDate(x.getDate() + d);
@@ -45,7 +62,10 @@ export const MOCK_EVENTS: MockEvent[] = [
     title: "AI Builders Night — Agents in Production",
     date: dayOffset(2, 18), location: "Sarit Centre, Nairobi", city: "Nairobi",
     cover: COVERS[0],
-    hosts: [{ name: "Brandon", avatar: AVATARS[0] }, { name: "Priya", avatar: AVATARS[1] }],
+    hosts: [
+      { name: "Brandon", avatar: AVATARS[0], socials: SOCIALS.brandon },
+      { name: "Priya", avatar: AVATARS[1], socials: SOCIALS.priya },
+    ],
     attendees: 142, status: "going", category: "AI", featured: true,
     videoUrl: "https://www.youtube.com/embed/aircAruvnKk",
   },
@@ -54,7 +74,7 @@ export const MOCK_EVENTS: MockEvent[] = [
     title: "Founders Coffee · Westlands Edition",
     date: dayOffset(5, 9), location: "Java House, Westlands", city: "Nairobi",
     cover: COVERS[1],
-    hosts: [{ name: "Marcus", avatar: AVATARS[2] }],
+    hosts: [{ name: "Marcus", avatar: AVATARS[2], socials: SOCIALS.marcus }],
     attendees: 38, status: "invited", category: "Community",
   },
   {
@@ -62,7 +82,10 @@ export const MOCK_EVENTS: MockEvent[] = [
     title: "Stellar East Africa — Campus Series · JKUAT",
     date: dayOffset(7, 12), location: "JKUAT IPIC Main Campus", city: "Juja",
     cover: COVERS[2],
-    hosts: [{ name: "Stellar", avatar: AVATARS[3] }, { name: "Brandon", avatar: AVATARS[0] }],
+    hosts: [
+      { name: "Stellar", avatar: AVATARS[3], socials: SOCIALS.stellar },
+      { name: "Brandon", avatar: AVATARS[0], socials: SOCIALS.brandon },
+    ],
     attendees: 410, status: "going", category: "Crypto", featured: true,
   },
   {
@@ -70,7 +93,7 @@ export const MOCK_EVENTS: MockEvent[] = [
     title: "Deliberate Democracy in Practice",
     date: dayOffset(10, 17), location: "Online", city: "Online",
     cover: COVERS[3],
-    hosts: [{ name: "PrivacyLab", avatar: AVATARS[4] }],
+    hosts: [{ name: "PrivacyLab", avatar: AVATARS[4], socials: SOCIALS.privacy }],
     attendees: 88, status: "interested", category: "Community", source: "YouTube",
   },
   {
@@ -78,7 +101,7 @@ export const MOCK_EVENTS: MockEvent[] = [
     title: "Mjengo Networking — The Collaborative Challenge",
     date: dayOffset(12, 7), location: "CTM Ngong Road", city: "Nairobi",
     cover: COVERS[4],
-    hosts: [{ name: "Mjengo", avatar: AVATARS[5] }],
+    hosts: [{ name: "Mjengo", avatar: AVATARS[5], socials: SOCIALS.mjengo }],
     attendees: 220, status: "none", category: "Community", featured: true,
   },
   {
@@ -86,7 +109,7 @@ export const MOCK_EVENTS: MockEvent[] = [
     title: "The Magic Behind Autocorrect",
     date: dayOffset(14, 17), location: "Sarit Centre", city: "Nairobi",
     cover: COVERS[5],
-    hosts: [{ name: "Meetup", avatar: AVATARS[6] }],
+    hosts: [{ name: "Meetup", avatar: AVATARS[6], socials: SOCIALS.meetup }],
     attendees: 64, status: "none", category: "Tech",
   },
   {
@@ -94,7 +117,7 @@ export const MOCK_EVENTS: MockEvent[] = [
     title: "Climate Makers Forum — Africa Edition",
     date: dayOffset(20, 10), location: "Radisson Blu", city: "Nairobi",
     cover: COVERS[6],
-    hosts: [{ name: "EcoGuild", avatar: AVATARS[7] }],
+    hosts: [{ name: "EcoGuild", avatar: AVATARS[7], socials: SOCIALS.ecoguild }],
     attendees: 305, status: "none", category: "Climate",
   },
   {
@@ -102,7 +125,7 @@ export const MOCK_EVENTS: MockEvent[] = [
     title: "Late Night Jam · Vibe Coding Edition",
     date: dayOffset(25, 21), location: "Online", city: "Online",
     cover: COVERS[7],
-    hosts: [{ name: "Marcus", avatar: AVATARS[2] }],
+    hosts: [{ name: "Marcus", avatar: AVATARS[2], socials: SOCIALS.marcus }],
     attendees: 51, status: "interested", category: "Arts",
   },
   // Past
@@ -111,7 +134,10 @@ export const MOCK_EVENTS: MockEvent[] = [
     title: "Replit + Security · Community AMA with CTO",
     date: dayOffset(-12, 19), location: "Online", city: "Online",
     cover: COVERS[1],
-    hosts: [{ name: "Raymmar", avatar: AVATARS[4] }, { name: "Francisco", avatar: AVATARS[6] }],
+    hosts: [
+      { name: "Raymmar", avatar: AVATARS[4], socials: SOCIALS.raymmar },
+      { name: "Francisco", avatar: AVATARS[6], socials: SOCIALS.francisco },
+    ],
     attendees: 6800, status: "invited", category: "Tech", source: "YouTube",
   },
   {
@@ -119,7 +145,7 @@ export const MOCK_EVENTS: MockEvent[] = [
     title: "Stellar East Africa — JKUAT Recap",
     date: dayOffset(-15, 12), location: "JKUAT IPIC Main Campus", city: "Juja",
     cover: COVERS[2],
-    hosts: [{ name: "Brandon", avatar: AVATARS[0] }],
+    hosts: [{ name: "Brandon", avatar: AVATARS[0], socials: SOCIALS.brandon }],
     attendees: 138, status: "going", category: "Crypto",
   },
   {
@@ -127,7 +153,7 @@ export const MOCK_EVENTS: MockEvent[] = [
     title: "Founders April Mixer",
     date: dayOffset(-30, 18), location: "The Alchemist", city: "Nairobi",
     cover: COVERS[3],
-    hosts: [{ name: "Marcus", avatar: AVATARS[2] }],
+    hosts: [{ name: "Marcus", avatar: AVATARS[2], socials: SOCIALS.marcus }],
     attendees: 92, status: "going", category: "Community",
   },
 ];
