@@ -49,9 +49,9 @@ const DuotoneIcon = ({ iconName }: { iconName: string }) => {
 };
 
 const EventCard = ({ ev }: { ev: MockEvent }) => (
-  <Link to={`/events/${ev.slug}`} className="shrink-0 w-[260px] sm:w-[280px] group">
+  <Link to={`/events/${ev.slug}`} className="w-full group block">
     <div className="aspect-[4/3] rounded-xl overflow-hidden bg-muted mb-3">
-      <img src={ev.cover} alt={ev.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+      <img src={ev.cover} alt={ev.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
     </div>
     <p className="text-xs text-muted-foreground mb-1">{format(new Date(ev.date), "EEE, MMM d, h:mm a")}</p>
     <h3 className="font-display font-bold text-base leading-snug line-clamp-2 group-hover:text-primary transition-colors">{ev.title}</h3>
@@ -73,7 +73,7 @@ function Row({ title, subtitle, items, maxItems = 3 }: { title: string; subtitle
           View All <ArrowRight className="w-3.5 h-3.5" />
         </button>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {displayItems.map((ev) => <EventCard key={ev.id} ev={ev} />)}
       </div>
     </section>

@@ -15,6 +15,8 @@ import { useProfile } from "@/hooks/useProfile";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { fetchUpcomingEvents, fetchPastEvents, MockEvent } from "@/lib/mockEvents";
 import { CALENDAR_SYNC_ENDPOINT } from "@/lib/mediaConstants";
+import OrganizerSocials from "@/components/event-public/OrganizerSocials";
+
 
 type View = "month" | "week" | "agenda";
 
@@ -235,6 +237,12 @@ export default function Calendar() {
                     <Users className="w-4 h-4" />
                     {selected.attendees.toLocaleString()} registered
                   </p>
+                </div>
+                
+                {/* Host Info & Fluent Socials */}
+                <div className="pt-2 border-t border-border/40">
+                  <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">Hosted by</p>
+                  <OrganizerSocials hosts={selected.hosts} />
                 </div>
                 <div className="grid grid-cols-3 gap-2 pt-2">
                   <Button variant="outline" className="rounded-full" size="sm" asChild>

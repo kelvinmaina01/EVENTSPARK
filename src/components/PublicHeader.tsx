@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 
-const loggedInItems = [
+const navItems = [
   { to: "/events", label: "Events" },
   { to: "/calendars", label: "Calendars" },
   { to: "/discover", label: "Discover" },
@@ -26,34 +26,22 @@ export function PublicHeader() {
       <div className="max-w-7xl mx-auto h-14 flex items-center px-4 sm:px-6 gap-2">
         <Link to="/" className="mr-2 shrink-0"><Logo size="sm" /></Link>
 
-        {user ? (
-          <nav className="flex items-center gap-1">
-            {loggedInItems.map((it) => (
-              <RRNavLink
-                key={it.to}
-                to={it.to}
-                className={({ isActive }) =>
-                  `h-9 px-4 inline-flex items-center rounded-full text-sm font-medium transition-colors ${
-                    isActive ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                  }`
-                }
-              >
-                {it.label}
-              </RRNavLink>
-            ))}
-          </nav>
-        ) : (
-          <RRNavLink
-            to="/discover"
-            className={({ isActive }) =>
-              `h-9 px-4 inline-flex items-center rounded-full text-sm font-medium transition-colors ${
-                isActive ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted"
-              }`
-            }
-          >
-            Discover Events
-          </RRNavLink>
-        )}
+        <nav className="flex items-center gap-1">
+          {navItems.map((it) => (
+            <RRNavLink
+              key={it.to}
+              to={it.to}
+              className={({ isActive }) =>
+                `h-9 px-4 inline-flex items-center rounded-full text-sm font-medium transition-colors ${
+                  isActive ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                }`
+              }
+            >
+              {it.label}
+            </RRNavLink>
+          ))}
+        </nav>
+
 
         <div className="flex-1" />
 
