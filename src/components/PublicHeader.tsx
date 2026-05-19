@@ -31,11 +31,11 @@ export function PublicHeader() {
           <Link to="/" className="shrink-0"><Logo size="sm" /></Link>
 
           {/* Search Bar (Meetup Style) */}
-          <div className="hidden md:flex items-center h-10 bg-muted/60 hover:bg-muted border border-transparent hover:border-border rounded-full pl-4 pr-1.5 focus-within:!bg-background focus-within:!border-primary/50 focus-within:ring-2 focus-within:ring-primary/20 transition-all shadow-sm max-w-[380px] w-full">
-            <input type="text" placeholder="Search events..." className="bg-transparent border-none outline-none text-sm placeholder:text-muted-foreground w-full flex-1 min-w-[80px] lg:min-w-[120px]" />
+          <div onClick={() => setOpen(true)} className="hidden md:flex items-center h-10 bg-muted/60 hover:bg-muted border border-transparent hover:border-border rounded-full pl-4 pr-1.5 cursor-pointer hover:shadow-md transition-all max-w-[380px] w-full">
+            <input type="text" readOnly placeholder="Search events..." className="cursor-pointer bg-transparent border-none outline-none text-sm placeholder:text-muted-foreground w-full flex-1 min-w-[80px] lg:min-w-[120px]" />
             <div className="w-px h-5 bg-border mx-2 shrink-0" />
-            <input type="text" defaultValue="Othaya, KE" className="bg-transparent border-none outline-none text-sm w-[90px] xl:w-[110px] shrink-0" />
-            <button className="w-8 h-8 rounded-full bg-[#19192E] text-white flex items-center justify-center ml-1 hover:bg-[#19192E]/90 shrink-0">
+            <input type="text" readOnly defaultValue="Othaya, KE" className="cursor-pointer bg-transparent border-none outline-none text-sm w-[90px] xl:w-[110px] shrink-0" />
+            <button className="w-8 h-8 rounded-full bg-[#19192E] text-white flex items-center justify-center ml-1 hover:bg-[#19192E]/90 shrink-0 pointer-events-none">
               <Search className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -108,11 +108,6 @@ export function PublicHeader() {
           )}
 
           <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <button aria-label="Search" className="w-10 h-10 grid place-items-center rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
-                <Search className="w-[18px] h-[18px]" />
-              </button>
-            </DialogTrigger>
             <DialogContent className="p-0 max-w-lg overflow-hidden">
               <Command>
                 <CommandInput placeholder="Search for events, calendars and more…" />

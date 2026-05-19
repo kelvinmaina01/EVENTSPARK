@@ -4,7 +4,7 @@ import Footer from "@/components/layout/Footer";
 import BrandsMarquee from "@/components/landing/BrandsMarquee";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Puzzle,
@@ -19,8 +19,11 @@ import {
   UserCheck,
   Search,
   Globe,
+  Ticket,
+  Compass,
 } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 
 import eventChill from "@/assets/event-chill-code-workshop.jpg";
 import eventHackathon from "@/assets/event-hackathon-ai.jpg";
@@ -337,8 +340,10 @@ function ConfettiLayer({ size, opacity, count, spread }: { size: number; opacity
 }
 
 const Landing = () => {
+  const navigate = useNavigate();
   const [wordIndex, setWordIndex] = useState(0);
   const [navVisible, setNavVisible] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [devOpen, setDevOpen] = useState(false);
   const [titleWeight, setTitleWeight] = useState(700);
   const [confettiSize, setConfettiSize] = useState(2.5);
@@ -409,14 +414,39 @@ const Landing = () => {
             </Link>
 
             {/* Search Bar (Meetup Style) */}
-            <div className="hidden md:flex items-center h-10 bg-muted/60 hover:bg-muted border border-transparent hover:border-border rounded-full pl-4 pr-1.5 focus-within:!bg-background focus-within:!border-primary/50 focus-within:ring-2 focus-within:ring-primary/20 transition-all shadow-sm max-w-[320px] lg:max-w-[380px] w-full">
-              <input type="text" placeholder="Search events..." className="bg-transparent border-none outline-none text-sm placeholder:text-muted-foreground w-full flex-1 min-w-[80px] lg:min-w-[120px]" />
+            <div onClick={() => setSearchOpen(true)} className="hidden md:flex items-center h-10 bg-muted/60 hover:bg-muted border border-transparent hover:border-border rounded-full pl-4 pr-1.5 cursor-pointer hover:shadow-md transition-all max-w-[320px] lg:max-w-[380px] w-full">
+              <input type="text" readOnly placeholder="Search events..." className="cursor-pointer bg-transparent border-none outline-none text-sm placeholder:text-muted-foreground w-full flex-1 min-w-[80px] lg:min-w-[120px]" />
               <div className="w-px h-5 bg-border mx-2 shrink-0" />
-              <input type="text" defaultValue="Othaya, KE" className="bg-transparent border-none outline-none text-sm w-[90px] xl:w-[110px] shrink-0" />
-              <button className="w-8 h-8 rounded-full bg-[#19192E] text-white flex items-center justify-center ml-1 hover:bg-[#19192E]/90 shrink-0">
+              <input type="text" readOnly defaultValue="Othaya, KE" className="cursor-pointer bg-transparent border-none outline-none text-sm w-[90px] xl:w-[110px] shrink-0" />
+              <button className="w-8 h-8 rounded-full bg-[#19192E] text-white flex items-center justify-center ml-1 hover:bg-[#19192E]/90 shrink-0 pointer-events-none">
                 <Search className="w-3.5 h-3.5" />
               </button>
             </div>
+
+            <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
+              <DialogContent className="p-0 max-w-lg overflow-hidden bg-background border-border">
+                <Command>
+                  <CommandInput placeholder="Search for events, calendars and more…" />
+                  <CommandList>
+                    <CommandEmpty>No results.</CommandEmpty>
+                    <CommandGroup heading="Shortcuts">
+                      <CommandItem onSelect={() => { setSearchOpen(false); navigate("/auth"); }}>
+                        <ArrowRight className="w-4 h-4 mr-2" /> Create Event
+                      </CommandItem>
+                      <CommandItem onSelect={() => { setSearchOpen(false); navigate("/events"); }}>
+                        <Ticket className="w-4 h-4 mr-2" /> Open Events
+                      </CommandItem>
+                      <CommandItem onSelect={() => { setSearchOpen(false); navigate("/discover"); }}>
+                        <Compass className="w-4 h-4 mr-2" /> Open Discover
+                      </CommandItem>
+                      <CommandItem onSelect={() => { setSearchOpen(false); navigate("/"); }}>
+                        <Sparkles className="w-4 h-4 mr-2" /> Open Home
+                      </CommandItem>
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </DialogContent>
+            </Dialog>
 
             {/* Language Selector Modal */}
             <Dialog>
