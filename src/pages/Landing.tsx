@@ -21,6 +21,7 @@ import {
   Globe,
   Ticket,
   Compass,
+  MapPin,
 } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
@@ -34,6 +35,39 @@ import avatarSarah from "@/assets/avatar-sarah.jpg";
 import avatarMarcus from "@/assets/avatar-marcus.jpg";
 import avatarPriya from "@/assets/avatar-priya.jpg";
 
+
+const POPULAR_CITIES = [
+  {
+    name: "Nairobi",
+    continent: "Africa",
+    desc: "Capital of Kenya and Africa's Silicon Savannah. A bustling hub of innovation, creative events, and close-up wildlife safaris.",
+    image: "https://images.unsplash.com/photo-1542362567-b07eac790acd?w=600&auto=format&fit=crop&q=80",
+  },
+  {
+    name: "Mumbai",
+    continent: "Asia",
+    desc: "The financial capital of India and Bollywood's home. A fast-paced metropolis of rich heritage, tech hubs, and diverse cultural events.",
+    image: "https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=600&auto=format&fit=crop&q=80",
+  },
+  {
+    name: "San Francisco",
+    continent: "North America",
+    desc: "The heartbeat of global tech and startup culture. Famous for Silicon Valley, steep hills, cable cars, and the Golden Gate Bridge.",
+    image: "https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=600&auto=format&fit=crop&q=80",
+  },
+  {
+    name: "London",
+    continent: "Europe",
+    desc: "A historic global powerhouse. Centered around major financial districts, art galleries, fintech meetups, and historic riverside pubs.",
+    image: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=600&auto=format&fit=crop&q=80",
+  },
+  {
+    name: "Sydney",
+    continent: "Australia",
+    desc: "Australia's stunning harbor gem. World-famous for its Opera House, surf beaches, sun-drenched festivals, and vibrant communities.",
+    image: "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?w=600&auto=format&fit=crop&q=80",
+  }
+];
 
 const features = [
   {
@@ -804,6 +838,77 @@ const Landing = () => {
                     </div>
                   </CardContent>
                 </Card>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Popular Cities Section */}
+      <section className="py-16 lg:py-24 bg-background relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
+            <div>
+              <h2 className="text-3xl sm:text-4xl font-display font-bold tracking-tight text-foreground">
+                Popular cities on <span className="text-[#FF758F] font-extrabold relative inline-block after:absolute after:bottom-1 after:left-0 after:w-full after:h-1 after:bg-[#FF758F]/20">eventspark</span>
+              </h2>
+              <p className="mt-3 text-muted-foreground text-base max-w-2xl font-body">
+                Looking for fun things to do near you? See what eventspark organizers are planning in cities around the world.
+              </p>
+            </div>
+            <div className="mt-4 md:mt-0 flex items-center gap-3 bg-[#EAF7ED] text-[#2E7D32] dark:bg-[#1E3A24] dark:text-[#A1E3AD] px-4 py-2.5 rounded-2xl shadow-sm border border-[#C8E6C9]/40 self-start md:self-auto hover:scale-[1.02] transition-transform duration-250 cursor-default">
+              <MapPin className="w-5 h-5 animate-bounce shrink-0" />
+              <div className="text-left leading-none">
+                <span className="text-[10px] uppercase font-bold tracking-wider opacity-80 block">We're</span>
+                <span className="text-sm font-extrabold tracking-tight">EVERYWHERE!</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            {POPULAR_CITIES.map((city, idx) => (
+              <motion.div
+                key={city.name}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                className="group relative rounded-3xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 bg-card border border-border/50 h-[360px] cursor-pointer flex flex-col justify-between"
+              >
+                {/* City Image */}
+                <div className="relative h-[280px] overflow-hidden">
+                  <img
+                    src={city.image}
+                    alt={city.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                  />
+                  {/* Wave effect overlay */}
+                  <svg viewBox="0 0 1440 120" preserveAspectRatio="none" className="absolute -bottom-1 left-0 w-full h-8 text-card fill-current pointer-events-none transition-colors duration-200">
+                    <path d="M0,60 C120,100 240,20 360,60 C480,100 600,20 720,60 C840,100 960,20 1080,60 C1200,100 1320,20 1440,60 L1440,120 L0,120 Z" />
+                  </svg>
+                </div>
+
+                {/* City Name below */}
+                <div className="h-[80px] flex items-center justify-center bg-card transition-colors duration-200">
+                  <span className="font-display font-bold text-lg text-foreground group-hover:text-primary transition-colors duration-200">
+                    {city.name}
+                  </span>
+                </div>
+
+                {/* Pink glassmorphism overlay sliding up on hover */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#FF758F]/95 via-[#FF758F]/85 to-[#FF758F]/60 backdrop-blur-md translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out flex flex-col justify-end p-6 text-white rounded-3xl z-10">
+                  <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-75">
+                    <span className="text-[10px] uppercase font-bold tracking-widest bg-white/20 px-2 py-0.5 rounded-full mb-2 inline-block">
+                      {city.continent}
+                    </span>
+                    <h3 className="font-display font-bold text-2xl mb-1.5 leading-none">
+                      {city.name}
+                    </h3>
+                    <p className="text-xs leading-relaxed opacity-95 font-body">
+                      {city.desc}
+                    </p>
+                  </div>
+                </div>
               </motion.div>
             ))}
           </div>
