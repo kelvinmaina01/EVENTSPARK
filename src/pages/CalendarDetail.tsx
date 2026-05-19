@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { 
   ArrowLeft, ArrowRight, Calendar, Globe, MapPin, Users, 
@@ -86,6 +86,14 @@ export default function CalendarDetail() {
 
   const calendar = getCalendarBySlug(calendarSlug || "");
 
+  useEffect(() => {
+    if (calendarSlug && calendar) {
+      const localSubsStr = localStorage.getItem("eventspark_subscribed_slugs") || "[]";
+      const localSubs = JSON.parse(localSubsStr);
+      setIsSubscribed(calendar.subscribed || localSubs.includes(calendarSlug));
+    }
+  }, [calendarSlug, calendar]);
+
   if (!calendar) {
     return (
       <div className="min-h-screen flex flex-col bg-background">
@@ -95,7 +103,7 @@ export default function CalendarDetail() {
             <div className="w-16 h-16 rounded-2xl bg-muted grid place-items-center text-3xl mx-auto">📅</div>
             <h1 className="text-2xl font-display font-bold">Calendar Not Found</h1>
             <p className="text-muted-foreground text-sm">This community calendar doesn't exist or hasn't been set up yet.</p>
-            <Button onClick={() => navigate("/calendars")} variant="outline" className="rounded-full">
+            <Button onClick={() => navigate("/dashboard/calendar")} variant="outline" className="rounded-full">
               <ArrowLeft className="w-4 h-4 mr-1.5" /> Back to Calendars
             </Button>
           </div>
@@ -105,19 +113,25 @@ export default function CalendarDetail() {
     );
   }
 
-  // Initialize subscription state from the mock data
-  if (!isSubscribed && calendar.subscribed) {
-    setIsSubscribed(true);
-  }
-
   const handleSubscribe = () => {
-    setIsSubscribed(!isSubscribed);
-    if (!isSubscribed) {
-      toast.success(`Subscribed to ${calendar.name}! 🎉`, {
-        description: "You'll be notified about new events from this calendar.",
-      });
-    } else {
-      toast.success(`Unsubscribed from ${calendar.name}`);
+    const nextSub = !isSubscribed;
+    setIsSubscribed(nextSub);
+    
+    if (calendarSlug) {
+      const localSubsStr = localStorage.getItem("eventspark_subscribed_slugs") || "[]";
+      let localSubs = JSON.parse(localSubsStr) as string[];
+      if (nextSub) {
+        if (!localSubs.includes(calendarSlug)) {
+          localSubs.push(calendarSlug);
+        }
+        toast.success(`Subscribed to ${calendar.name}! 🎉`, {
+          description: "You'll be notified about new events from this calendar.",
+        });
+      } else {
+        localSubs = localSubs.filter(s => s !== calendarSlug);
+        toast.success(`Unsubscribed from ${calendar.name}`);
+      }
+      localStorage.setItem("eventspark_subscribed_slugs", JSON.stringify(localSubs));
     }
   };
 

@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { useNavigate, useParams, Link } from "react-router-dom";
+import { useNavigate, useParams, Link, useSearchParams } from "react-router-dom";
 import {
   ArrowLeft, ArrowRight, Check, Layout, Columns2, Monitor,
   Loader2, Sparkles, MapPin, Video, Globe, PartyPopper, ExternalLink, Eye, Copy, Info
@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
 import MediaUploadZone, { MediaValue } from "@/components/event-creation/MediaUploadZone";
+import { getCustomCalendars } from "@/lib/mockEvents";
 
 const steps = [
   { number: 1, title: "Event Details", subtitle: "Name, date, location & description" },
@@ -81,6 +82,10 @@ const CreateEvent = () => {
   const { data: existingEvent, isLoading: eventLoading } = useEvent(isEditMode ? editId : undefined);
   const { data: existingFields, isLoading: fieldsLoading } = useFormFields(isEditMode ? editId : undefined);
 
+  const [searchParams] = useSearchParams();
+  const [myCalendars, setMyCalendars] = useState<any[]>([]);
+  const [selectedCalendarSlug, setSelectedCalendarSlug] = useState("");
+
   const [step, setStep] = useState(1);
   const [name, setName] = useState("");
   const [startDate, setStartDate] = useState("");
@@ -113,6 +118,55 @@ const CreateEvent = () => {
   const updateEvent = useUpdateEvent();
   const bulkInsertFields = useBulkInsertFormFields();
   const { data: profile } = useProfile();
+
+  // Seed / fetch calendars
+  useEffect(() => {
+    let list = getCustomCalendars();
+    if (list.length === 0) {
+      const defaultName = profile?.full_name ? `${profile.full_name}'s Calendar` : "My Calendar";
+      const defaultCal = {
+        name: defaultName,
+        slug: "my-calendar",
+        icon: "⚡",
+        description: "My personal event space.",
+        longDescription: "Welcome to my personal calendar. Find and subscribe to all my upcoming and past events.",
+        coverImage: "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=1200&q=80",
+        events: 0,
+        subscribed: false,
+        followers: 12,
+        host: { name: profile?.full_name || "Host", avatar: profile?.avatar_url || "https://api.dicebear.com/7.x/identicon/svg?seed=default" },
+        socials: { website: profile?.website || "" },
+        tintColor: "pink",
+        locationType: "global",
+        locationValue: "",
+      };
+      localStorage.setItem("eventspark_custom_calendars", JSON.stringify([defaultCal]));
+      list = [defaultCal];
+    }
+    setMyCalendars(list);
+    
+    const paramCal = searchParams.get("calendar");
+    if (paramCal && list.some(c => c.slug === paramCal)) {
+      setSelectedCalendarSlug(paramCal);
+    } else if (list.length > 0) {
+      setSelectedCalendarSlug(list[0].slug);
+    }
+  }, [profile, searchParams]);
+
+  useEffect(() => {
+    if (isEditMode && editId && initialized) {
+      const localEventsStr = localStorage.getItem("eventspark_custom_events") || "[]";
+      try {
+        const localEvents = JSON.parse(localEventsStr);
+        const mapped = localEvents.find((e: any) => e.id === editId || e.slug === existingEvent?.slug);
+        if (mapped && mapped.calendarSlug) {
+          setSelectedCalendarSlug(mapped.calendarSlug);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  }, [isEditMode, editId, existingEvent, initialized]);
 
   // Pre-populate form in edit mode
   useEffect(() => {
@@ -261,11 +315,50 @@ const CreateEvent = () => {
         if (fields.length > 0) {
           await bulkInsertFields.mutateAsync(fields.map(f => ({ ...f, event_id: editId })));
         }
+
+        const localEventsStr = localStorage.getItem("eventspark_custom_events") || "[]";
+        let localEvents = JSON.parse(localEventsStr);
+        const eventItem = {
+          id: editId,
+          slug: existingEvent?.slug || "edit-event-slug",
+          title: name,
+          date: buildEventDate(startDate, startTime) || new Date().toISOString(),
+          endDate: buildEventDate(endDate, endTime),
+          location: getLocationValue() || "Virtual",
+          cover: flyerUrl || "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80",
+          category: eventType,
+          calendarSlug: selectedCalendarSlug,
+          attendees: existingEvent?.attendees || 0,
+        };
+        localEvents = localEvents.map((e: any) => e.id === editId ? eventItem : e);
+        if (!localEvents.some((e: any) => e.id === editId)) {
+          localEvents.push(eventItem);
+        }
+        localStorage.setItem("eventspark_custom_events", JSON.stringify(localEvents));
+
         toast.success("Event updated!");
         navigate(`/dashboard/events/${editId}`);
       } else {
         const event = await createEvent.mutateAsync(eventData);
         await bulkInsertFields.mutateAsync(fields.map(f => ({ ...f, event_id: event.id })));
+
+        const localEventsStr = localStorage.getItem("eventspark_custom_events") || "[]";
+        let localEvents = JSON.parse(localEventsStr);
+        const eventItem = {
+          id: event.id,
+          slug: event.slug,
+          title: name,
+          date: buildEventDate(startDate, startTime) || new Date().toISOString(),
+          endDate: buildEventDate(endDate, endTime),
+          location: getLocationValue() || "Virtual",
+          cover: flyerUrl || "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80",
+          category: eventType,
+          calendarSlug: selectedCalendarSlug,
+          attendees: 0,
+        };
+        localEvents.push(eventItem);
+        localStorage.setItem("eventspark_custom_events", JSON.stringify(localEvents));
+
         setCreatedEventId(event.id);
         setCreatedSlug(event.slug);
         setShowSuccess(true);
@@ -468,9 +561,25 @@ const CreateEvent = () => {
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label>Organization</Label>
-                      <Input value={profile?.company || ""} disabled className="bg-muted/50" placeholder="Set in Settings" />
+                      <Label>Host Calendar <span className="text-destructive">*</span></Label>
+                      <Select value={selectedCalendarSlug} onValueChange={setSelectedCalendarSlug}>
+                        <SelectTrigger><SelectValue placeholder="Select a Calendar" /></SelectTrigger>
+                        <SelectContent>
+                          {myCalendars.map(cal => (
+                            <SelectItem key={cal.slug} value={cal.slug}>
+                              <span className="flex items-center gap-1.5">
+                                <span className="text-sm shrink-0">{cal.icon}</span>
+                                <span className="truncate">{cal.name}</span>
+                              </span>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Organization</Label>
+                    <Input value={profile?.company || ""} disabled className="bg-muted/50" placeholder="Set in Settings" />
                   </div>
                 </CardContent>
               </Card>

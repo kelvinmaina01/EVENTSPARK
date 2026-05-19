@@ -18,6 +18,7 @@ import {
 
 const navItems = [
   { title: "Events", url: "/dashboard/events", icon: CalendarDays },
+  { title: "Calendars", url: "/dashboard/calendar", icon: CalendarDays },
   { title: "Attendees", url: "/dashboard/attendees", icon: Users },
   { title: "Analytics", url: "/dashboard/analytics", icon: BarChart3 },
   { title: "Integrations", url: "/dashboard/integrations", icon: Puzzle },

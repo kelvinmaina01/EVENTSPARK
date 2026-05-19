@@ -128,7 +128,7 @@ export default function ProfilePage() {
   const name = profile?.full_name || profile?.company || "Kelvin Gichinga";
   const slug = profile?.company_slug || "Kelvinmaina";
   const bio = profile?.company_description || "I build data-driven systems at the intersection of health, AI, and Technology as a Software Engineer";
-  const avatar = profile?.avatar_url || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&q=80";
+  const avatar = profile?.avatar_url || `https://api.dicebear.com/7.x/fun-emoji/svg?seed=${slug}`;
 
   return (
     <div className="min-h-screen bg-background flex flex-col justify-between">

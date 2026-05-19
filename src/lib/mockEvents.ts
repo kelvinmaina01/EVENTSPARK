@@ -238,6 +238,10 @@ export interface FeaturedCalendar {
   socials: { twitter?: string; linkedin?: string; instagram?: string; website?: string };
   upcomingEvents: CalendarEvent[];
   pastEvents: CalendarEvent[];
+  status?: "active" | "coming-soon" | "archived";
+  locationType?: "city" | "global";
+  locationValue?: string;
+  tintColor?: string;
 }
 
 export const FEATURED_CALENDARS: FeaturedCalendar[] = [
@@ -550,7 +554,60 @@ export const FEATURED_CALENDARS: FeaturedCalendar[] = [
   }
 ];
 
+export function getCustomCalendars(): FeaturedCalendar[] {
+  if (typeof window === "undefined") return [];
+  const cals = localStorage.getItem("eventspark_custom_calendars");
+  if (!cals) return [];
+  try {
+    const parsed = JSON.parse(cals);
+    const localEventsStr = localStorage.getItem("eventspark_custom_events") || "[]";
+    const localEvents = JSON.parse(localEventsStr);
+    
+    return parsed.map((cal: any) => {
+      const myEvents = localEvents.filter((e: any) => e.calendarSlug === cal.slug);
+      
+      const upcomingEvents = myEvents.filter((e: any) => new Date(e.date) >= new Date()).map((e: any) => ({
+        id: e.id,
+        slug: e.slug,
+        title: e.title,
+        date: e.date,
+        endDate: e.endDate,
+        location: e.location,
+        cover: e.cover || e.flyerUrl || "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80",
+        attendees: e.attendees || 0,
+        category: e.category || "Tech",
+        hosts: e.hosts || [{ name: cal.host?.name || "Organizer", avatar: cal.host?.avatar || "https://api.dicebear.com/7.x/identicon/svg?seed=default" }]
+      }));
+
+      const pastEvents = myEvents.filter((e: any) => new Date(e.date) < new Date()).map((e: any) => ({
+        id: e.id,
+        slug: e.slug,
+        title: e.title,
+        date: e.date,
+        endDate: e.endDate,
+        location: e.location,
+        cover: e.cover || e.flyerUrl || "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80",
+        attendees: e.attendees || 0,
+        category: e.category || "Tech",
+        hosts: e.hosts || [{ name: cal.host?.name || "Organizer", avatar: cal.host?.avatar || "https://api.dicebear.com/7.x/identicon/svg?seed=default" }]
+      }));
+
+      return {
+        ...cal,
+        events: myEvents.length,
+        upcomingEvents,
+        pastEvents
+      };
+    });
+  } catch (err) {
+    console.error("Error loading custom calendars:", err);
+    return [];
+  }
+}
+
 export function getCalendarBySlug(slug: string): FeaturedCalendar | undefined {
+  const custom = getCustomCalendars().find(c => c.slug === slug);
+  if (custom) return custom;
   return FEATURED_CALENDARS.find(c => c.slug === slug);
 }
 
