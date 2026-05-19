@@ -31,6 +31,7 @@ import CheckIn from "./pages/dashboard/CheckIn";
 import Attendees from "./pages/dashboard/Attendees";
 import Analytics from "./pages/dashboard/Analytics";
 import Integrations from "./pages/dashboard/Integrations";
+import Payments from "./pages/dashboard/Payments";
 import SettingsPage from "./pages/dashboard/SettingsPage";
 import Calendar from "./pages/dashboard/Calendar";
 import NotFound from "./pages/NotFound";
@@ -86,6 +87,7 @@ const App = () => (
                       <Route path="attendees" element={<Attendees />} />
                       <Route path="analytics" element={<Analytics />} />
                       <Route path="integrations" element={<Integrations />} />
+                      <Route path="payments" element={<Payments />} />
                       <Route path="settings" element={<SettingsPage />} />
                     </Routes>
                   </DashboardLayout>
