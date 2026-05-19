@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { fetchEventBySlug, fetchUpcomingEvents, MockEvent } from "@/lib/mockEvents";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import LocationCard from "@/components/event-public/LocationCard";
 import OrganizerSocials from "@/components/event-public/OrganizerSocials";
@@ -39,24 +40,26 @@ function FallbackVideo({ src, muted, onUnmute }: { src: string; muted: boolean; 
         className="w-full h-full object-cover"
         playsInline
         autoPlay
-        muted={muted}
         loop
-        controls
       />
       {needsTap && (
         <button
-          onClick={() => { ref.current?.play().then(() => setNeedsTap(false)).catch(() => {}); }}
-          className="absolute inset-0 grid place-items-center bg-black/40 text-white text-sm font-medium"
+          onClick={() => {
+            const v = ref.current;
+            if (v) v.play();
+            setNeedsTap(false);
+          }}
+          className="absolute inset-0 w-full h-full flex items-center justify-center bg-black/40 text-white font-medium hover:bg-black/50 transition-colors"
         >
-          Tap to play
+          <Play className="w-12 h-12 stroke-[1.5]" />
         </button>
       )}
-      {!muted ? null : (
+      {!muted && (
         <button
-          onClick={() => { if (ref.current) ref.current.muted = false; onUnmute(); }}
-          className="absolute bottom-3 right-3 rounded-full bg-black/70 text-white text-xs px-3 py-1.5 hover:bg-black/85"
+          onClick={onUnmute}
+          className="absolute bottom-4 right-4 bg-black/60 hover:bg-black/80 text-white px-3 py-1.5 rounded-full text-xs font-semibold"
         >
-          Unmute
+          Mute
         </button>
       )}
     </div>
@@ -75,12 +78,81 @@ export default function EventPublicDetail() {
   useEffect(() => {
     let active = true;
     setLoading(true);
-    Promise.all([fetchEventBySlug(slug || ""), fetchUpcomingEvents()]).then(([e, all]) => {
-      if (!active) return;
-      setEvent(e);
-      setMore(all.filter((x) => x.slug !== slug).slice(0, 3));
-      setLoading(false);
-    });
+    
+    const loadEventData = async () => {
+      try {
+        // 1. Try mock events first
+        let resolvedEvent = await fetchEventBySlug(slug || "");
+        
+        // 2. Try Supabase database if mock is not found
+        if (!resolvedEvent && slug) {
+          const { data: dbEvent, error } = await supabase
+            .from("events")
+            .select("*, profiles(*)")
+            .eq("slug", slug)
+            .maybeSingle();
+
+          if (dbEvent && !error) {
+            const profile = dbEvent.profiles as any;
+            const socialLinks = profile?.social_links || [];
+            const socialsObj: Record<string, string> = {};
+
+            if (Array.isArray(socialLinks)) {
+              socialLinks.forEach((l: any) => {
+                if (!l || typeof l !== "object") return;
+                const platform = (l.platform || "").toLowerCase();
+                if (platform.includes("twitter") || platform.includes("x")) {
+                  socialsObj.twitter = l.url;
+                } else if (platform.includes("linkedin")) {
+                  socialsObj.linkedin = l.url;
+                } else if (platform.includes("instagram")) {
+                  socialsObj.instagram = l.url;
+                } else if (platform.includes("website") || platform.includes("globe")) {
+                  socialsObj.website = l.url;
+                }
+              });
+            }
+            if (profile?.website && !socialsObj.website) {
+              socialsObj.website = profile.website;
+            }
+
+            resolvedEvent = {
+              id: dbEvent.id,
+              title: dbEvent.name,
+              description: dbEvent.description || "",
+              date: dbEvent.event_date || new Date().toISOString(),
+              endDate: dbEvent.event_end_date || undefined,
+              location: dbEvent.location_value || "Virtual",
+              cover: dbEvent.background_image_url || "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800",
+              category: dbEvent.event_type || "Community",
+              attendees: 0,
+              capacity: dbEvent.capacity || undefined,
+              slug: dbEvent.slug,
+              hosts: [
+                {
+                  name: profile?.company || profile?.full_name || "Community Host",
+                  avatar: profile?.avatar_url || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80",
+                  socials: socialsObj
+                }
+              ]
+            };
+          }
+        }
+
+        const allUpcoming = await fetchUpcomingEvents();
+
+        if (active) {
+          setEvent(resolvedEvent);
+          setMore(allUpcoming.filter((x) => x.slug !== slug).slice(0, 3));
+          setLoading(false);
+        }
+      } catch (err) {
+        console.error("Error loading public event detail:", err);
+        if (active) setLoading(false);
+      }
+    };
+
+    loadEventData();
     return () => { active = false; };
   }, [slug]);
 

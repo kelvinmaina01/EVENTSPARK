@@ -726,52 +726,7 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Companies Section */}
-      <section className="py-16 lg:py-20 bg-muted/30">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl sm:text-4xl font-display mb-4 text-foreground tracking-[-0.02em] leading-tight">
-              Teams from top companies manage their events<br />using <span className="text-pink-500">Events Spark</span>
-            </h2>
-          </motion.div>
 
-          {/* Marquee Animation */}
-          <div className="relative overflow-hidden">
-            <div className="flex animate-marquee">
-              {/* First set of logos */}
-              <div className="flex items-center gap-12 lg:gap-16 px-4">
-                {COMPANY_LOGOS.map((company, index) => (
-                  <div key={`first-${index}`} className="flex items-center justify-center min-w-[120px] lg:min-w-[140px] h-16 lg:h-20 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
-                    <img 
-                      src={company.logo} 
-                      alt={company.name} 
-                      className={`max-h-full max-w-full object-contain ${company.name === 'Apple' ? 'max-h-[60%] max-w-[60%]' : ''}`}
-                    />
-                  </div>
-                ))}
-              </div>
-              {/* Duplicate set for seamless loop */}
-              <div className="flex items-center gap-12 lg:gap-16 px-4">
-                {COMPANY_LOGOS.map((company, index) => (
-                  <div key={`second-${index}`} className="flex items-center justify-center min-w-[120px] lg:min-w-[140px] h-16 lg:h-20 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
-                    <img 
-                      src={company.logo} 
-                      alt={company.name} 
-                      className={`max-h-full max-w-full object-contain ${company.name === 'Apple' ? 'max-h-[60%] max-w-[60%]' : ''}`}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* CTA */}
       <section className="pt-10 lg:pt-16 pb-12 lg:pb-16 relative">

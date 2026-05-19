@@ -268,65 +268,233 @@ export const FEATURED_CALENDARS = [
   }
 ];
 
-export const LOCAL_EVENTS = [
+export type CityDetail = {
+  name: string;
+  eventsCount: number;
+  iconName: string;
+  color: "blue" | "yellow" | "orange" | "teal" | "pink" | "beige" | "brown" | "green" | "purple" | "grey";
+};
+
+export const CITIES_BY_CONTINENT: Record<string, CityDetail[]> = {
+  "Africa": [
+    { name: "Cape Town", eventsCount: 6, iconName: "Waves", color: "teal" },
+    { name: "Lagos", eventsCount: 12, iconName: "Building2", color: "grey" },
+    { name: "Nairobi", eventsCount: 13, iconName: "Building", color: "green" }
+  ],
+  "Asia & Pacific": [
+    { name: "Tokyo", eventsCount: 42, iconName: "Compass", color: "orange" },
+    { name: "Singapore", eventsCount: 35, iconName: "Building2", color: "blue" },
+    { name: "Sydney", eventsCount: 24, iconName: "Waves", color: "teal" },
+    { name: "Bengaluru", eventsCount: 51, iconName: "School", color: "yellow" },
+    { name: "Seoul", eventsCount: 18, iconName: "Building", color: "purple" },
+    { name: "Melbourne", eventsCount: 15, iconName: "Trees", color: "green" }
+  ],
+  "Europe": [
+    { name: "London", eventsCount: 87, iconName: "Building2", color: "blue" },
+    { name: "Paris", eventsCount: 54, iconName: "Compass", color: "orange" },
+    { name: "Berlin", eventsCount: 39, iconName: "School", color: "grey" },
+    { name: "Amsterdam", eventsCount: 32, iconName: "Waves", color: "teal" },
+    { name: "Lisbon", eventsCount: 21, iconName: "Trees", color: "pink" },
+    { name: "Zürich", eventsCount: 12, iconName: "Mountain", color: "purple" }
+  ],
+  "South America": [
+    { name: "São Paulo", eventsCount: 28, iconName: "Building", color: "blue" },
+    { name: "Buenos Aires", eventsCount: 22, iconName: "School", color: "yellow" },
+    { name: "Bogotá", eventsCount: 15, iconName: "Mountain", color: "orange" },
+    { name: "Rio de Janeiro", eventsCount: 19, iconName: "Waves", color: "teal" },
+    { name: "Santiago", eventsCount: 11, iconName: "Mountain", color: "green" },
+    { name: "Lima", eventsCount: 8, iconName: "Compass", color: "grey" }
+  ],
+  "North America": [
+    { name: "Atlanta", eventsCount: 17, iconName: "Building", color: "blue" },
+    { name: "Austin", eventsCount: 31, iconName: "Building2", color: "yellow" },
+    { name: "Boston", eventsCount: 25, iconName: "Compass", color: "orange" },
+    { name: "Calgary", eventsCount: 10, iconName: "Building", color: "teal" },
+    { name: "Chicago", eventsCount: 36, iconName: "Waves", color: "pink" },
+    { name: "Dallas", eventsCount: 14, iconName: "Milestone", color: "beige" },
+    { name: "Denver", eventsCount: 13, iconName: "Mountain", color: "orange" },
+    { name: "Houston", eventsCount: 9, iconName: "Building2", color: "brown" },
+    { name: "Las Vegas", eventsCount: 16, iconName: "Sparkles", color: "yellow" },
+    { name: "Los Angeles", eventsCount: 45, iconName: "Trees", color: "green" },
+    { name: "Mexico City", eventsCount: 29, iconName: "Sparkles", color: "orange" },
+    { name: "Miami", eventsCount: 24, iconName: "Trees", color: "blue" },
+    { name: "Minneapolis", eventsCount: 10, iconName: "Waves", color: "pink" },
+    { name: "Montréal", eventsCount: 29, iconName: "Globe", color: "blue" },
+    { name: "New York", eventsCount: 105, iconName: "Building", color: "orange" },
+    { name: "Philadelphia", eventsCount: 28, iconName: "Bell", color: "orange" },
+    { name: "Phoenix", eventsCount: 14, iconName: "Compass", color: "orange" },
+    { name: "Portland", eventsCount: 11, iconName: "Sparkles", color: "pink" },
+    { name: "Sacramento", eventsCount: 14, iconName: "Waves", color: "green" },
+    { name: "Salt Lake City", eventsCount: 13, iconName: "Mountain", color: "yellow" },
+    { name: "San Diego", eventsCount: 10, iconName: "Building2", color: "blue" },
+    { name: "San Francisco", eventsCount: 78, iconName: "Waves", color: "orange" },
+    { name: "Seattle", eventsCount: 41, iconName: "Building", color: "purple" },
+    { name: "Toronto", eventsCount: 96, iconName: "Building2", color: "blue" },
+    { name: "Vancouver", eventsCount: 33, iconName: "Globe", color: "yellow" },
+    { name: "Washington, DC", eventsCount: 27, iconName: "Building", color: "grey" },
+    { name: "Waterloo", eventsCount: 8, iconName: "School", color: "green" }
+  ]
+};
+
+export const LOCAL_EVENTS_TEMPLATES = [
   {
-    id: "local1",
-    slug: "nairobi-tech-meetup",
-    title: "Nairobi Tech Community Meetup",
-    date: "2024-03-20T18:00:00Z",
-    location: "iHub, Nairobi",
+    title: "Tech Community Meetup",
+    location: "Hub & Cafe",
     category: "Tech",
     cover: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&q=80",
-    attendees: 89
+    offset: 2,
+    hour: 18
   },
   {
-    id: "local2",
-    slug: "ai-workshop-nairobi",
-    title: "Machine Learning Workshop for Beginners",
-    date: "2024-03-22T14:00:00Z",
-    location: "Nairobi Garage, Kilimani",
+    title: "AI Builders Night",
+    location: "Innovation Space",
     category: "AI",
     cover: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=400&q=80",
-    attendees: 45
+    offset: 4,
+    hour: 19
   },
   {
-    id: "local3",
-    slug: "wellness-yoga-session",
     title: "Weekend Wellness: Yoga & Meditation",
-    date: "2024-03-23T09:00:00Z",
-    location: "Karura Forest, Nairobi",
+    location: "Local Gardens",
     category: "Wellness",
     cover: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&q=80",
-    attendees: 67
+    offset: 5,
+    hour: 9
   },
   {
-    id: "local4",
-    slug: "startup-pitch-night",
-    title: "Startup Pitch Night: Nairobi Edition",
-    date: "2024-03-24T17:00:00Z",
-    location: "The Nairobi Innovation Hub",
-    category: "Business",
+    title: "Startup Pitch Night",
+    location: "Enterprise Hall",
+    category: "Community",
     cover: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=400&q=80",
-    attendees: 123
+    offset: 6,
+    hour: 17
   },
   {
-    id: "local5",
-    slug: "food-festival-nairobi",
-    title: "Nairobi Street Food Festival",
-    date: "2024-03-25T12:00:00Z",
-    location: "Uhuru Gardens, Nairobi",
-    category: "Food & Drink",
+    title: "Street Food & Arts Festival",
+    location: "Downtown Plaza",
+    category: "Arts",
     cover: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&q=80",
-    attendees: 234
+    offset: 7,
+    hour: 12
   },
   {
-    id: "local6",
-    slug: "crypto-meetup-kenya",
-    title: "Kenya Crypto & Blockchain Meetup",
-    date: "2024-03-26T18:30:00Z",
-    location: "Nairobi Securities Exchange",
+    title: "Crypto & Web3 Blockchain Meetup",
+    location: "Finance Center",
     category: "Crypto",
     cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400&q=80",
-    attendees: 78
+    offset: 9,
+    hour: 18
   }
 ];
+
+export async function fetchLocalEventsByCity(cityName: string): Promise<MockEvent[]> {
+  // Simulate network latency (very brief for seamless UI experience)
+  await new Promise((resolve) => setTimeout(resolve, 80));
+
+  // Generate customized events based on the selected city's name
+  return LOCAL_EVENTS_TEMPLATES.map((tmpl, idx) => ({
+    id: `local-${cityName.toLowerCase().replace(/[^a-z0-9]/g, "-")}-${idx}`,
+    slug: `${cityName.toLowerCase().replace(/[^a-z0-9]/g, "-")}-${tmpl.title.toLowerCase().replace(/[^a-z0-9]/g, "-")}`,
+    title: `${cityName} ${tmpl.title}`,
+    date: dayOffset(tmpl.offset, tmpl.hour),
+    location: `${tmpl.location}, ${cityName}`,
+    city: cityName,
+    cover: tmpl.cover,
+    hosts: [
+      { name: "Local Host", avatar: AVATARS[idx % AVATARS.length] }
+    ],
+    attendees: Math.floor(Math.random() * 150) + 30,
+    status: "none",
+    category: tmpl.category as any
+  }));
+}
+
+// Fallback for backward compatibility
+export const LOCAL_EVENTS = LOCAL_EVENTS_TEMPLATES.map((tmpl, idx) => ({
+  id: `local-default-${idx}`,
+  slug: `default-${tmpl.title.toLowerCase().replace(/[^a-z0-9]/g, "-")}`,
+  title: `Nairobi ${tmpl.title}`,
+  date: dayOffset(tmpl.offset, tmpl.hour),
+  location: `${tmpl.location}, Nairobi`,
+  category: tmpl.category,
+  cover: tmpl.cover,
+  attendees: Math.floor(Math.random() * 100) + 20
+}));
+
+export interface CityTheme {
+  heroImage: string;
+  timezone: string;
+  description: string;
+  longDescription: string;
+  localTimeOffset: number;
+}
+
+export const CITY_THEMES: Record<string, CityTheme> = {
+  "Cape Town": {
+    heroImage: "https://images.unsplash.com/photo-1580618672591-eb180b1a973f?w=1600&q=80",
+    timezone: "GMT+2",
+    description: "Discover the hottest events in Cape Town, and get notified of new events before they sell out.",
+    longDescription: "In Cape Town, creativity gathers between ocean and mountain. From builder meetups to wellness Sundays, the scene blends entrepreneurial energy with a laid-back coastal rhythm.",
+    localTimeOffset: 2
+  },
+  "Nairobi": {
+    heroImage: "https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?w=1600&q=80",
+    timezone: "GMT+3",
+    description: "Nairobi is East Africa's leading tech hub—the Silicon Savannah. Join dynamic builder nights, venture capital meetups, and groundbreaking mobile technology summits.",
+    longDescription: "In Nairobi, the Silicon Savannah is alive with builder meetups, community coding sessions, and creative design workshops. Entrepreneurial drive meets a warm, cooperative tech spirit.",
+    localTimeOffset: 3
+  },
+  "Lagos": {
+    heroImage: "https://images.unsplash.com/photo-1594913785202-58df87760144?w=1600&q=80",
+    timezone: "GMT+1",
+    description: "Lagos pulses with unmatched creative, commercial, and tech energy. Discover bustling startup workshops, fintech panels, and vibrant cultural exhibitions in Nigeria's commercial capital.",
+    longDescription: "Lagos is the commercial engine of West Africa, dynamic and filled with creative energy. Explore tech startup mixers, media production panels, and intense business development cohorts.",
+    localTimeOffset: 1
+  },
+  "San Francisco": {
+    heroImage: "https://images.unsplash.com/photo-1506012787146-f92b2d7d6d96?w=1600&q=80",
+    timezone: "GMT-7",
+    description: "San Francisco is the global center of AI innovation and software engineering. Connect with founders, builders, and developers at hacker house gatherings, AI demo nights, and casual meetups.",
+    longDescription: "In San Francisco, AI research meets product builders. From elite hacker homes in Hayes Valley to dynamic demo days in SOMA, the city remains the ultimate technological frontier.",
+    localTimeOffset: -7
+  },
+  "New York": {
+    heroImage: "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=1600&q=80",
+    timezone: "GMT-4",
+    description: "New York City blends tech innovation with media, finance, and the arts. Explore fintech meetups, creative coding events, and elite networking socials in the city that never sleeps.",
+    longDescription: "In Manhattan and Brooklyn, financial technology, advertising, and creative arts merge seamlessly. The NYC scene is fast-paced, intellectually demanding, and extremely high-energy.",
+    localTimeOffset: -4
+  },
+  "Tokyo": {
+    heroImage: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=1600&q=80",
+    timezone: "GMT+9",
+    description: "Tokyo merges cutting-edge technology with deep-rooted tradition. Discover next-gen gaming showcases, robotics workshops, and cultural technology expos in Japan's neon-lit metropolis.",
+    longDescription: "Tokyo represents the pinnacle of robotic and digital art integration, blending clean streets with electric nights. Witness next-gen game dev meetups, AI art showoffs, and anime tech circles.",
+    localTimeOffset: 9
+  },
+  "London": {
+    heroImage: "https://images.unsplash.com/photo-1513635269975-59663e0ca1ad?w=1600&q=80",
+    timezone: "GMT+1",
+    description: "London brings together a global community of builders, investors, and creatives. Join prime tech summits, venture roundtables, and high-impact fintech gatherings across Europe's leading startup capital.",
+    longDescription: "London brings together top global venture financing and digital services. Join high-profile tech summits, elite hacker nights, and developer gatherings in Shoreditch.",
+    localTimeOffset: 1
+  },
+  "Paris": {
+    heroImage: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=1600&q=80",
+    timezone: "GMT+2",
+    description: "Paris stands at the intersection of AI excellence, design, and culture. Experience premier developer bootcamps, creative agency socials, and state-of-the-art research roundtables.",
+    longDescription: "Paris is emerging as Europe's leading playground for open-source AI and boutique tech design. Join open-source bootcamps, developer dinners, and creative socials near the Seine.",
+    localTimeOffset: 2
+  }
+};
+
+export function getCityTheme(cityName: string): CityTheme {
+  return CITY_THEMES[cityName] || {
+    heroImage: "https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=1600&q=80",
+    timezone: "GMT+3",
+    description: `Discover the hottest events in ${cityName}, and get notified of new events before they sell out.`,
+    longDescription: `Welcome to ${cityName}! From local gatherings to builder meetups, find the best communities and stay connected to what is happening near you.`,
+    localTimeOffset: 3
+  };
+}
+
