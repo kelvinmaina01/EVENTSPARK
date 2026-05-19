@@ -18,6 +18,7 @@ import EventPublicDetail from "./pages/EventPublicDetail";
 import Discover from "./pages/Discover";
 import LocalPlaceDetail from "./pages/LocalPlaceDetail";
 import Calendars from "./pages/Calendars";
+import CalendarDetail from "./pages/CalendarDetail";
 
 import Pricing from "./pages/Pricing";
 import QRCode from "./pages/QRCode";
@@ -62,6 +63,7 @@ const App = () => (
               <Route path="/discover" element={<Discover />} />
               <Route path="/local/:citySlug" element={<LocalPlaceDetail />} />
               <Route path="/calendars" element={<Calendars />} />
+              <Route path="/cal/:calendarSlug" element={<CalendarDetail />} />
               <Route path="/pricing" element={<Pricing />} />
               <Route path="/qr" element={<QRCode />} />
 

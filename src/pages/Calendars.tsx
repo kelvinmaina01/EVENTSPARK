@@ -438,43 +438,49 @@ export default function Calendars() {
                     ) : (
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {subscribedList.map((cal) => {
-                          const routePath = cal.slug ? `/company/${cal.slug}` : `/calendars`;
+                          const routePath = cal.slug ? (cal.isDb ? `/company/${cal.slug}` : `/cal/${cal.slug}`) : `/calendars`;
                           
                           return (
-                            <Card key={cal.name} className="group hover:shadow-lg transition-all duration-200 border-border/50 overflow-hidden bg-card">
-                              <CardContent className="p-6">
-                                <div className="flex items-start gap-4">
-                                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-500/10 flex items-center justify-center text-2xl border border-white/20 shadow-sm relative overflow-hidden shrink-0">
-                                    <span className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/10 to-white/0 transform -skew-x-12" />
-                                    {cal.icon}
-                                  </div>
-                                  <div className="flex-1 min-w-0">
-                                    <Link to={routePath} className="block">
-                                      <h3 className="font-display font-semibold text-base mb-1.5 group-hover:text-primary transition-colors truncate">
+                            <Card 
+                              key={cal.name} 
+                              className="group shadow-none rounded-2xl bg-card transition-all duration-200 cursor-pointer"
+                              style={{ border: "1.5px solid hsl(var(--primary))" }}
+                              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.border = "1.5px solid #19192E"; (e.currentTarget as HTMLElement).style.backgroundColor = "#19192E"; }}
+                              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.border = "1.5px solid hsl(var(--primary))"; (e.currentTarget as HTMLElement).style.backgroundColor = ""; }}
+                            >
+                              <Link to={routePath} className="block">
+                                <CardContent className="p-6">
+                                  <div className="flex items-start gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-500/10 flex items-center justify-center text-2xl border border-white/20 shadow-sm relative overflow-hidden shrink-0">
+                                      <span className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/10 to-white/0 transform -skew-x-12" />
+                                      {cal.icon}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <h3 className="font-display font-semibold text-base mb-1.5 group-hover:text-white transition-colors truncate">
                                         {cal.name}
                                       </h3>
-                                    </Link>
-                                    <p className="text-xs text-muted-foreground mb-4 leading-relaxed line-clamp-2 min-h-[32px]">
-                                      {cal.description}
-                                    </p>
-                                    <div className="flex items-center justify-between">
-                                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                                        <Icon icon="fluent:calendar-empty-24-filled" className="w-3.5 h-3.5 text-primary" />
-                                        <span>{cal.events} events</span>
+                                      <p className="text-xs text-muted-foreground group-hover:text-zinc-300 mb-4 leading-relaxed line-clamp-2 min-h-[32px] transition-colors">
+                                        {cal.description}
+                                      </p>
+                                      <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground group-hover:text-zinc-400 transition-colors">
+                                          <Icon icon="fluent:calendar-empty-24-filled" className="w-3.5 h-3.5 text-primary" />
+                                          <span>{cal.events} events</span>
+                                        </div>
+                                        <Button
+                                          size="sm"
+                                          variant="outline"
+                                          className="h-8 px-3.5 text-xs rounded-full transition-all duration-300 border-amber-500/50 text-amber-600 bg-amber-500/5 group-hover:bg-white/10 group-hover:text-zinc-300 group-hover:border-transparent"
+                                          onClick={(e) => { e.preventDefault(); handleSubscribe(cal); }}
+                                        >
+                                          <Icon icon="fluent:dismiss-24-filled" className="w-3 h-3 mr-1" />
+                                          Unsubscribe
+                                        </Button>
                                       </div>
-                                      <Button
-                                        size="sm"
-                                        variant="outline"
-                                        className="h-8 px-3 text-xs rounded-full border-border text-destructive hover:bg-destructive/5 hover:text-destructive"
-                                        onClick={() => handleSubscribe(cal)}
-                                      >
-                                        <Icon icon="fluent:dismiss-24-filled" className="w-3 h-3 mr-1" />
-                                        Unsubscribe
-                                      </Button>
                                     </div>
                                   </div>
-                                </div>
-                              </CardContent>
+                                </CardContent>
+                              </Link>
                             </Card>
                           );
                         })}
@@ -488,58 +494,64 @@ export default function Calendars() {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {calendarList.map((calendar) => {
                       const isSubbed = subscribedList.some(item => item.name === calendar.name);
-                      const routePath = calendar.slug ? `/company/${calendar.slug}` : `/calendars`;
+                      const routePath = calendar.slug ? (calendar.isDb ? `/company/${calendar.slug}` : `/cal/${calendar.slug}`) : `/calendars`;
 
                       return (
-                        <Card key={calendar.name} className="group hover:shadow-lg hover:border-border/80 transition-all duration-300 border-border/50 overflow-hidden bg-card">
-                          <CardContent className="p-6">
-                            <div className="flex items-start gap-4">
-                              <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl border border-white/20 shadow-sm relative overflow-hidden shrink-0 bg-gradient-to-br ${
-                                isSubbed ? "from-amber-500/20 to-amber-500/10" : "from-primary/20 to-primary/10"
-                              }`}>
-                                <span className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/10 to-white/0 transform -skew-x-12" />
-                                {calendar.icon}
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <Link to={routePath} className="block">
-                                  <h3 className="font-display font-semibold text-base mb-1.5 group-hover:text-primary transition-colors truncate">
+                        <Card 
+                          key={calendar.name} 
+                          className="group shadow-none rounded-2xl bg-card transition-all duration-200 cursor-pointer"
+                          style={{ border: "1.5px solid hsl(var(--primary))" }}
+                          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.border = "1.5px solid #19192E"; (e.currentTarget as HTMLElement).style.backgroundColor = "#19192E"; }}
+                          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.border = "1.5px solid hsl(var(--primary))"; (e.currentTarget as HTMLElement).style.backgroundColor = ""; }}
+                        >
+                          <Link to={routePath} className="block">
+                            <CardContent className="p-6">
+                              <div className="flex items-start gap-4">
+                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl border border-white/20 shadow-sm relative overflow-hidden shrink-0 bg-gradient-to-br ${
+                                  isSubbed ? "from-amber-500/20 to-amber-500/10" : "from-primary/20 to-primary/10"
+                                }`}>
+                                  <span className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/10 to-white/0 transform -skew-x-12" />
+                                  {calendar.icon}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <h3 className="font-display font-semibold text-base mb-1.5 group-hover:text-white transition-colors truncate">
                                     {calendar.name}
                                   </h3>
-                                </Link>
-                                <p className="text-xs text-muted-foreground mb-4 leading-relaxed line-clamp-2 min-h-[32px]">
-                                  {calendar.description}
-                                </p>
-                                <div className="flex items-center justify-between">
-                                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                                    <Icon icon="fluent:calendar-empty-24-filled" className="w-3.5 h-3.5 text-primary" />
-                                    <span>{calendar.events} events</span>
+                                  <p className="text-xs text-muted-foreground group-hover:text-zinc-300 mb-4 leading-relaxed line-clamp-2 min-h-[32px] transition-colors">
+                                    {calendar.description}
+                                  </p>
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground group-hover:text-zinc-400 transition-colors">
+                                      <Icon icon="fluent:calendar-empty-24-filled" className="w-3.5 h-3.5 text-primary" />
+                                      <span>{calendar.events} events</span>
+                                    </div>
+                                    <Button
+                                      size="sm"
+                                      variant={isSubbed ? "outline" : "default"}
+                                      className={`h-8 px-3.5 text-xs rounded-full transition-all duration-300 ${
+                                        isSubbed 
+                                          ? "border-amber-500/50 text-amber-600 bg-amber-500/5 group-hover:bg-white/10 group-hover:text-zinc-300 group-hover:border-transparent" 
+                                          : "bg-[#19192E] text-white hover:bg-[#19192E]/90 group-hover:bg-primary group-hover:text-primary-foreground shadow-sm"
+                                      }`}
+                                      onClick={(e) => { e.preventDefault(); handleSubscribe(calendar); }}
+                                    >
+                                      {isSubbed ? (
+                                        <>
+                                          <Icon icon="fluent:checkmark-24-filled" className="w-3 h-3 mr-1" />
+                                          Subscribed
+                                        </>
+                                      ) : (
+                                        <>
+                                          <Icon icon="fluent:add-24-filled" className="w-3 h-3 mr-1" />
+                                          Subscribe
+                                        </>
+                                      )}
+                                    </Button>
                                   </div>
-                                  <Button
-                                    size="sm"
-                                    variant={isSubbed ? "outline" : "default"}
-                                    className={`h-8 px-3.5 text-xs rounded-full transition-all duration-300 ${
-                                      isSubbed 
-                                        ? "border-amber-500/50 text-amber-600 bg-amber-500/5 hover:bg-amber-500/10" 
-                                        : "shadow-sm"
-                                    }`}
-                                    onClick={() => handleSubscribe(calendar)}
-                                  >
-                                    {isSubbed ? (
-                                      <>
-                                        <Icon icon="fluent:checkmark-24-filled" className="w-3 h-3 mr-1" />
-                                        Subscribed
-                                      </>
-                                    ) : (
-                                      <>
-                                        <Icon icon="fluent:add-24-filled" className="w-3 h-3 mr-1" />
-                                        Subscribe
-                                      </>
-                                    )}
-                                  </Button>
                                 </div>
                               </div>
-                            </div>
-                          </CardContent>
+                            </CardContent>
+                          </Link>
                         </Card>
                       );
                     })}

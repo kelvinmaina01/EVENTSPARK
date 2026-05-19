@@ -163,33 +163,45 @@ export default function Discover() {
         <section className="mb-16">
           <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-[-0.02em] mb-5">Featured Calendars</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {FEATURED_CALENDARS.map((calendar) => (
-              <UICard key={calendar.name} className="group shadow-none rounded-2xl bg-card border border-border/60 hover:bg-muted/40 transition-colors">
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center text-2xl">
-                      {calendar.icon}
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-display font-semibold text-lg mb-2 group-hover:text-primary transition-colors">
-                        {calendar.name}
-                      </h3>
-                      <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-                        {calendar.description}
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <Calendar className="w-3 h-3" />
-                          <span>{calendar.events} events</span>
+            {FEATURED_CALENDARS.slice(0, 3).map((calendar) => (
+              <UICard 
+                key={calendar.name} 
+                className="group shadow-none rounded-2xl bg-card transition-all duration-200 cursor-pointer"
+                style={{ border: "1.5px solid hsl(var(--primary))" }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.border = "1.5px solid #19192E"; (e.currentTarget as HTMLElement).style.backgroundColor = "#19192E"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.border = "1.5px solid hsl(var(--primary))"; (e.currentTarget as HTMLElement).style.backgroundColor = ""; }}
+              >
+                <Link to={`/cal/${calendar.slug}`} className="block">
+                  <CardContent className="p-6">
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center text-2xl shrink-0">
+                        {calendar.icon}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-display font-semibold text-lg mb-2 group-hover:text-white transition-colors truncate">
+                          {calendar.name}
+                        </h3>
+                        <p className="text-sm text-muted-foreground group-hover:text-zinc-300 mb-4 leading-relaxed line-clamp-2 transition-colors">
+                          {calendar.description}
+                        </p>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground group-hover:text-zinc-400 transition-colors">
+                            <Calendar className="w-3 h-3" />
+                            <span>{calendar.events} events</span>
+                          </div>
+                          <span className={`inline-flex items-center gap-1 h-8 px-4 rounded-md text-xs font-medium ${
+                            calendar.subscribed 
+                              ? "bg-muted text-muted-foreground group-hover:bg-white/10 group-hover:text-zinc-300" 
+                              : "bg-primary text-primary-foreground"
+                          } transition-colors`}>
+                            {!calendar.subscribed && <Plus className="w-3 h-3" />}
+                            {calendar.subscribed ? "Subscribed" : "Subscribe"}
+                          </span>
                         </div>
-                        <Button size="sm" className="h-8 px-4 text-xs">
-                          <Plus className="w-3 h-3 mr-1" />
-                          Subscribe
-                        </Button>
                       </div>
                     </div>
-                  </div>
-                </CardContent>
+                  </CardContent>
+                </Link>
               </UICard>
             ))}
           </div>
