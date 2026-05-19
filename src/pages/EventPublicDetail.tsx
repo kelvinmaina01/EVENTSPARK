@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import PublicHeader from "@/components/PublicHeader";
 import Footer from "@/components/layout/Footer";
 import { DoodleIcon } from "@/components/DoodleIcon";
+import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
