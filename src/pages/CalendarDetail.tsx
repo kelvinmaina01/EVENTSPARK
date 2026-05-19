@@ -385,10 +385,10 @@ export default function CalendarDetail() {
                 </Button>
               </div>
 
-              {/* Reviews Carousel */}
-              <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
-                {MOCK_REVIEWS.map((review) => (
-                  <div key={review.id} className="min-w-[280px] max-w-[280px] sm:min-w-[320px] sm:max-w-[320px] snap-start bg-card rounded-2xl p-5 border border-border/40 shrink-0">
+              {/* Reviews Stack */}
+              <div className="space-y-4">
+                {MOCK_REVIEWS.slice(0, 2).map((review) => (
+                  <div key={review.id} className="bg-card rounded-2xl p-5 border border-border/40">
                     <div className="flex items-center gap-3 mb-3">
                       <img src={review.avatar} alt={review.name} className="w-10 h-10 rounded-full bg-muted object-cover" />
                       <div>
@@ -401,7 +401,7 @@ export default function CalendarDetail() {
                         <Star key={i} className={`w-3.5 h-3.5 ${i < review.rating ? 'fill-current' : 'text-muted stroke-current'}`} />
                       ))}
                     </div>
-                    <p className="text-sm text-foreground/90 line-clamp-4 leading-relaxed">
+                    <p className="text-sm text-foreground/90 leading-relaxed">
                       "{review.text}"
                     </p>
                   </div>

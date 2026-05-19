@@ -613,7 +613,15 @@ export default function EventPublicDetail() {
                 </DialogContent>
               </Dialog>
 
-              <Button className="rounded-full h-11 px-8 font-semibold bg-[#19192E] text-white hover:bg-[#19192E]/90 shrink-0 ml-1 shadow-md">Attend</Button>
+              {isPastEvent ? (
+                <Button disabled className="rounded-full h-11 px-8 font-semibold bg-muted text-muted-foreground shrink-0 ml-1 cursor-not-allowed">
+                  Event Ended
+                </Button>
+              ) : (
+                <Button onClick={handleRegister} className="rounded-full h-11 px-8 font-semibold bg-[#19192E] text-white hover:bg-[#19192E]/90 shrink-0 ml-1 shadow-md">
+                  {registered ? "Registered" : "Attend"}
+                </Button>
+              )}
             </div>
           </div>
         </div>

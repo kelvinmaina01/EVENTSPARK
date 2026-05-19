@@ -41,7 +41,7 @@ const POPULAR_CITIES = [
     name: "Nairobi",
     continent: "Africa",
     desc: "Capital of Kenya and Africa's Silicon Savannah. A bustling hub of innovation, creative events, and close-up wildlife safaris.",
-    image: "https://images.unsplash.com/photo-1542362567-b07eac790acd?w=600&auto=format&fit=crop&q=80",
+    image: "https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?w=600&auto=format&fit=crop&q=80",
   },
   {
     name: "Mumbai",
@@ -896,7 +896,7 @@ const Landing = () => {
                 </div>
 
                 {/* Pink glassmorphism overlay sliding up on hover */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#FF758F]/95 via-[#FF758F]/85 to-[#FF758F]/60 backdrop-blur-md translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out flex flex-col justify-end p-6 text-white rounded-3xl z-10">
+                <div className="absolute inset-0 bg-gradient-to-t from-[#FF758F]/80 via-[#FF758F]/50 to-[#FF758F]/25 backdrop-blur-[6px] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out flex flex-col justify-end p-6 text-white rounded-3xl z-10">
                   <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-75">
                     <span className="text-[10px] uppercase font-bold tracking-widest bg-white/20 px-2 py-0.5 rounded-full mb-2 inline-block">
                       {city.continent}
