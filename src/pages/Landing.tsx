@@ -17,7 +17,10 @@ import {
   PieChart,
   BarChart2,
   UserCheck,
+  Search,
+  Globe,
 } from "lucide-react";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 import eventChill from "@/assets/event-chill-code-workshop.jpg";
 import eventHackathon from "@/assets/event-hackathon-ai.jpg";
@@ -398,18 +401,69 @@ const Landing = () => {
         animate={{ y: navVisible ? 0 : -100 }}
         transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
       >
-        <div className="max-w-7xl mx-auto flex items-center justify-between h-[72px] px-6 lg:px-8">
-          <Link to="/">
-            <Logo size="md" />
-          </Link>
-          <div className="flex items-center gap-1 sm:gap-2">
+        <div className="max-w-7xl mx-auto flex items-center justify-between h-[72px] px-6 lg:px-8 w-full gap-4">
+          {/* Left: Logo, Search & Language */}
+          <div className="flex items-center gap-4 flex-1">
+            <Link to="/" className="shrink-0">
+              <Logo size="md" />
+            </Link>
+
+            {/* Search Bar (Meetup Style) */}
+            <div className="hidden md:flex items-center h-10 bg-muted/60 hover:bg-muted border border-transparent hover:border-border rounded-full pl-4 pr-1.5 focus-within:!bg-background focus-within:!border-primary/50 focus-within:ring-2 focus-within:ring-primary/20 transition-all shadow-sm max-w-[320px] lg:max-w-[380px] w-full">
+              <input type="text" placeholder="Search events..." className="bg-transparent border-none outline-none text-sm placeholder:text-muted-foreground w-full flex-1 min-w-[80px] lg:min-w-[120px]" />
+              <div className="w-px h-5 bg-border mx-2 shrink-0" />
+              <input type="text" defaultValue="Othaya, KE" className="bg-transparent border-none outline-none text-sm w-[90px] xl:w-[110px] shrink-0" />
+              <button className="w-8 h-8 rounded-full bg-[#19192E] text-white flex items-center justify-center ml-1 hover:bg-[#19192E]/90 shrink-0">
+                <Search className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            {/* Language Selector Modal */}
+            <Dialog>
+              <DialogTrigger className="hidden lg:flex items-center gap-1.5 text-sm font-medium hover:bg-muted px-3 py-1.5 rounded-lg transition-colors text-foreground">
+                <Globe className="w-4 h-4 text-muted-foreground" /> English
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl p-6 rounded-3xl bg-background border-border">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-base font-bold mx-auto">Change your language</h2>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {[
+                    "English", "English (Australia)", "Deutsch",
+                    "Español", "Español (España)", "Français",
+                    "Italiano", "Nederlands", "Polski",
+                    "Português", "Türkçe", "ไทย",
+                    "日本語", "한국어", "Русский"
+                  ].map((lang) => (
+                    <button key={lang} className={`flex items-center gap-3 p-3 rounded-full border transition-colors ${lang === 'English' ? 'border-[#19192E] ring-1 ring-[#19192E] bg-muted/20' : 'border-border hover:border-primary/50'}`}>
+                      <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${lang === 'English' ? 'border-[#19192E]' : 'border-muted-foreground/30'}`}>
+                        {lang === 'English' && <div className="w-2 h-2 rounded-full bg-[#19192E]" />}
+                      </div>
+                      <span className="text-sm font-medium text-foreground">{lang}</span>
+                    </button>
+                  ))}
+                </div>
+                <div className="flex justify-end gap-3 mt-8">
+                  <DialogTrigger asChild>
+                    <Button variant="ghost" className="rounded-full font-semibold">Cancel</Button>
+                  </DialogTrigger>
+                  <DialogTrigger asChild>
+                    <Button className="rounded-full bg-[#19192E] hover:bg-[#19192E]/90 text-white px-6 font-semibold">Save</Button>
+                  </DialogTrigger>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          {/* Right: Actions */}
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             <Button variant="ghost" className="text-sm font-medium rounded-full" asChild>
               <Link to="/discover">Discover Events</Link>
             </Button>
             <Button variant="ghost" className="text-sm font-medium rounded-full" asChild>
               <Link to="/auth">Sign In</Link>
             </Button>
-            <Button className="hidden sm:inline-flex text-sm font-semibold rounded-full" asChild>
+            <Button className="hidden sm:inline-flex text-sm font-semibold rounded-full bg-[#19192E] text-white hover:bg-[#19192E]/90" asChild>
               <Link to="/auth">Get Started</Link>
             </Button>
           </div>
