@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import {
   Dialog, DialogContent, DialogTrigger,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 
 const navItems = [
