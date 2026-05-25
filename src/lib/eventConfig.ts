@@ -13,7 +13,7 @@ export type EventPostRegConfig = {
   showCalendar?: boolean;     // default true
 };
 
-const KEY = (eventId: string) => `eventspark:postreg:${eventId}`;
+const KEY = (eventId: string) => `hostquill:postreg:${eventId}`;
 
 export function getEventConfig(eventId: string): EventPostRegConfig {
   if (typeof window === "undefined") return {};

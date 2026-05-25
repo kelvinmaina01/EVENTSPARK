@@ -16,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import LocationCard from "@/components/event-public/LocationCard";
 import OrganizerSocials from "@/components/event-public/OrganizerSocials";
+import { applySeo, DEFAULT_OG_IMAGE } from "@/lib/seo";
 
 
 // Native <video> with a robust autoplay fallback. Browsers block autoplay unless
@@ -167,6 +168,43 @@ export default function EventPublicDetail() {
     loadEventData();
     return () => { active = false; };
   }, [slug]);
+
+  useEffect(() => {
+    if (!event) return;
+    const path = `/events/${event.slug || slug || ""}`;
+    applySeo({
+      title: `${event.title} on Hostquill`,
+      description: `${event.title} is hosted on Hostquill. View date, location, organizer details, registration options, and related events.`,
+      path,
+      image: event.cover || DEFAULT_OG_IMAGE,
+      jsonLd: {
+        "@context": "https://schema.org",
+        "@type": "Event",
+        name: event.title,
+        description: event.description || `${event.title} is hosted on Hostquill.`,
+        startDate: event.date,
+        endDate: event.endDate,
+        eventStatus: "https://schema.org/EventScheduled",
+        eventAttendanceMode: event.location?.toLowerCase().includes("virtual")
+          ? "https://schema.org/OnlineEventAttendanceMode"
+          : "https://schema.org/OfflineEventAttendanceMode",
+        image: [event.cover || DEFAULT_OG_IMAGE],
+        url: `https://hostquill.com${path}`,
+        location: {
+          "@type": "Place",
+          name: event.location || "Event location",
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: event.location || "Event location",
+          },
+        },
+        organizer: {
+          "@type": "Organization",
+          name: event.hosts?.[0]?.name || "Hostquill organizer",
+        },
+      },
+    });
+  }, [event, slug]);
 
   if (loading) {
     return (
@@ -590,7 +628,7 @@ export default function EventPublicDetail() {
                                     </div>
                                     <div className="pt-2 border-t border-white/10 flex justify-between items-center">
                                       <span className="text-[10px] font-medium opacity-60">By {event.hosts[0]?.name}</span>
-                                      <span className="text-[10px] font-bold text-primary">Attend on Eventspark</span>
+                                      <span className="text-[10px] font-bold text-primary">Attend on Hostquill</span>
                                     </div>
                                   </div>
                                </div>

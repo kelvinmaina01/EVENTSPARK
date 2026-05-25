@@ -55,7 +55,7 @@ export default function FinishSignup() {
         setMockSession({
           ...user,
           id: "mock-user-id",
-          email: user?.email || "guest@eventspark.com",
+          email: user?.email || "guest@hostquill.com",
           user_metadata: { full_name: name }
         });
         localStorage.setItem("mock_profile", JSON.stringify(profileData));

@@ -59,12 +59,12 @@ export default function Analytics() {
         socials: { website: profile.website || "" },
         tintColor: "Pink", locationType: "global", locationValue: "",
       };
-      localStorage.setItem("eventspark_custom_calendars", JSON.stringify([defaultCal]));
+      localStorage.setItem("hostquill_custom_calendars", JSON.stringify([defaultCal]));
       list = [defaultCal];
     }
     setMyCalendars(list);
 
-    const localEventsStr = localStorage.getItem("eventspark_custom_events") || "[]";
+    const localEventsStr = localStorage.getItem("hostquill_custom_events") || "[]";
     const localEvents = JSON.parse(localEventsStr);
     const mappedLocal = localEvents.map((e: any) => ({
       id: e.id, slug: e.slug, title: e.title, date: e.date,

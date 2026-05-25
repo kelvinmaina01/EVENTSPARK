@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
-import { lovable } from "@/integrations/lovable/index";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { Logo } from "@/components/Logo";
@@ -52,8 +51,11 @@ const Auth = () => {
   }, [user, navigate]);
 
   const handleOAuth = async (provider: "google" | "apple") => {
-    const { error } = await lovable.auth.signInWithOAuth(provider, {
-      redirect_uri: window.location.origin + "/dashboard/events",
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: `${window.location.origin}/dashboard/events`,
+      },
     });
     if (error) toast.error(error.message || `${provider} sign-in failed`);
   };
@@ -150,7 +152,7 @@ const Auth = () => {
             <Logo size="lg" />
           </Link>
           <h1 className="mt-6 font-display font-bold text-3xl sm:text-4xl tracking-[-0.02em] text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.4)]">
-            Welcome to eventspark
+            Welcome to Hostquill
           </h1>
           <p className="mt-2 text-white/85 text-sm font-body drop-shadow-[0_1px_4px_rgba(0,0,0,0.3)]">
             Create events people actually want to attend

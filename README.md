@@ -1,9 +1,9 @@
 <div align="center">
 
-# 🎆 Events Spark App
+# 🎆 Hostquill App
 *The modern platform for creating, managing, and discovering unforgettable events*
 
-![Events Spark Logo](src/assets/logo-glyph.png)
+![Hostquill Logo](src/assets/logo-glyph.png)
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
@@ -128,7 +128,7 @@ Comprehensive dashboard featuring:
 Create a `.env` file with:
 ```env
 VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key
 VITE_CLOUDINARY_CLOUD_NAME=your_cloudinary_name
 VITE_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
 ```
@@ -192,12 +192,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- 📧 Email: support@eventsspark.com
+- 📧 Email: support@hostquill.com
 - 🐛 Issues: [GitHub Issues](https://github.com/your-username/events-spark-app/issues)
 - 📖 Documentation: [Wiki](https://github.com/your-username/events-spark-app/wiki)
 
 ---
 
 <div align="center">
-Made with ❤️ by the Events Spark Team
+Made with ❤️ by the Hostquill Team
 </div>

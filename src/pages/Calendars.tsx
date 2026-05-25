@@ -74,7 +74,7 @@ export default function Calendars() {
       id: c.id,
       name: c.company || c.full_name || "Unnamed Organization",
       icon: "🏢",
-      description: c.company_description || "A community organizer hosting premium events on Events Spark.",
+      description: c.company_description || "A community organizer hosting premium events on Hostquill.",
       events: eventCountMap[c.id] || 0,
       slug: c.company_slug || undefined,
       isDb: true
@@ -227,7 +227,7 @@ export default function Calendars() {
             className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/5 text-primary text-xs font-semibold uppercase tracking-wider shadow-sm"
           >
             <Icon icon="fluent:calendar-sparkle-24-filled" className="w-3.5 h-3.5" />
-            Events Spark Calendars
+            Hostquill Calendars
           </motion.div>
           <motion.h1
             initial={{ opacity: 0, y: 10 }}
@@ -322,7 +322,7 @@ export default function Calendars() {
                         <div className="space-y-2">
                           <h3 className="font-display font-bold text-lg text-foreground">Sign In Required</h3>
                           <p className="text-sm text-muted-foreground">
-                            Sign in to Events Spark to check your agenda, manage hosting schedules, and track RSVP bookings.
+                            Sign in to Hostquill to check your agenda, manage hosting schedules, and track RSVP bookings.
                           </p>
                         </div>
                         <Button asChild className="w-full rounded-full h-11 shadow-md">

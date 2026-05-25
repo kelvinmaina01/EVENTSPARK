@@ -449,7 +449,7 @@ const SettingsPage = () => {
             </div>
             <div className="p-5 rounded-2xl bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-blue-500/10 border border-pink-500/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div className="space-y-1">
-                <h4 className="text-sm font-bold text-foreground flex items-center gap-1.5"><Sparkles className="w-4 h-4 text-pink-500 animate-pulse" /> Upgrade to EventSpark Plus</h4>
+                <h4 className="text-sm font-bold text-foreground flex items-center gap-1.5"><Sparkles className="w-4 h-4 text-pink-500 animate-pulse" /> Upgrade to Hostquill Plus</h4>
                 <p className="text-xs text-muted-foreground max-w-md">Integrate full tracking script payloads with Google, Twitter/X, and Meta analytics.</p>
               </div>
               <Button size="sm" className="rounded-full bg-pink-500 hover:bg-pink-600 text-white font-semibold text-xs shrink-0 self-end sm:self-auto">Learn More</Button>
@@ -742,17 +742,17 @@ const SettingsPage = () => {
           <div className="bg-card border border-border/40 rounded-2xl p-6 space-y-5 shadow-sm">
             <div>
               <h3 className="text-lg font-display font-bold">API Keys</h3>
-              <p className="text-sm text-muted-foreground mt-0.5">Use the EventSpark API or integrate with Zapier.</p>
+              <p className="text-sm text-muted-foreground mt-0.5">Use the Hostquill API or integrate with Zapier.</p>
             </div>
 
             <div className="py-8 text-center border border-dashed border-border/40 rounded-2xl bg-muted/5 space-y-3">
               <Key className="w-8 h-8 text-muted-foreground/30 mx-auto" />
               <div>
                 <p className="text-sm font-bold">No API Keys</p>
-                <p className="text-xs text-muted-foreground mt-0.5">Upgrade to EventSpark Plus to create API keys.</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Upgrade to Hostquill Plus to create API keys.</p>
               </div>
               <Button size="sm" className="rounded-full bg-pink-500 hover:bg-pink-600 text-white font-semibold text-xs">
-                Upgrade to EventSpark Plus
+                Upgrade to Hostquill Plus
               </Button>
             </div>
           </div>
@@ -768,10 +768,10 @@ const SettingsPage = () => {
               <Webhook className="w-8 h-8 text-muted-foreground/30 mx-auto animate-pulse" />
               <div>
                 <p className="text-sm font-bold">No Webhooks</p>
-                <p className="text-xs text-muted-foreground mt-0.5">Upgrade to EventSpark Plus to create webhooks.</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Upgrade to Hostquill Plus to create webhooks.</p>
               </div>
               <Button size="sm" className="rounded-full bg-pink-500 hover:bg-pink-600 text-white font-semibold text-xs">
-                Upgrade to EventSpark Plus
+                Upgrade to Hostquill Plus
               </Button>
             </div>
           </div>

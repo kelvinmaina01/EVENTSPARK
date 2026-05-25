@@ -46,7 +46,7 @@ const sortedCategories = categoryOrder.filter(c => grouped[c]);
 
 const Integrations = () => {
   const handleConnect = (name: string) => {
-    toast.info(`To connect ${name}, go to your Lovable project Settings → Connectors and set it up there.`, {
+    toast.info(`To connect ${name}, go to your project settings and set it up there.`, {
       duration: 6000,
     });
   };

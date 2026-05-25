@@ -15,6 +15,7 @@ import { Tables } from "@/integrations/supabase/types";
 import { supabase } from "@/integrations/supabase/client";
 import { getSessionId, getUtmFromUrl, buildIcs, downloadIcs, googleCalendarUrl } from "@/lib/tracking";
 import { getEventConfig } from "@/lib/eventConfig";
+import { applySeo, eventToJsonLd } from "@/lib/seo";
 
 type FormField = Tables<"form_fields">;
 
@@ -235,7 +236,7 @@ const FlyerImage = ({ flyerUrl, eventName, className = "" }: { flyerUrl: string 
 
 const PoweredBy = () => (
   <p className="text-center text-xs text-muted-foreground mt-6">
-    Powered by <span className="font-semibold">eventspark</span>
+    Powered by <span className="font-semibold">Hostquill</span>
   </p>
 );
 
@@ -271,6 +272,17 @@ const Register = () => {
       user_agent: typeof navigator !== "undefined" ? navigator.userAgent.slice(0, 500) : null,
     } as any).then(() => {});
   }, [event?.id]);
+
+  useEffect(() => {
+    if (!event) return;
+    applySeo({
+      title: `${event.name} Registration`,
+      description: `Register for ${event.name} on Hostquill. View event details, submit attendee information, and save the event to your calendar.`,
+      path: `/register/${event.slug}`,
+      image: event.background_image_url || undefined,
+      jsonLd: eventToJsonLd(event, `/register/${event.slug}`),
+    });
+  }, [event]);
 
   const handleFieldChange = useCallback((label: string, value: string) => {
     setFormData(prev => ({ ...prev, [label]: value }));

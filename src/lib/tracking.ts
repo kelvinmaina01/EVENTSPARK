@@ -71,11 +71,11 @@ export function buildIcs(opts: {
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//eventspark//EN",
+    "PRODID:-//hostquill//EN",
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
     "BEGIN:VEVENT",
-    `UID:${opts.uid}@eventspark`,
+    `UID:${opts.uid}@hostquill`,
     `DTSTAMP:${toIcsDate(new Date())}`,
     `DTSTART:${toIcsDate(start)}`,
     `DTEND:${toIcsDate(end)}`,

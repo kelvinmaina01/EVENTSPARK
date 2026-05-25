@@ -195,7 +195,7 @@ export default function Payments() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `eventspark_sales_${new Date().toISOString().slice(0,10)}.csv`);
+    link.setAttribute("download", `hostquill_sales_${new Date().toISOString().slice(0,10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -257,7 +257,7 @@ export default function Payments() {
                   </Button>
                   <p className="text-xs text-muted-foreground flex items-center gap-1.5 pt-2 border-t border-border/40">
                     <Info className="w-3.5 h-3.5 text-primary" />
-                    Stripe is a secure payment processor with low fees that handles all of EventSpark's sales.
+                    Stripe is a secure payment processor with low fees that handles all of Hostquill's sales.
                   </p>
                 </div>
               )}
@@ -489,7 +489,7 @@ export default function Payments() {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Calculate and add taxes on top of ticket prices. Upgrade to EventSpark Plus to collect taxes.
+                Calculate and add taxes on top of ticket prices. Upgrade to Hostquill Plus to collect taxes.
               </p>
               <Button variant="outline" size="sm" className="w-full text-xs font-semibold rounded-full" onClick={() => setShowTaxPlusModal(true)}>
                 Learn More
@@ -719,9 +719,9 @@ export default function Payments() {
             <div className="w-12 h-12 rounded-full bg-pink-100 dark:bg-pink-950/20 text-pink-500 flex items-center justify-center mx-auto mb-2 text-xl">
               ✨
             </div>
-            <DialogTitle className="text-center font-display font-bold">Upgrade to EventSpark Plus</DialogTitle>
+            <DialogTitle className="text-center font-display font-bold">Upgrade to Hostquill Plus</DialogTitle>
             <DialogDescription className="text-center text-xs leading-relaxed">
-              Collecting taxes from guests requires an active subscription to EventSpark Plus. Automate tax rates calculation for over 40+ countries.
+              Collecting taxes from guests requires an active subscription to Hostquill Plus. Automate tax rates calculation for over 40+ countries.
             </DialogDescription>
           </DialogHeader>
           <div className="py-2 space-y-2.5">

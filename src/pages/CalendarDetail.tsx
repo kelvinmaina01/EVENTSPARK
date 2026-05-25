@@ -88,7 +88,7 @@ export default function CalendarDetail() {
 
   useEffect(() => {
     if (calendarSlug && calendar) {
-      const localSubsStr = localStorage.getItem("eventspark_subscribed_slugs") || "[]";
+      const localSubsStr = localStorage.getItem("hostquill_subscribed_slugs") || "[]";
       const localSubs = JSON.parse(localSubsStr);
       setIsSubscribed(calendar.subscribed || localSubs.includes(calendarSlug));
     }
@@ -118,7 +118,7 @@ export default function CalendarDetail() {
     setIsSubscribed(nextSub);
     
     if (calendarSlug) {
-      const localSubsStr = localStorage.getItem("eventspark_subscribed_slugs") || "[]";
+      const localSubsStr = localStorage.getItem("hostquill_subscribed_slugs") || "[]";
       let localSubs = JSON.parse(localSubsStr) as string[];
       if (nextSub) {
         if (!localSubs.includes(calendarSlug)) {
@@ -131,7 +131,7 @@ export default function CalendarDetail() {
         localSubs = localSubs.filter(s => s !== calendarSlug);
         toast.success(`Unsubscribed from ${calendar.name}`);
       }
-      localStorage.setItem("eventspark_subscribed_slugs", JSON.stringify(localSubs));
+      localStorage.setItem("hostquill_subscribed_slugs", JSON.stringify(localSubs));
     }
   };
 

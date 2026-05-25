@@ -128,13 +128,13 @@ export default function Calendar() {
         upcomingEvents: [],
         pastEvents: []
       };
-      localStorage.setItem("eventspark_custom_calendars", JSON.stringify([defaultCal]));
+      localStorage.setItem("hostquill_custom_calendars", JSON.stringify([defaultCal]));
       custom = [defaultCal];
     }
     setMyCalendars(custom);
 
     // 2. Load featured / discover calendars
-    const localSubsStr = localStorage.getItem("eventspark_subscribed_slugs") || "[]";
+    const localSubsStr = localStorage.getItem("hostquill_subscribed_slugs") || "[]";
     const localSubs = JSON.parse(localSubsStr) as string[];
 
     const subs = FEATURED_CALENDARS.filter(c => c.subscribed || localSubs.includes(c.slug));
@@ -145,7 +145,7 @@ export default function Calendar() {
 
     // 3. Load events (mock + custom local)
     Promise.all([fetchUpcomingEvents(), fetchPastEvents()]).then(([u, p]) => {
-      const localEventsStr = localStorage.getItem("eventspark_custom_events") || "[]";
+      const localEventsStr = localStorage.getItem("hostquill_custom_events") || "[]";
       const localEvents = JSON.parse(localEventsStr);
       
       const mappedLocal = localEvents.map((e: any) => ({
@@ -222,7 +222,7 @@ export default function Calendar() {
     };
 
     const updated = [...myCalendars, newCal];
-    localStorage.setItem("eventspark_custom_calendars", JSON.stringify(updated));
+    localStorage.setItem("hostquill_custom_calendars", JSON.stringify(updated));
     setMyCalendars(updated);
     setShowCreateModal(false);
     toast.success("Calendar created successfully! 🎉");
@@ -279,7 +279,7 @@ export default function Calendar() {
       return c;
     });
 
-    localStorage.setItem("eventspark_custom_calendars", JSON.stringify(updated));
+    localStorage.setItem("hostquill_custom_calendars", JSON.stringify(updated));
     setMyCalendars(updated);
     setEditingCalendar(null);
     toast.success("Calendar configuration saved!");
@@ -291,7 +291,7 @@ export default function Calendar() {
     if (!confirm("Are you sure you want to delete this calendar? This action cannot be undone.")) return;
     
     const updated = myCalendars.filter(c => c.slug !== slug);
-    localStorage.setItem("eventspark_custom_calendars", JSON.stringify(updated));
+    localStorage.setItem("hostquill_custom_calendars", JSON.stringify(updated));
     setMyCalendars(updated);
     setEditingCalendar(null);
     toast.success("Calendar deleted.");
@@ -300,7 +300,7 @@ export default function Calendar() {
 
   // Toggle subscribe/unsubscribe for discover calendars
   const handleSubscribeToggle = (slug: string, currentSubbed: boolean) => {
-    const localSubsStr = localStorage.getItem("eventspark_subscribed_slugs") || "[]";
+    const localSubsStr = localStorage.getItem("hostquill_subscribed_slugs") || "[]";
     let localSubs = JSON.parse(localSubsStr) as string[];
 
     if (currentSubbed) {
@@ -312,7 +312,7 @@ export default function Calendar() {
       localSubs.push(slug);
       toast.success("Subscribed to calendar! 🎉");
     }
-    localStorage.setItem("eventspark_subscribed_slugs", JSON.stringify(localSubs));
+    localStorage.setItem("hostquill_subscribed_slugs", JSON.stringify(localSubs));
     loadData();
   };
 
@@ -436,7 +436,7 @@ export default function Calendar() {
                           <div className="pt-10 min-w-0 flex-1">
                             <h3 className="font-display font-bold text-xl leading-tight truncate">{cal.name}</h3>
                             <p className="text-xs text-muted-foreground mt-1 font-medium truncate">
-                              eventspark.co/cal/{cal.slug}
+                              hostquill.co/cal/{cal.slug}
                             </p>
                           </div>
                         </div>
@@ -816,7 +816,7 @@ export default function Calendar() {
               <Label htmlFor="cal-slug">Public URL Slug</Label>
               <div className="flex items-center">
                 <span className="bg-muted border border-r-0 border-border px-3 h-9 flex items-center text-xs text-muted-foreground rounded-l-lg">
-                  eventspark.co/cal/
+                  hostquill.co/cal/
                 </span>
                 <Input
                   id="cal-slug"
@@ -950,7 +950,7 @@ export default function Calendar() {
                       <Label>Public URL Slug</Label>
                       <div className="flex items-center">
                         <span className="bg-muted border border-r-0 border-border px-3.5 h-10 flex items-center text-xs text-muted-foreground rounded-l-lg shrink-0">
-                          eventspark.co/cal/
+                          hostquill.co/cal/
                         </span>
                         <Input value={editSlug} onChange={e => setEditSlug(e.target.value)} className="rounded-l-none" />
                       </div>

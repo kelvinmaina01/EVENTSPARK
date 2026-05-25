@@ -1,0 +1,10 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#19192E"/>
+  <circle cx="1008" cy="126" r="190" fill="#FF758F" opacity="0.24"/>
+  <circle cx="170" cy="540" r="220" fill="#7C3AED" opacity="0.2"/>
+  <text x="96" y="238" fill="#FFFFFF" font-family="Arial, sans-serif" font-size="86" font-weight="800">Hostquill</text>
+  <text x="100" y="320" fill="#F8F6FF" font-family="Arial, sans-serif" font-size="38" font-weight="600">Create, manage, promote, and analyze events.</text>
+  <text x="100" y="392" fill="#C9C4DF" font-family="Arial, sans-serif" font-size="28">Event pages • Registrations • Tickets • Check-in • Analytics</text>
+  <rect x="100" y="458" width="286" height="66" rx="33" fill="#FF758F"/>
+  <text x="132" y="501" fill="#19192E" font-family="Arial, sans-serif" font-size="24" font-weight="700">hostquill.com</text>
+</svg>

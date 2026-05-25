@@ -140,7 +140,7 @@ const CreateEvent = () => {
         locationType: "global",
         locationValue: "",
       };
-      localStorage.setItem("eventspark_custom_calendars", JSON.stringify([defaultCal]));
+      localStorage.setItem("hostquill_custom_calendars", JSON.stringify([defaultCal]));
       list = [defaultCal];
     }
     setMyCalendars(list);
@@ -155,7 +155,7 @@ const CreateEvent = () => {
 
   useEffect(() => {
     if (isEditMode && editId && initialized) {
-      const localEventsStr = localStorage.getItem("eventspark_custom_events") || "[]";
+      const localEventsStr = localStorage.getItem("hostquill_custom_events") || "[]";
       try {
         const localEvents = JSON.parse(localEventsStr);
         const mapped = localEvents.find((e: any) => e.id === editId || e.slug === existingEvent?.slug);
@@ -316,7 +316,7 @@ const CreateEvent = () => {
           await bulkInsertFields.mutateAsync(fields.map(f => ({ ...f, event_id: editId })));
         }
 
-        const localEventsStr = localStorage.getItem("eventspark_custom_events") || "[]";
+        const localEventsStr = localStorage.getItem("hostquill_custom_events") || "[]";
         let localEvents = JSON.parse(localEventsStr);
         const eventItem = {
           id: editId,
@@ -334,7 +334,7 @@ const CreateEvent = () => {
         if (!localEvents.some((e: any) => e.id === editId)) {
           localEvents.push(eventItem);
         }
-        localStorage.setItem("eventspark_custom_events", JSON.stringify(localEvents));
+        localStorage.setItem("hostquill_custom_events", JSON.stringify(localEvents));
 
         toast.success("Event updated!");
         navigate(`/dashboard/events/${editId}`);
@@ -342,7 +342,7 @@ const CreateEvent = () => {
         const event = await createEvent.mutateAsync(eventData);
         await bulkInsertFields.mutateAsync(fields.map(f => ({ ...f, event_id: event.id })));
 
-        const localEventsStr = localStorage.getItem("eventspark_custom_events") || "[]";
+        const localEventsStr = localStorage.getItem("hostquill_custom_events") || "[]";
         let localEvents = JSON.parse(localEventsStr);
         const eventItem = {
           id: event.id,
@@ -357,7 +357,7 @@ const CreateEvent = () => {
           attendees: 0,
         };
         localEvents.push(eventItem);
-        localStorage.setItem("eventspark_custom_events", JSON.stringify(localEvents));
+        localStorage.setItem("hostquill_custom_events", JSON.stringify(localEvents));
 
         setCreatedEventId(event.id);
         setCreatedSlug(event.slug);

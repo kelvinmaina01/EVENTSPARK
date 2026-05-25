@@ -147,7 +147,7 @@ const Pricing = () => {
               transition={{ delay: 0.2 }}
               className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto"
             >
-              From intimate gatherings to large-scale conferences, Events Spark has the perfect plan for your needs
+              From intimate gatherings to large-scale conferences, Hostquill has the perfect plan for your needs
             </motion.p>
 
             {/* Billing Toggle */}

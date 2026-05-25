@@ -8,6 +8,7 @@ import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
+import { SeoManager } from "@/lib/seo";
 
 import Landing from "./pages/Landing";
 import Auth from "./pages/Auth";
@@ -21,6 +22,12 @@ import Calendars from "./pages/Calendars";
 import CalendarDetail from "./pages/CalendarDetail";
 import FinishSignup from "./pages/FinishSignup";
 import ProfilePage from "./pages/ProfilePage";
+import About from "./pages/About";
+import Features from "./pages/Features";
+import UseCases from "./pages/UseCases";
+import Compare from "./pages/Compare";
+import Blog from "./pages/Blog";
+import SeoLandingPage from "./pages/SeoLandingPage";
 
 import Pricing from "./pages/Pricing";
 import QRCode from "./pages/QRCode";
@@ -55,13 +62,21 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <ScrollToTop />
+            <SeoManager />
             <Routes>
               {/* Public */}
               <Route path="/" element={<Landing />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/features" element={<Features />} />
+              <Route path="/use-cases" element={<UseCases />} />
+              <Route path="/compare" element={<Compare />} />
+              <Route path="/blog" element={<Blog />} />
               <Route path="/register/:slug" element={<Register />} />
               <Route path="/company/:companySlug" element={<CompanyPage />} />
               <Route path="/events" element={<EventsList />} />
+              <Route path="/events/city/:citySlug" element={<SeoLandingPage type="city" />} />
+              <Route path="/events/category/:categorySlug" element={<SeoLandingPage type="category" />} />
               <Route path="/events/:slug" element={<EventPublicDetail />} />
               <Route path="/discover" element={<Discover />} />
               <Route path="/local/:citySlug" element={<LocalPlaceDetail />} />

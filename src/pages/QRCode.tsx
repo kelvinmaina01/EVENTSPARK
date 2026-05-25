@@ -26,7 +26,7 @@ const QRCode = () => {
     date: "March 15, 2024",
     time: "2:00 PM - 6:00 PM",
     location: "Innovation Center, San Francisco",
-    url: "https://eventsspark.app/events/tech-summit-2024",
+    url: "https://hostquill.app/events/tech-summit-2024",
     registered: 247,
     capacity: 500
   };

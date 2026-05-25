@@ -649,7 +649,7 @@ const Landing = () => {
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex items-center justify-between mb-10">
             <h2 className="text-2xl sm:text-3xl font-display text-foreground tracking-[-0.02em]" style={{ fontWeight: titleWeight }}>
-              Popular events on eventspark
+              Popular events on Hostquill
             </h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -703,7 +703,7 @@ const Landing = () => {
               Everything you need to run amazing events
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              From page creation to post-event analytics, eventspark has you covered.
+              From page creation to post-event analytics, Hostquill has you covered.
             </p>
           </motion.div>
 
@@ -784,7 +784,7 @@ const Landing = () => {
           <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
             {[
               {
-                quote: "eventspark cut our setup time by 80%. We went from spending hours on registration to minutes.",
+                quote: "Hostquill cut our setup time by 80%. We went from spending hours on registration to minutes.",
                 name: "Sarah Chen",
                 role: "Community manager",
                 avatar: avatarSarah,
@@ -802,7 +802,7 @@ const Landing = () => {
                 avatar: avatarPriya,
               },
               {
-                quote: "We switched from three different tools to just eventspark. Everything in one place is a game changer.",
+                quote: "We switched from three different tools to just Hostquill. Everything in one place is a game changer.",
                 name: "James Liu",
                 role: "Tech meetup organizer",
                 avatar: "https://i.pravatar.cc/300?img=33",
@@ -850,10 +850,10 @@ const Landing = () => {
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
             <div>
               <h2 className="text-3xl sm:text-4xl font-display font-bold tracking-tight text-foreground">
-                Popular cities on <span className="text-[#FF758F] font-extrabold relative inline-block after:absolute after:bottom-1 after:left-0 after:w-full after:h-1 after:bg-[#FF758F]/20">eventspark</span>
+                Popular cities on <span className="text-[#FF758F] font-extrabold relative inline-block after:absolute after:bottom-1 after:left-0 after:w-full after:h-1 after:bg-[#FF758F]/20">Hostquill</span>
               </h2>
               <p className="mt-3 text-muted-foreground text-base max-w-2xl font-body">
-                Looking for fun things to do near you? See what eventspark organizers are planning in cities around the world.
+                Looking for fun things to do near you? See what Hostquill organizers are planning in cities around the world.
               </p>
             </div>
             <div className="mt-4 md:mt-0 flex items-center gap-3 bg-[#EAF7ED] text-[#2E7D32] dark:bg-[#1E3A24] dark:text-[#A1E3AD] px-4 py-2.5 rounded-2xl shadow-sm border border-[#C8E6C9]/40 self-start md:self-auto hover:scale-[1.02] transition-transform duration-250 cursor-default">
@@ -1009,7 +1009,7 @@ const Landing = () => {
                     Ready to create your next event?
                   </h2>
                   <p className="text-background/70 text-lg mb-8 max-w-lg mx-auto text-balance">
-                    Join thousands of organizers who use eventspark to build better events.
+                    Join thousands of organizers who use Hostquill to build better events.
                   </p>
                   <Button size="lg" className="text-base font-semibold px-8 h-12 bg-primary text-primary-foreground hover:bg-primary/90" asChild>
                     <Link to="/auth">Get started for free <ArrowRight className="ml-2 w-4 h-4" /></Link>

@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 
 const LOGOS = [
-  { src: "https://i.ibb.co/YBWtB70b/lovable.jpg", name: "Lovable" },
   { src: "https://i.ibb.co/XfV3jbYw/google-logo-brandlogos-net-ixyfi-300x96.png", name: "Google" },
   { src: "https://i.ibb.co/Y7BBTKbL/angular-logo-brandlogos-net-beb6k-300x74.png", name: "Angular" },
   { src: "https://i.ibb.co/LzjKzK3V/walmart-2008-2025-logo-512x128.png", name: "Walmart" },
@@ -31,7 +30,7 @@ export default function BrandsMarquee() {
           Teams from top companies
           <br />
           manage their events with{" "}
-          <span className="text-primary">eventspark</span>
+          <span className="text-primary">Hostquill</span>
         </motion.h2>
       </div>
 

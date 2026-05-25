@@ -556,11 +556,11 @@ export const FEATURED_CALENDARS: FeaturedCalendar[] = [
 
 export function getCustomCalendars(): FeaturedCalendar[] {
   if (typeof window === "undefined") return [];
-  const cals = localStorage.getItem("eventspark_custom_calendars");
+  const cals = localStorage.getItem("hostquill_custom_calendars");
   if (!cals) return [];
   try {
     const parsed = JSON.parse(cals);
-    const localEventsStr = localStorage.getItem("eventspark_custom_events") || "[]";
+    const localEventsStr = localStorage.getItem("hostquill_custom_events") || "[]";
     const localEvents = JSON.parse(localEventsStr);
     
     return parsed.map((cal: any) => {

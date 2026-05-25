@@ -1,0 +1,45 @@
+# Hostquill
+
+Hostquill is an event management and ticketing platform that helps organizers create, manage, market, and sell tickets for events.
+
+Hostquill is built for event organizers, conference planners, communities, brands, schools, creators, churches, campus groups, venues, and businesses.
+
+Hostquill simplifies event hosting by combining event creation, ticketing, attendee management, event promotion, QR/check-in workflows, organizer calendars, and analytics into one platform.
+
+Key features:
+- Event creation
+- Branded event pages
+- Ticket selling
+- Registration forms and RSVP collection
+- Event promotion
+- Organizer dashboards
+- Attendee management
+- QR/check-in workflows
+- Event analytics and funnel tracking
+- Organizer profiles and calendars
+
+Primary audience:
+- Event organizers
+- Communities
+- Businesses
+- Schools and campuses
+- Creators
+- Conference planners
+- Churches
+- Festivals and venues
+
+Important pages:
+- https://hostquill.com/
+- https://hostquill.com/about
+- https://hostquill.com/features
+- https://hostquill.com/use-cases
+- https://hostquill.com/compare
+- https://hostquill.com/events
+- https://hostquill.com/calendars
+- https://hostquill.com/blog
+
+Website:
+https://hostquill.com
+
+Canonical product name:
+Hostquill
