@@ -189,7 +189,7 @@ export default function EventPublicDetail() {
           ? "https://schema.org/OnlineEventAttendanceMode"
           : "https://schema.org/OfflineEventAttendanceMode",
         image: [event.cover || DEFAULT_OG_IMAGE],
-        url: `https://hostquill.com${path}`,
+        url: `https://eventspark-eta.vercel.app${path}`,
         location: {
           "@type": "Place",
           name: event.location || "Event location",

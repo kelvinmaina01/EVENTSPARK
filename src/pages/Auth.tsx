@@ -11,6 +11,13 @@ import { supabase } from "@/integrations/supabase/client";
 
 const showSocialAuth = true;
 
+const getAuthRedirectUrl = (path: string) => {
+  const configuredSiteUrl = import.meta.env.VITE_SITE_URL?.replace(/\/$/, "");
+  const origin = configuredSiteUrl || window.location.origin;
+
+  return `${origin}${path}`;
+};
+
 const getEmailName = (value: string) => {
   const localPart = value.split("@")[0] || "there";
   return localPart
@@ -63,7 +70,7 @@ const Auth = () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: `${window.location.origin}/dashboard/events`,
+        redirectTo: getAuthRedirectUrl("/dashboard/events"),
       },
     });
     if (error) toast.error(error.message || `${provider} sign-in failed`);
@@ -78,7 +85,7 @@ const Auth = () => {
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: `${window.location.origin}/finish-signup`,
+          emailRedirectTo: getAuthRedirectUrl("/finish-signup"),
           shouldCreateUser: true,
           data: {
             preferred_name: emailName,
