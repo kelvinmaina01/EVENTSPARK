@@ -1,1 +1,26 @@
 project_id = "etfokjdtemmhuzddjlux"
+
+[auth]
+enabled = true
+site_url = "http://localhost:8080"
+additional_redirect_urls = [
+  "http://localhost:8080",
+  "http://localhost:8080/auth",
+  "http://localhost:8080/finish-signup",
+  "https://hostquill.com",
+  "https://hostquill.com/auth",
+  "https://hostquill.com/finish-signup"
+]
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = true
+enable_confirmations = true
+secure_password_change = false
+max_frequency = "1m0s"
+otp_length = 8
+otp_expiry = 3600
+
+[auth.mfa.totp]
+enroll_enabled = true
+verify_enabled = true

@@ -204,6 +204,14 @@ function metadataForPath(pathname: string): SeoInput {
     };
   }
 
+  if (pathname.startsWith("/profile/")) {
+    return {
+      title: "Organizer Profile on Hostquill",
+      description: "View an organizer profile on Hostquill, including public organizer details and hosted events.",
+      path: pathname,
+    };
+  }
+
   return {
     title: "Hostquill",
     description: "Hostquill helps organizers create, manage, promote, and analyze events from one event hosting platform.",

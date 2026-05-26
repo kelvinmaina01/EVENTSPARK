@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -44,7 +44,7 @@ const SettingsPage = () => {
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteSending, setInviteSending] = useState(false);
 
-  // Calendar Defaults States
+  // Event Defaults States
   const [eventVisibility, setEventVisibility] = useState("public");
   const [publicGuestList, setPublicGuestList] = useState(true);
   const [collectFeedback, setCollectFeedback] = useState(true);
@@ -73,7 +73,8 @@ const SettingsPage = () => {
   const [copiedCode, setCopiedCode] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState("");
 
-  if (profile && !initialized) {
+  useEffect(() => {
+    if (!profile || initialized) return;
     setFullName(profile.full_name || "");
     setCompany(profile.company || "");
     setWebsite((profile as any).website || "");
@@ -83,7 +84,7 @@ const SettingsPage = () => {
     setCompanySlug((profile as any).company_slug || "");
     setAvatarUrl(profile.avatar_url || "");
     setInitialized(true);
-  }
+  }, [profile, initialized]);
 
   const handleSave = async () => {
     try {
@@ -195,11 +196,11 @@ const SettingsPage = () => {
   const handleChangeStatus = () => {
     const nextStatus = activeStatus === "active" ? "archived" : "active";
     setActiveStatus(nextStatus);
-    toast.success(`Calendar status changed to ${nextStatus === "active" ? "Active" : "Archived"}`);
+    toast.success(`Profile status changed to ${nextStatus === "active" ? "Active" : "Archived"}`);
   };
 
   const handleDeleteCalendar = () => {
-    toast.error("Permanently deleting the calendar requires confirmation.");
+    toast.error("Permanently deleting the profile requires confirmation.");
   };
 
   const addSocialLink = () => setSocialLinks([...socialLinks, { platform: "", url: "" }]);
@@ -211,7 +212,7 @@ const SettingsPage = () => {
   const removeSocialLink = (index: number) => setSocialLinks(socialLinks.filter((_, i) => i !== index));
 
   const embedCodeString = `<iframe
-  src="${window.location.origin}/embed/calendar/${companySlug || "kelvinmaina"}/events?theme=${embedTheme}&layout=${embedLayout}"
+  src="${window.location.origin}/embed/profile/${companySlug || "kelvinmaina"}/events?theme=${embedTheme}&layout=${embedLayout}"
   width="600"
   height="450"
   frameborder="0"
@@ -236,7 +237,7 @@ const SettingsPage = () => {
     <div className="space-y-8 max-w-3xl mx-auto pb-16">
       <div>
         <h1 className="text-3xl font-display font-bold">Settings</h1>
-        <p className="text-muted-foreground">Manage your event circles, pages, defaults, and teams.</p>
+        <p className="text-muted-foreground">Manage your organizer profile, event defaults, and team access.</p>
       </div>
 
       <Tabs defaultValue="profile" className="space-y-6">
@@ -328,10 +329,10 @@ const SettingsPage = () => {
 
             {companySlug && (
               <div className="space-y-2">
-                <Label>Public Custom Namespace Page</Label>
+                <Label>Public Profile Page</Label>
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                   <Input
-                    value={`${window.location.origin}/company/${companySlug}`}
+                    value={`${window.location.origin}/profile/${companySlug}`}
                     readOnly
                     className="flex-1 text-sm rounded-full bg-muted/20"
                   />
@@ -341,13 +342,13 @@ const SettingsPage = () => {
                       size="icon"
                       className="shrink-0 rounded-full"
                       onClick={() => {
-                        navigator.clipboard.writeText(`${window.location.origin}/company/${companySlug}`);
+                        navigator.clipboard.writeText(`${window.location.origin}/profile/${companySlug}`);
                         toast.success("Link copied!");
                       }}
                     >
                       <Copy className="w-4 h-4" />
                     </Button>
-                    <a href={`/company/${companySlug}`} target="_blank" rel="noopener noreferrer">
+                    <a href={`/profile/${companySlug}`} target="_blank" rel="noopener noreferrer">
                       <Button variant="outline" size="icon" className="shrink-0 rounded-full">
                         <ExternalLink className="w-4 h-4" />
                       </Button>
@@ -399,7 +400,7 @@ const SettingsPage = () => {
           <div className="bg-card border border-border/40 rounded-2xl p-6 space-y-5 shadow-sm">
             <div>
               <h3 className="text-lg font-display font-bold">Event Defaults</h3>
-              <p className="text-sm text-muted-foreground mt-0.5">Default settings for new events created on this calendar circle.</p>
+              <p className="text-sm text-muted-foreground mt-0.5">Default settings for new events created from your organizer profile.</p>
             </div>
 
             <div className="border border-border/40 rounded-2xl divide-y divide-border/40 bg-muted/10 overflow-hidden">
@@ -459,8 +460,8 @@ const SettingsPage = () => {
           {/* Status Settings Card */}
           <div className="bg-card border border-border/40 rounded-2xl p-6 space-y-6 shadow-sm">
             <div>
-              <h3 className="text-lg font-display font-bold">Calendar Status</h3>
-              <p className="text-sm text-muted-foreground mt-0.5">Mark the calendar circle as coming soon or archive it if it is no longer active.</p>
+              <h3 className="text-lg font-display font-bold">Profile Status</h3>
+              <p className="text-sm text-muted-foreground mt-0.5">Mark your organizer profile as active or archive it if it is no longer in use.</p>
             </div>
 
             <div className="p-4 sm:p-5 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -469,7 +470,7 @@ const SettingsPage = () => {
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
                   <h4 className="text-sm font-bold text-emerald-600 capitalize">{activeStatus}</h4>
                 </div>
-                <p className="text-xs text-muted-foreground">The calendar circle is fully active and accepting registrations, event submissions, and co-hostings.</p>
+                <p className="text-xs text-muted-foreground">The organizer profile is active and accepting registrations for published events.</p>
               </div>
               <Button variant="outline" size="sm" className="rounded-full text-xs font-semibold shrink-0" onClick={handleChangeStatus}>
                 Change Status
@@ -481,10 +482,10 @@ const SettingsPage = () => {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="space-y-0.5">
                 <h4 className="text-sm font-semibold text-destructive">Danger Zone</h4>
-                <p className="text-xs text-muted-foreground">Permanently delete this event circle. All calendar data and stats will be lost.</p>
+                <p className="text-xs text-muted-foreground">Permanently delete this organizer profile. Event data and stats will be lost.</p>
               </div>
               <Button variant="destructive" size="sm" className="rounded-full text-xs font-bold shrink-0" onClick={handleDeleteCalendar}>
-                <Trash2 className="w-3.5 h-3.5 mr-1.5" /> Permanently Delete Calendar
+                <Trash2 className="w-3.5 h-3.5 mr-1.5" /> Permanently Delete Profile
               </Button>
             </div>
           </div>
@@ -497,7 +498,7 @@ const SettingsPage = () => {
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div>
                 <h3 className="text-lg font-display font-bold">Admins</h3>
-                <p className="text-sm text-muted-foreground mt-0.5">Admins have full access to co-hosts calendars and can approve public event submissions.</p>
+                <p className="text-sm text-muted-foreground mt-0.5">Admins have full access to hosted events and can approve public event submissions.</p>
               </div>
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 <Input
@@ -654,7 +655,7 @@ const SettingsPage = () => {
           <div className="bg-card border border-border/40 rounded-2xl p-6 space-y-6 shadow-sm">
             <div>
               <h3 className="text-lg font-display font-bold">Embed Events</h3>
-              <p className="text-sm text-muted-foreground mt-0.5">Embed your calendar widget to easily display live circles of upcoming events on your own website.</p>
+              <p className="text-sm text-muted-foreground mt-0.5">Embed your event widget to display upcoming hosted events on your own website.</p>
             </div>
 
             {/* Premium Embed Customizer and Preview Container */}
@@ -711,7 +712,7 @@ const SettingsPage = () => {
                     📭
                   </div>
                   <h4 className="font-display font-bold text-lg">No Upcoming Events</h4>
-                  <p className="text-xs text-muted-foreground max-w-xs mx-auto">All hosted meets are currently complete. Check back soon for fresh community calendar circles!</p>
+                  <p className="text-xs text-muted-foreground max-w-xs mx-auto">All hosted events are currently complete. Check back soon for new events.</p>
                   <div className="pt-2">
                     <Button variant="outline" size="sm" className="rounded-full text-xs font-semibold px-4">
                       Browse Discover
@@ -761,7 +762,7 @@ const SettingsPage = () => {
           <div className="bg-card border border-border/40 rounded-2xl p-6 space-y-5 shadow-sm">
             <div>
               <h3 className="text-lg font-display font-bold">Webhooks</h3>
-              <p className="text-sm text-muted-foreground mt-0.5">Get notified in real-time about activities on your calendar circle.</p>
+              <p className="text-sm text-muted-foreground mt-0.5">Get notified in real-time about event and registration activity.</p>
             </div>
 
             <div className="py-8 text-center border border-dashed border-border/40 rounded-2xl bg-muted/5 space-y-3">
@@ -776,11 +777,11 @@ const SettingsPage = () => {
             </div>
           </div>
 
-          {/* Calendar ID Card */}
+          {/* Organizer ID Card */}
           <div className="bg-card border border-border/40 rounded-2xl p-6 space-y-4 shadow-sm">
             <div>
-              <h3 className="text-lg font-display font-bold">Calendar ID</h3>
-              <p className="text-sm text-muted-foreground mt-0.5">Programmatic circle identifier for integrations and query APIs.</p>
+              <h3 className="text-lg font-display font-bold">Organizer ID</h3>
+              <p className="text-sm text-muted-foreground mt-0.5">Programmatic profile identifier for integrations and query APIs.</p>
             </div>
             <div className="flex items-center gap-2 p-3 border border-border/40 bg-muted/10 rounded-2xl">
               <code className="text-xs font-mono font-bold text-pink-500 select-all flex-1">
@@ -792,7 +793,7 @@ const SettingsPage = () => {
                 className="h-8 rounded-full text-xs text-pink-500 font-bold shrink-0"
                 onClick={() => {
                   navigator.clipboard.writeText("cal-vU8qMhMJPoDBJQq");
-                  toast.success("Calendar ID copied to clipboard!");
+                  toast.success("Organizer ID copied to clipboard!");
                 }}
               >
                 <Copy className="w-3.5 h-3.5 mr-1" /> Copy ID
