@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { CalendarDays, MapPin, Video, Globe, Loader2, CheckCircle2, Zap, CalendarPlus, Download } from "lucide-react";
 import { useEventBySlug, Event } from "@/hooks/useEvents";
 import { useFormFields } from "@/hooks/useFormFields";
@@ -212,7 +212,10 @@ const RegistrationForm = ({
     <div className="flex items-start gap-2 pt-2">
       <Checkbox id="gdpr" checked={consent} onCheckedChange={(c) => onConsentChange(!!c)} />
       <Label htmlFor="gdpr" className="text-xs text-muted-foreground leading-relaxed">
-        I agree to receive communications about this event and consent to the processing of my data in accordance with the Privacy Policy.
+        I agree to receive communications about this event and consent to the processing of my data in accordance with the{" "}
+        <Link to="/privacy" className="font-semibold text-foreground underline underline-offset-2">
+          Privacy Policy
+        </Link>.
       </Label>
     </div>
     <Button
