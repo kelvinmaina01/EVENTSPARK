@@ -18,7 +18,7 @@ import {
 
 const navItems = [
   { title: "Events", url: "/dashboard/events", icon: CalendarDays },
-  { title: "Calendars", url: "/dashboard/calendar", icon: CalendarDays },
+  { title: "Collections", url: "/dashboard/calendar", icon: CalendarDays },
   { title: "Attendees", url: "/dashboard/attendees", icon: Users },
   { title: "Analytics", url: "/dashboard/analytics", icon: BarChart3 },
   { title: "Integrations", url: "/dashboard/integrations", icon: Puzzle },
@@ -45,7 +45,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const allItems = [
     ...navItems,
     ...(profile?.company_slug
-      ? [{ title: "Company", url: `/company/${profile.company_slug}`, icon: Eye }]
+      ? [{ title: "Public Profile", url: `/profile/${profile.company_slug}`, icon: Eye }]
       : []),
   ];
 

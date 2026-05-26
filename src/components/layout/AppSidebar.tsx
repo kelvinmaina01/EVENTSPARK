@@ -30,7 +30,7 @@ import {
 
 const navItems = [
   { title: "Events", url: "/dashboard/events", icon: CalendarDays },
-  { title: "Calendars", url: "/dashboard/calendar", icon: CalendarDays },
+  { title: "Collections", url: "/dashboard/calendar", icon: CalendarDays },
   { title: "Attendees", url: "/dashboard/attendees", icon: Users },
   { title: "Analytics", url: "/dashboard/analytics", icon: BarChart3 },
   { title: "Integrations", url: "/dashboard/integrations", icon: Puzzle },
@@ -105,13 +105,13 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <NavLink
-                    to={profile?.company_slug ? `/company/${profile.company_slug}` : "/dashboard/settings"}
+                    to={profile?.company_slug ? `/profile/${profile.company_slug}` : "/dashboard/settings"}
                     className="hover:bg-sidebar-accent/50"
                     activeClassName="bg-sidebar-accent text-sidebar-primary font-medium"
                     onClick={handleNavClick}
                   >
                     <Eye className="mr-2 h-4 w-4" />
-                    {!collapsed && <span>View Company</span>}
+                    {!collapsed && <span>Public Profile</span>}
                   </NavLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>

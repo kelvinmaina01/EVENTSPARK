@@ -19,6 +19,7 @@ const Events = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [scope, setScope] = useState<"mine" | "upcoming" | "past">("mine");
   const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
   const { data: events, isLoading } = useEvents(search || undefined);
   const { data: registrations } = useRegistrations();
@@ -28,11 +29,17 @@ const Events = () => {
     regCounts[r.event_id] = (regCounts[r.event_id] || 0) + 1;
   });
 
-  const filtered = events?.filter(e => statusFilter === "all" || e.status === statusFilter);
+  const now = new Date();
+  const scopedEvents = events?.filter((event) => {
+    if (scope === "upcoming") return !event.event_date || new Date(event.event_date) >= now;
+    if (scope === "past") return event.event_date ? new Date(event.event_date) < now : false;
+    return true;
+  });
+  const filtered = scopedEvents?.filter(e => statusFilter === "all" || e.status === statusFilter);
 
   // Upcoming events: future-dated, sorted by date, take first 4
   const upcoming = events
-    ?.filter(e => e.event_date && new Date(e.event_date) >= new Date())
+    ?.filter(e => e.event_date && new Date(e.event_date) >= now)
     .sort((a, b) => new Date(a.event_date!).getTime() - new Date(b.event_date!).getTime())
     .slice(0, 4);
 
@@ -103,14 +110,29 @@ const Events = () => {
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-display font-bold">Events</h1>
-          <p className="text-muted-foreground">Create and manage your event registration pages.</p>
+          <h1 className="text-3xl font-display font-bold">My events</h1>
+          <p className="text-muted-foreground">Create, publish, and manage events from your organizer profile. Collections are optional.</p>
         </div>
         <Button className="w-full sm:w-auto" asChild>
           <Link to="/dashboard/events/create">
             <Plus className="w-4 h-4 mr-2" /> Create event
           </Link>
         </Button>
+      </div>
+
+      <div className="rounded-2xl border border-border bg-card p-4 sm:p-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <p className="text-sm font-semibold text-foreground">Host as yourself</p>
+          <p className="text-sm text-muted-foreground">You do not need to create a company or calendar before publishing an event.</p>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <Button asChild className="bg-primary hover:bg-primary/90">
+            <Link to="/dashboard/events/create"><Plus className="w-4 h-4 mr-2" /> New event</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link to="/events"><ExternalLink className="w-4 h-4 mr-2" /> Discover events</Link>
+          </Button>
+        </div>
       </div>
 
       {/* Upcoming Events Row */}
@@ -124,6 +146,28 @@ const Events = () => {
           </div>
         </div>
       )}
+
+      <div className="flex flex-wrap gap-2">
+        {([
+          { id: "mine", label: "All my events", count: events?.length || 0 },
+          { id: "upcoming", label: "Upcoming", count: events?.filter(e => !e.event_date || new Date(e.event_date) >= now).length || 0 },
+          { id: "past", label: "Past", count: events?.filter(e => e.event_date && new Date(e.event_date) < now).length || 0 },
+        ] as const).map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            onClick={() => setScope(item.id)}
+            className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
+              scope === item.id
+                ? "bg-foreground text-background"
+                : "bg-muted text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {item.label}
+            <span className="ml-2 opacity-70">{item.count}</span>
+          </button>
+        ))}
+      </div>
 
       {/* Filters + View Toggle */}
       <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
@@ -228,8 +272,10 @@ const Events = () => {
       ) : (
         <div className="text-center py-20">
           <CalendarDays className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-lg font-semibold mb-2">No events yet</h3>
-          <p className="text-muted-foreground mb-4">Create your first event to get started.</p>
+          <h3 className="text-lg font-semibold mb-2">{scope === "past" ? "No past events yet" : "No events yet"}</h3>
+          <p className="text-muted-foreground mb-4">
+            {scope === "past" ? "Past events will appear here after their event date." : "Create your first event from your organizer profile."}
+          </p>
           <Button asChild>
             <Link to="/dashboard/events/create"><Plus className="w-4 h-4 mr-2" /> Create event</Link>
           </Button>

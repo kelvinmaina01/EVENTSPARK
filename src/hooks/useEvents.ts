@@ -10,7 +10,11 @@ export function useEvents(search?: string) {
   return useQuery({
     queryKey: ["events", user?.id, search],
     queryFn: async () => {
-      let query = supabase.from("events").select("*").order("created_at", { ascending: false });
+      let query = supabase
+        .from("events")
+        .select("*")
+        .eq("user_id", user!.id)
+        .order("created_at", { ascending: false });
       if (search) {
         query = query.ilike("name", `%${search}%`);
       }

@@ -123,13 +123,13 @@ const CreateEvent = () => {
   useEffect(() => {
     let list = getCustomCalendars();
     if (list.length === 0) {
-      const defaultName = profile?.full_name ? `${profile.full_name}'s Calendar` : "My Calendar";
+      const defaultName = profile?.full_name ? `${profile.full_name}'s events` : "Personal events";
       const defaultCal = {
         name: defaultName,
-        slug: "my-calendar",
+        slug: "personal-events",
         icon: "⚡",
-        description: "My personal event space.",
-        longDescription: "Welcome to my personal calendar. Find and subscribe to all my upcoming and past events.",
+        description: "Optional collection for related events.",
+        longDescription: "A personal collection for related hosted events.",
         coverImage: "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=1200&q=80",
         events: 0,
         subscribed: false,
@@ -149,7 +149,7 @@ const CreateEvent = () => {
     if (paramCal && list.some(c => c.slug === paramCal)) {
       setSelectedCalendarSlug(paramCal);
     } else if (list.length > 0) {
-      setSelectedCalendarSlug(list[0].slug);
+      setSelectedCalendarSlug("personal-events");
     }
   }, [profile, searchParams]);
 
@@ -561,11 +561,12 @@ const CreateEvent = () => {
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label>Host Calendar <span className="text-destructive">*</span></Label>
+                      <Label>Event collection <span className="text-muted-foreground font-normal">(optional)</span></Label>
                       <Select value={selectedCalendarSlug} onValueChange={setSelectedCalendarSlug}>
-                        <SelectTrigger><SelectValue placeholder="Select a Calendar" /></SelectTrigger>
+                        <SelectTrigger><SelectValue placeholder="No collection" /></SelectTrigger>
                         <SelectContent>
-                          {myCalendars.map(cal => (
+                          <SelectItem value="personal-events">No collection - host as yourself</SelectItem>
+                          {myCalendars.filter(cal => cal.slug !== "personal-events").map(cal => (
                             <SelectItem key={cal.slug} value={cal.slug}>
                               <span className="flex items-center gap-1.5">
                                 <span className="text-sm shrink-0">{cal.icon}</span>
@@ -578,8 +579,8 @@ const CreateEvent = () => {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label>Organization</Label>
-                    <Input value={profile?.company || ""} disabled className="bg-muted/50" placeholder="Set in Settings" />
+                    <Label>Organizer</Label>
+                    <Input value={profile?.full_name || profile?.company || ""} disabled className="bg-muted/50" placeholder="Your profile name" />
                   </div>
                 </CardContent>
               </Card>
@@ -702,21 +703,21 @@ const CreateEvent = () => {
                     <p className="text-xs text-muted-foreground">Ticketing, approvals, and capacity. All optional.</p>
                   </div>
 
-                  {/* Company Info */}
+                  {/* Organizer Info */}
                   <div className="p-4 rounded-lg border border-border bg-muted/30">
                     <div className="flex items-center justify-between mb-2">
-                      <Label className="text-sm font-semibold">Company Info</Label>
+                      <Label className="text-sm font-semibold">Organizer profile</Label>
                       <Link to="/dashboard/settings" className="text-xs text-primary hover:underline">Edit in Settings</Link>
                     </div>
-                    {profile?.company ? (
+                    {profile?.full_name || profile?.company ? (
                       <div className="space-y-1">
-                        <p className="text-sm font-medium">{profile.company}</p>
+                        <p className="text-sm font-medium">{profile.full_name || profile.company}</p>
                         {(profile as any).company_description && (
                           <p className="text-xs text-muted-foreground">{(profile as any).company_description}</p>
                         )}
                       </div>
                     ) : (
-                      <p className="text-xs text-muted-foreground">No company info set. Add it in Settings.</p>
+                      <p className="text-xs text-muted-foreground">No organizer profile details set. Add them in Settings.</p>
                     )}
                   </div>
 

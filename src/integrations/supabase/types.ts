@@ -51,6 +51,8 @@ export type Database = {
       }
       event_page_views: {
         Row: {
+          city: string | null
+          country: string | null
           created_at: string
           event_id: string
           id: string
@@ -64,6 +66,8 @@ export type Database = {
           utm_term: string | null
         }
         Insert: {
+          city?: string | null
+          country?: string | null
           created_at?: string
           event_id: string
           id?: string
@@ -77,6 +81,8 @@ export type Database = {
           utm_term?: string | null
         }
         Update: {
+          city?: string | null
+          country?: string | null
           created_at?: string
           event_id?: string
           id?: string
@@ -90,6 +96,51 @@ export type Database = {
           utm_term?: string | null
         }
         Relationships: []
+      }
+      event_feedback: {
+        Row: {
+          author_name: string | null
+          comment: string | null
+          created_at: string
+          event_id: string
+          id: string
+          rating: number
+          registration_id: string | null
+        }
+        Insert: {
+          author_name?: string | null
+          comment?: string | null
+          created_at?: string
+          event_id: string
+          id?: string
+          rating: number
+          registration_id?: string | null
+        }
+        Update: {
+          author_name?: string | null
+          comment?: string | null
+          created_at?: string
+          event_id?: string
+          id?: string
+          rating?: number
+          registration_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_feedback_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_feedback_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "registrations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       event_waitlist: {
         Row: {

@@ -109,13 +109,13 @@ export default function Calendar() {
     
     // Seed default if empty
     if (custom.length === 0) {
-      const defaultName = profile?.full_name ? `${profile.full_name}'s Calendar` : "My Calendar";
+      const defaultName = profile?.full_name ? `${profile.full_name}'s collection` : "Personal collection";
       const defaultCal = {
         name: defaultName,
         slug: "my-calendar",
         icon: "⚡",
         description: "My personal event space.",
-        longDescription: "Welcome to my personal calendar. Find and subscribe to all my upcoming and past events.",
+        longDescription: "A collection for related events. You can still create events directly from your profile without using this.",
         coverImage: "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=1200&q=80",
         events: 0,
         subscribed: false,
@@ -196,7 +196,7 @@ export default function Calendar() {
     
     const existing = myCalendars.find(c => c.slug === cleanedSlug) || discoverCalendars.find(c => c.slug === cleanedSlug);
     if (existing) {
-      toast.error("A calendar with this slug already exists.");
+      toast.error("A collection with this slug already exists.");
       return;
     }
 
@@ -225,7 +225,7 @@ export default function Calendar() {
     localStorage.setItem("hostquill_custom_calendars", JSON.stringify(updated));
     setMyCalendars(updated);
     setShowCreateModal(false);
-    toast.success("Calendar created successfully! 🎉");
+    toast.success("Collection created successfully.");
 
     // Reset fields
     setNewName("");
@@ -282,19 +282,19 @@ export default function Calendar() {
     localStorage.setItem("hostquill_custom_calendars", JSON.stringify(updated));
     setMyCalendars(updated);
     setEditingCalendar(null);
-    toast.success("Calendar configuration saved!");
+    toast.success("Collection settings saved.");
     loadData();
   };
 
   // Delete calendar
   const handleDeleteCalendar = (slug: string) => {
-    if (!confirm("Are you sure you want to delete this calendar? This action cannot be undone.")) return;
+    if (!confirm("Are you sure you want to delete this collection? This action cannot be undone.")) return;
     
     const updated = myCalendars.filter(c => c.slug !== slug);
     localStorage.setItem("hostquill_custom_calendars", JSON.stringify(updated));
     setMyCalendars(updated);
     setEditingCalendar(null);
-    toast.success("Calendar deleted.");
+    toast.success("Collection deleted.");
     loadData();
   };
 
@@ -306,11 +306,11 @@ export default function Calendar() {
     if (currentSubbed) {
       // Unsubscribe
       localSubs = localSubs.filter(s => s !== slug);
-      toast.success("Unsubscribed from calendar");
+      toast.success("Unfollowed collection");
     } else {
       // Subscribe
       localSubs.push(slug);
-      toast.success("Subscribed to calendar! 🎉");
+      toast.success("Following collection.");
     }
     localStorage.setItem("hostquill_subscribed_slugs", JSON.stringify(localSubs));
     loadData();
@@ -324,12 +324,12 @@ export default function Calendar() {
       {/* Header */}
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-3xl font-bold tracking-[-0.02em]">Calendars</h1>
-          <p className="text-muted-foreground text-sm mt-1">Manage, discover and host events under custom namespaces.</p>
+          <h1 className="font-display text-3xl font-bold tracking-[-0.02em]">Collections</h1>
+          <p className="text-muted-foreground text-sm mt-1">Optional event groups for series, communities, or recurring programs.</p>
         </div>
         <div className="flex gap-2">
           <Button size="sm" className="rounded-full bg-pink-500 hover:bg-pink-600 text-white font-semibold" onClick={() => setShowCreateModal(true)}>
-            <Plus className="w-4 h-4 mr-1.5" /> Create Calendar
+            <Plus className="w-4 h-4 mr-1.5" /> Create Collection
           </Button>
           <Button size="sm" variant="outline" className="rounded-full" onClick={() => navigate("/dashboard/events/create")}>
             <CalendarPlus className="w-4 h-4 mr-1.5" /> Create Event
@@ -340,7 +340,7 @@ export default function Calendar() {
       {/* Tabs list */}
       <div className="flex border-b border-border/40 pb-px gap-1 overflow-x-auto">
         {(["my-calendars", "subscribed", "discover", "schedule"] as const).map(tab => {
-          let label = "My Calendars";
+          let label = "My Collections";
           let count = myCalendars.length;
           if (tab === "subscribed") { label = "Subscribed"; count = subscribedCalendars.length; }
           else if (tab === "discover") { label = "Discover"; count = discoverCalendars.length; }
@@ -380,7 +380,7 @@ export default function Calendar() {
             <div className="relative max-w-sm flex-1 w-full">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
-                placeholder="Search calendars..."
+                placeholder="Search collections..."
                 className="pl-10 rounded-full h-9 text-xs bg-background"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
@@ -574,7 +574,7 @@ export default function Calendar() {
                 <div className="col-span-full py-16 text-center bg-card border border-dashed border-border/40 rounded-2xl">
                   <CalendarDays className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
                   <h3 className="font-display font-semibold text-lg">No Subscriptions</h3>
-                  <p className="text-sm text-muted-foreground mt-1 max-w-sm mx-auto">You haven't subscribed to any community calendars yet. Browse the Discover tab to find great circles.</p>
+                  <p className="text-sm text-muted-foreground mt-1 max-w-sm mx-auto">You are not following any community collections yet. Browse Discover to find useful groups.</p>
                 </div>
               )}
             </div>
@@ -613,7 +613,7 @@ export default function Calendar() {
                 <div className="col-span-full py-16 text-center bg-card border border-dashed border-border/40 rounded-2xl">
                   <CalendarDays className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
                   <h3 className="font-display font-semibold text-lg">No Subscriptions</h3>
-                  <p className="text-sm text-muted-foreground mt-1 max-w-sm mx-auto">You haven't subscribed to any community calendars yet.</p>
+                  <p className="text-sm text-muted-foreground mt-1 max-w-sm mx-auto">You are not following any community collections yet.</p>
                 </div>
               )}
             </div>
@@ -707,7 +707,7 @@ export default function Calendar() {
                   onChange={e => setSelectedCalendarSlug(e.target.value)}
                   className="bg-card border border-border/60 rounded-full text-xs font-medium px-3.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-pink-500"
                 >
-                  <option value="all">All Calendars Combined</option>
+                  <option value="all">All Collections Combined</option>
                   {myCalendars.map(cal => (
                     <option key={cal.slug} value={cal.slug}>Host: {cal.icon} {cal.name}</option>
                   ))}
@@ -778,9 +778,9 @@ export default function Calendar() {
       <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Create Calendar Space</DialogTitle>
+            <DialogTitle>Create Collection</DialogTitle>
             <DialogDescription>
-              A calendar acts as your host profile and groups related events together.
+              Collections are optional. Use them to group related events, not as a required host profile.
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleCreateCalendar} className="space-y-4 pt-2">
@@ -798,7 +798,7 @@ export default function Calendar() {
                 </select>
               </div>
               <div className="col-span-3 space-y-1">
-                <Label htmlFor="cal-name">Calendar Name</Label>
+                <Label htmlFor="cal-name">Collection Name</Label>
                 <Input
                   id="cal-name"
                   placeholder="e.g. Design Tech Guild"
@@ -936,7 +936,7 @@ export default function Calendar() {
               {/* Form Settings Details */}
               <div className="p-6 space-y-6 pt-10 flex-1">
                 <SheetHeader className="text-left p-0 mb-4">
-                  <SheetTitle className="font-display text-xl tracking-tight">Calendar Customization</SheetTitle>
+                  <SheetTitle className="font-display text-xl tracking-tight">Collection Settings</SheetTitle>
                 </SheetHeader>
 
                 <div className="space-y-4">
@@ -1028,8 +1028,8 @@ export default function Calendar() {
                   {/* Calendar Status Card */}
                   <div className="space-y-4 p-4 rounded-xl border border-border/50 bg-muted/20">
                     <div>
-                      <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block">Calendar Status</Label>
-                      <span className="text-[11px] text-muted-foreground">Mark the calendar as coming soon or archive it if it is no longer active.</span>
+                      <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block">Collection Status</Label>
+                      <span className="text-[11px] text-muted-foreground">Mark the collection as coming soon or archive it if it is no longer active.</span>
                     </div>
 
                     <div className="p-3 bg-background border border-border/40 rounded-xl space-y-1">
@@ -1040,9 +1040,9 @@ export default function Calendar() {
                         <span className="text-xs font-bold capitalize">{editStatus.replace("-", " ")}</span>
                       </div>
                       <p className="text-[10px] text-muted-foreground leading-normal font-medium">
-                        {editStatus === "active" && "The calendar is active and accepting subscriptions and event submissions."}
-                        {editStatus === "coming-soon" && "The calendar is marked as Coming Soon. Subscriptions and new events are paused."}
-                        {editStatus === "archived" && "The calendar is archived. Past events are preserved but no new activity is permitted."}
+                        {editStatus === "active" && "The collection is active and can group related events."}
+                        {editStatus === "coming-soon" && "The collection is marked as Coming Soon. New grouped events are paused."}
+                        {editStatus === "archived" && "The collection is archived. Past events are preserved but no new activity is permitted."}
                       </p>
                     </div>
 
@@ -1067,7 +1067,7 @@ export default function Calendar() {
                         className="h-8 rounded-lg text-xs font-bold text-destructive hover:bg-destructive/10 p-0 justify-start w-full hover:text-destructive"
                         onClick={() => handleDeleteCalendar(editingCalendar.slug)}
                       >
-                        Permanently Delete Calendar
+                        Permanently Delete Collection
                       </Button>
                     </div>
                   </div>
@@ -1130,7 +1130,7 @@ export default function Calendar() {
               {/* Save / Delete Actions Footer */}
               <div className="p-6 bg-muted/20 border-t border-border/40 flex items-center justify-between gap-3 shrink-0">
                 <Button variant="ghost" className="rounded-full text-xs font-semibold text-destructive hover:bg-destructive/10" onClick={() => handleDeleteCalendar(editingCalendar.slug)}>
-                  <Trash2 className="w-4 h-4 mr-1.5" /> Delete Calendar
+                  <Trash2 className="w-4 h-4 mr-1.5" /> Delete Collection
                 </Button>
                 <div className="flex gap-2">
                   <Button variant="outline" className="rounded-full text-xs font-semibold" onClick={() => setEditingCalendar(null)}>
@@ -1359,7 +1359,7 @@ function AgendaView({ events, onPick }: { events: MockEvent[]; onPick: (e: MockE
     return (
       <div className="bg-card border border-border/40 rounded-2xl p-12 text-center text-muted-foreground">
         <CalendarDays className="w-8 h-8 mx-auto mb-3 opacity-40 text-pink-500" />
-        <p className="text-sm">No events scheduled for the selected calendar.</p>
+        <p className="text-sm">No events scheduled for the selected collection.</p>
       </div>
     );
   }
