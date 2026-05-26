@@ -2,14 +2,14 @@ project_id = "etfokjdtemmhuzddjlux"
 
 [auth]
 enabled = true
-site_url = "http://localhost:8080"
+site_url = "https://hostquill.com"
 additional_redirect_urls = [
-  "http://localhost:8080",
-  "http://localhost:8080/auth",
-  "http://localhost:8080/finish-signup",
   "https://hostquill.com",
   "https://hostquill.com/auth",
-  "https://hostquill.com/finish-signup"
+  "https://hostquill.com/finish-signup",
+  "http://localhost:8080",
+  "http://localhost:8080/auth",
+  "http://localhost:8080/finish-signup"
 ]
 
 [auth.email]
