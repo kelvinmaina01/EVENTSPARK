@@ -129,7 +129,7 @@ Create a `.env` file with:
 ```env
 VITE_SUPABASE_URL=your_supabase_url
 VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key
-VITE_SITE_URL=https://hostquill.com
+VITE_SITE_URL=https://eventspark-eta.vercel.app
 VITE_CLOUDINARY_CLOUD_NAME=your_cloudinary_name
 VITE_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
 ```
@@ -139,8 +139,8 @@ VITE_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
 2. Run the migration scripts from `supabase/migrations/`
 3. Set up authentication providers
 4. Set Auth URL Configuration:
-   - Site URL: `https://hostquill.com`
-   - Redirect URLs: `https://hostquill.com/auth`, `https://hostquill.com/finish-signup`, plus your local development URLs
+   - Site URL: `https://eventspark-eta.vercel.app`
+   - Redirect URLs: `https://eventspark-eta.vercel.app/auth`, `https://eventspark-eta.vercel.app/finish-signup`, plus your local development URLs
 5. Configure storage buckets for media uploads
 
 ## 🧪 Testing

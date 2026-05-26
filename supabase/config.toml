@@ -2,11 +2,11 @@ project_id = "etfokjdtemmhuzddjlux"
 
 [auth]
 enabled = true
-site_url = "https://hostquill.com"
+site_url = "https://eventspark-eta.vercel.app"
 additional_redirect_urls = [
-  "https://hostquill.com",
-  "https://hostquill.com/auth",
-  "https://hostquill.com/finish-signup",
+  "https://eventspark-eta.vercel.app",
+  "https://eventspark-eta.vercel.app/auth",
+  "https://eventspark-eta.vercel.app/finish-signup",
   "http://localhost:8080",
   "http://localhost:8080/auth",
   "http://localhost:8080/finish-signup"

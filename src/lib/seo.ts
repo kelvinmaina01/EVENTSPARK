@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Event } from "@/hooks/useEvents";
 
-export const SITE_URL = "https://hostquill.com";
+export const SITE_URL = "https://eventspark-eta.vercel.app";
 export const SITE_NAME = "Hostquill";
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.svg`;
 
