@@ -112,8 +112,8 @@ export function Footer() {
         <div className="mt-16 pt-8 border-t border-white/10 flex flex-col lg:flex-row items-center justify-between gap-4 text-xs text-white/60">
           <div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-2">
             <span>© {new Date().getFullYear()} Hostquill Inc.</span>
-            <Link to="/#terms" className="hover:text-white transition-colors">Terms of service</Link>
-            <Link to="/#privacy" className="hover:text-white transition-colors">Privacy policy</Link>
+            <Link to="/terms" className="hover:text-white transition-colors">Terms of service</Link>
+            <Link to="/privacy" className="hover:text-white transition-colors">Privacy policy</Link>
             <Link to="/#cookies-settings" className="hover:text-white transition-colors">Cookie Settings</Link>
             <Link to="/#cookies-policy" className="hover:text-white transition-colors">Cookie policy</Link>
             <Link to="/#license" className="hover:text-white transition-colors">License attribution</Link>

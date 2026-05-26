@@ -28,6 +28,8 @@ import UseCases from "./pages/UseCases";
 import Compare from "./pages/Compare";
 import Blog from "./pages/Blog";
 import SeoLandingPage from "./pages/SeoLandingPage";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 
 import Pricing from "./pages/Pricing";
 import QRCode from "./pages/QRCode";
@@ -84,6 +86,8 @@ const App = () => (
               <Route path="/cal/:calendarSlug" element={<CalendarDetail />} />
               <Route path="/pricing" element={<Pricing />} />
               <Route path="/qr" element={<QRCode />} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/terms" element={<TermsOfService />} />
               <Route path="/finish-signup" element={<FinishSignup />} />
               <Route path="/profile/:userId" element={<ProfilePage />} />
 

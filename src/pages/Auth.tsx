@@ -237,7 +237,7 @@ const Auth = () => {
           </AnimatePresence>
 
           <p className="text-center text-[10px] text-muted-foreground mt-6 leading-normal">
-            By continuing, you agree to our <Link to="#" className="underline">Terms of Service</Link> and <Link to="#" className="underline">Privacy Policy</Link>.
+            By continuing, you agree to our <Link to="/terms" className="underline">Terms of Service</Link> and <Link to="/privacy" className="underline">Privacy Policy</Link>.
           </p>
         </div>
       </motion.div>
