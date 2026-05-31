@@ -17,7 +17,32 @@ import { toast } from "sonner";
 import LocationCard from "@/components/event-public/LocationCard";
 import OrganizerSocials from "@/components/event-public/OrganizerSocials";
 import { applySeo, DEFAULT_OG_IMAGE } from "@/lib/seo";
+import { useAuth } from "@/contexts/AuthContext";
 
+type EventDetail = MockEvent & {
+  description?: string;
+  template?: string | null;
+  primaryColor?: string | null;
+  colorMode?: string | null;
+  locationType?: string | null;
+  ticketPrice?: number | null;
+  registrationLimit?: number | null;
+  eventStatus?: string | null;
+  timezone?: string | null;
+  ownerId?: string | null;
+};
+
+const CATEGORY_FALLBACKS: MockEvent["category"][] = ["Tech", "AI", "Climate", "Crypto", "Arts", "Wellness", "Community"];
+
+function normalizeCategory(value?: string | null): MockEvent["category"] {
+  const match = CATEGORY_FALLBACKS.find((category) => category.toLowerCase() === value?.toLowerCase());
+  return match || "Community";
+}
+
+function formatPrice(value?: number | null) {
+  if (!value || Number(value) <= 0) return "Free";
+  return `$${Number(value).toFixed(2)}`;
+}
 
 // Native <video> with a robust autoplay fallback. Browsers block autoplay unless
 // the element is muted; we start muted, then surface an "Unmute" affordance once
@@ -72,7 +97,8 @@ function FallbackVideo({ src, muted, onUnmute }: { src: string; muted: boolean; 
 
 export default function EventPublicDetail() {
   const { slug } = useParams();
-  const [event, setEvent] = useState<MockEvent | null>(null);
+  const { user } = useAuth();
+  const [event, setEvent] = useState<EventDetail | null>(null);
   const [more, setMore] = useState<MockEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [registered, setRegistered] = useState(false);
@@ -95,7 +121,7 @@ export default function EventPublicDetail() {
     const loadEventData = async () => {
       try {
         // 1. Try mock events first
-        let resolvedEvent = await fetchEventBySlug(slug || "");
+        let resolvedEvent = (await fetchEventBySlug(slug || "")) as EventDetail | null;
         
         // 2. Try Supabase database if mock is not found
         if (!resolvedEvent && slug) {
@@ -107,6 +133,7 @@ export default function EventPublicDetail() {
 
           if (dbEvent && !error) {
             const profile = dbEvent.profiles as any;
+            const { data: registrationCount } = await supabase.rpc("get_registration_count", { p_event_id: dbEvent.id });
             const socialLinks = profile?.social_links || [];
             const socialsObj: Record<string, string> = {};
 
@@ -137,10 +164,21 @@ export default function EventPublicDetail() {
               endDate: dbEvent.event_end_date || undefined,
               location: dbEvent.location_value || "Virtual",
               cover: dbEvent.background_image_url || "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800",
-              category: dbEvent.event_type || "Community",
-              attendees: 0,
+              category: normalizeCategory(dbEvent.event_type),
+              attendees: Number(registrationCount || 0),
               capacity: dbEvent.capacity || undefined,
               slug: dbEvent.slug,
+              status: "none",
+              source: dbEvent.location_type === "physical" ? "In Person" : dbEvent.location_type === "hybrid" ? "Hybrid" : "Online",
+              template: dbEvent.template || "split",
+              primaryColor: dbEvent.primary_color || "#7C3AED",
+              colorMode: (dbEvent as any).color_mode || "light",
+              locationType: dbEvent.location_type || "virtual",
+              ticketPrice: dbEvent.ticket_price === null ? null : Number(dbEvent.ticket_price),
+              registrationLimit: dbEvent.registration_limit || dbEvent.capacity || null,
+              eventStatus: dbEvent.status,
+              timezone: dbEvent.timezone,
+              ownerId: dbEvent.user_id,
               hosts: [
                 {
                   name: profile?.company || profile?.full_name || "Community Host",
@@ -240,12 +278,16 @@ export default function EventPublicDetail() {
 
   const date = new Date(event.date);
   const endDate = event.endDate ? new Date(event.endDate) : new Date(date.getTime() + 2 * 60 * 60 * 1000);
+  const template = event.template || "split";
+  const brandColor = event.primaryColor || "#7C3AED";
+  const isDarkTemplate = event.colorMode === "dark";
+  const isFocusedTemplate = template === "minimal" || template === "cards";
+  const isLandingTemplate = template === "landing" || template === "stacked";
   
   // Calculate if event is in the past
   const isPastEvent = endDate < new Date();
   
-  // Mock flag to display the manage access strip
-  const hasManageAccess = true; 
+  const hasManageAccess = !!user && !!event.ownerId && user.id === event.ownerId; 
 
   const handleRegister = () => {
     setRegistered(true);
@@ -263,7 +305,7 @@ export default function EventPublicDetail() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className={`min-h-screen bg-background ${isDarkTemplate ? "dark" : ""}`}>
       <PublicHeader />
 
       {/* Manage Access Strip */}
@@ -276,18 +318,42 @@ export default function EventPublicDetail() {
         </div>
       )}
 
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 pt-6 pb-20">
+      {isLandingTemplate && (
+        <section
+          className="relative min-h-[56vh] overflow-hidden"
+          style={{ background: `linear-gradient(135deg, ${brandColor}, ${brandColor}CC)` }}
+        >
+          <img src={event.cover} alt={event.title} className="absolute inset-0 h-full w-full object-cover opacity-45" />
+          <div className="absolute inset-0 bg-[#19192E]/65" />
+          <div className="relative z-10 mx-auto flex min-h-[56vh] max-w-6xl flex-col justify-end px-4 py-14 text-white sm:px-6">
+            <Badge className="mb-5 w-fit rounded-full border-0 bg-white/15 px-4 py-1 text-white backdrop-blur">
+              {event.category} · {formatPrice(event.ticketPrice)}
+            </Badge>
+            <h1 className="max-w-4xl font-display text-4xl font-bold leading-tight tracking-[-0.02em] sm:text-6xl">
+              {event.title}
+            </h1>
+            {event.description && (
+              <p className="mt-5 max-w-2xl text-base leading-8 text-white/80 sm:text-lg">
+                {event.description}
+              </p>
+            )}
+          </div>
+        </section>
+      )}
+
+      <main className={`${isFocusedTemplate ? "max-w-4xl" : "max-w-6xl"} mx-auto px-4 sm:px-6 ${isLandingTemplate ? "pt-10" : "pt-6"} pb-20`}>
         <Link to="/events" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-6">
           <ArrowLeft className="w-4 h-4 mr-1" /> All events
         </Link>
 
-        <div className="grid lg:grid-cols-[1fr,380px] gap-8 lg:gap-12 items-start">
+        <div className={`${isFocusedTemplate ? "grid gap-8" : "grid lg:grid-cols-[1fr,380px] gap-8 lg:gap-12"} items-start`}>
           {/* Left column */}
           <div className="space-y-8">
             {/* Cover — image OR embedded video */}
+            {!isLandingTemplate && (
             <motion.div
               initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-              className="relative aspect-[16/10] rounded-3xl overflow-hidden bg-muted group"
+              className={`relative overflow-hidden bg-muted group ${template === "minimal" ? "aspect-[16/9] rounded-2xl" : template === "cards" ? "aspect-[21/9] rounded-lg" : "aspect-[16/10] rounded-3xl"}`}
             >
               {playing && event.videoUrl ? (
                 event.videoUrl.includes("youtube") || event.videoUrl.includes("vimeo") ? (
@@ -324,14 +390,17 @@ export default function EventPublicDetail() {
                 </Badge>
               )}
             </motion.div>
+            )}
 
             {/* Title */}
-            <div>
-              <p className="text-sm text-muted-foreground mb-2">{event.category} · {event.city}</p>
+            {!isLandingTemplate && (
+            <div className={template === "minimal" ? "text-center" : ""}>
+              <p className="text-sm text-muted-foreground mb-2">{event.category} · {event.city || event.source}</p>
               <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold tracking-[-0.02em] leading-[1.05]">
                 {event.title}
               </h1>
             </div>
+            )}
 
             {/* Hosted by */}
             <section>
@@ -367,6 +436,13 @@ export default function EventPublicDetail() {
             <section>
               <h2 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-3">About this event</h2>
               <div className="prose prose-sm max-w-none text-foreground/90 space-y-4">
+                {event.description && (
+                  <div className="space-y-4">
+                    {event.description.split(/\n+/).filter(Boolean).map((paragraph) => (
+                      <p key={paragraph}>{paragraph}</p>
+                    ))}
+                  </div>
+                )}
                 <p>
                   Join us for <strong>{event.title}</strong> — an unforgettable {event.category.toLowerCase()} gathering
                   bringing together builders, thinkers, and the curious. Expect inspiring talks,
@@ -377,10 +453,10 @@ export default function EventPublicDetail() {
                   ideas, new friends, and a renewed sense of momentum. Doors open 30 minutes before start.
                 </p>
                 <ul className="list-disc pl-5 space-y-1.5">
-                  <li>Curated keynotes from industry leaders</li>
-                  <li>Hands-on workshops and live demos</li>
-                  <li>Networking with {event.attendees.toLocaleString()}+ attendees</li>
-                  <li>Food, drinks, and parting gifts</li>
+                  <li>{event.locationType === "physical" ? "In-person event" : event.locationType === "hybrid" ? "Hybrid event" : "Online event"} hosted by {event.hosts[0]?.name || "Hostquill organizer"}</li>
+                  <li>{formatPrice(event.ticketPrice)} registration</li>
+                  <li>{event.registrationLimit ? `${event.registrationLimit.toLocaleString()} available spots` : "Open registration"}</li>
+                  <li>{event.attendees.toLocaleString()} attendees registered</li>
                 </ul>
               </div>
             </section>
@@ -388,8 +464,8 @@ export default function EventPublicDetail() {
             {/* Location */}
             <LocationCard
               venue={event.location}
-              address={event.city}
-              mode={event.location === "Online" || event.city === "Online" ? "virtual" : "physical"}
+              address={event.city || event.location}
+              mode={event.locationType === "physical" ? "physical" : "virtual"}
             />
 
             {/* Attendees preview */}
@@ -495,8 +571,10 @@ export default function EventPublicDetail() {
                     <p className="text-sm text-center text-muted-foreground">
                       Welcome! Please tap below to register.
                     </p>
-                    <Button onClick={handleRegister} className="w-full rounded-full h-12 text-base font-semibold">
+                    <Button asChild className="w-full rounded-full h-12 text-base font-semibold">
+                      <Link to={`/register/${event.slug}`}>
                       <Ticket className="w-4 h-4 mr-2" /> Register
+                      </Link>
                     </Button>
                   </>
                 )}
@@ -565,7 +643,7 @@ export default function EventPublicDetail() {
           </div>
           {/* Right side: Actions */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0 w-full sm:w-auto justify-between sm:justify-end">
-            <Badge variant="outline" className="rounded-full px-3 h-9 hidden md:inline-flex bg-background font-semibold">Free</Badge>
+            <Badge variant="outline" className="rounded-full px-3 h-9 hidden md:inline-flex bg-background font-semibold">{formatPrice(event.ticketPrice)}</Badge>
             <div className="flex items-center gap-1.5">
               <Button variant="ghost" size="icon" className="rounded-full h-10 w-10 shrink-0 text-muted-foreground hover:text-foreground"><Bookmark className="w-5 h-5" /></Button>
               
@@ -656,8 +734,8 @@ export default function EventPublicDetail() {
                   Event Ended
                 </Button>
               ) : (
-                <Button onClick={handleRegister} className="rounded-full h-11 px-8 font-semibold bg-[#19192E] text-white hover:bg-[#19192E]/90 shrink-0 ml-1 shadow-md">
-                  {registered ? "Registered" : "Attend"}
+                <Button asChild className="rounded-full h-11 px-8 font-semibold bg-[#19192E] text-white hover:bg-[#19192E]/90 shrink-0 ml-1 shadow-md">
+                  <Link to={`/register/${event.slug}`}>Attend</Link>
                 </Button>
               )}
             </div>
