@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { useNavigate, useParams, Link, useSearchParams } from "react-router-dom";
 import {
-  ArrowLeft, ArrowRight, Check, Layout, Columns2, Monitor,
+  ArrowLeft, ArrowRight, Check, Layout, Columns2, Monitor, PanelsTopLeft, Rows3,
   Loader2, Sparkles, MapPin, Video, Globe, PartyPopper, ExternalLink, Eye, Copy, Info
 } from "lucide-react";
 import { useCreateEvent, useUpdateEvent, useEvent } from "@/hooks/useEvents";
@@ -21,6 +21,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
 import MediaUploadZone, { MediaValue } from "@/components/event-creation/MediaUploadZone";
 import { getCustomCalendars } from "@/lib/mockEvents";
+import { EVENT_TEMPLATE_OPTIONS, EVENT_TEMPLATES } from "@/lib/eventTemplates";
 
 const steps = [
   { number: 1, title: "Event Details", subtitle: "Name, date, location & description" },
@@ -28,17 +29,18 @@ const steps = [
   { number: 3, title: "Registration Form", subtitle: "Fields attendees will fill out" },
 ];
 
-const imageRecommendations: Record<string, { ratio: string; size: string; tip: string }> = {
-  minimal: { ratio: "16:9", size: "1920 × 1080px", tip: "A wide banner works best — it appears at the top of a single-column layout." },
-  split: { ratio: "3:4 or 4:5", size: "1200 × 1600px", tip: "Portrait orientation — fills the left half of the screen next to the form." },
-  landing: { ratio: "16:9", size: "1920 × 1080px", tip: "Full-width hero banner — use a high-impact photo or branded flyer." },
+const templateIcons = {
+  minimal: Layout,
+  split: Columns2,
+  stacked: Rows3,
+  landing: Monitor,
+  cards: PanelsTopLeft,
 };
 
-const templates = [
-  { id: "minimal", name: "Minimal", icon: Layout, description: "Clean single-column layout with your image as a top banner" },
-  { id: "split", name: "Split Screen", icon: Columns2, description: "Image on the left, registration form on the right" },
-  { id: "landing", name: "Landing Page", icon: Monitor, description: "Full-width hero image with form embedded below" },
-];
+const templates = EVENT_TEMPLATE_OPTIONS.map((template) => ({
+  ...template,
+  icon: templateIcons[template.id],
+}));
 
 const defaultFields = [
   { label: "Full Name", field_type: "text", required: true, position: 0 },
@@ -760,16 +762,16 @@ const CreateEvent = () => {
                   </div>
 
                   {/* Image size recommendation */}
-                  {imageRecommendations[selectedTemplate] && (
+                  {EVENT_TEMPLATES[selectedTemplate as keyof typeof EVENT_TEMPLATES]?.image && (
                     <div className="flex gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20">
                       <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
                       <div className="text-xs space-y-1">
                         <p className="font-medium text-foreground">
                           Recommended for {templates.find(t => t.id === selectedTemplate)?.name}:
-                          <span className="text-primary ml-1">{imageRecommendations[selectedTemplate].size}</span>
-                          <span className="text-muted-foreground ml-1">({imageRecommendations[selectedTemplate].ratio})</span>
+                          <span className="text-primary ml-1">{EVENT_TEMPLATES[selectedTemplate as keyof typeof EVENT_TEMPLATES].image.size}</span>
+                          <span className="text-muted-foreground ml-1">({EVENT_TEMPLATES[selectedTemplate as keyof typeof EVENT_TEMPLATES].image.ratio})</span>
                         </p>
-                        <p className="text-muted-foreground">{imageRecommendations[selectedTemplate].tip}</p>
+                        <p className="text-muted-foreground">{EVENT_TEMPLATES[selectedTemplate as keyof typeof EVENT_TEMPLATES].image.tip}</p>
                       </div>
                     </div>
                   )}

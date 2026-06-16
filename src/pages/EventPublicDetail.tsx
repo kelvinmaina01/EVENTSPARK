@@ -18,6 +18,7 @@ import LocationCard from "@/components/event-public/LocationCard";
 import OrganizerSocials from "@/components/event-public/OrganizerSocials";
 import { applySeo, DEFAULT_OG_IMAGE } from "@/lib/seo";
 import { useAuth } from "@/contexts/AuthContext";
+import { getEventTemplate } from "@/lib/eventTemplates";
 
 type EventDetail = MockEvent & {
   description?: string;
@@ -278,11 +279,12 @@ export default function EventPublicDetail() {
 
   const date = new Date(event.date);
   const endDate = event.endDate ? new Date(event.endDate) : new Date(date.getTime() + 2 * 60 * 60 * 1000);
-  const template = event.template || "split";
+  const templateConfig = getEventTemplate(event.template);
+  const template = templateConfig.id;
   const brandColor = event.primaryColor || "#7C3AED";
   const isDarkTemplate = event.colorMode === "dark";
-  const isFocusedTemplate = template === "minimal" || template === "cards";
-  const isLandingTemplate = template === "landing" || template === "stacked";
+  const isFocusedTemplate = templateConfig.publicDetailVariant === "focused";
+  const isLandingTemplate = templateConfig.publicDetailVariant === "hero";
   
   // Calculate if event is in the past
   const isPastEvent = endDate < new Date();

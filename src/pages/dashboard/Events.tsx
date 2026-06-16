@@ -8,6 +8,10 @@ import { Plus, Search, CalendarDays, Users, Loader2, MapPin, ExternalLink, Layou
 import { useEvents } from "@/hooks/useEvents";
 import { useRegistrations } from "@/hooks/useRegistrations";
 import { format } from "date-fns";
+import { MOCK_EVENTS } from "@/lib/mockEvents";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 const statusColors: Record<string, string> = {
   live: "bg-success text-success-foreground",
@@ -21,8 +25,42 @@ const Events = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [scope, setScope] = useState<"mine" | "upcoming" | "past">("mine");
   const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
-  const { data: events, isLoading } = useEvents(search || undefined);
+  const { data: events, isLoading, refetch } = useEvents(search || undefined);
   const { data: registrations } = useRegistrations();
+  const { user } = useAuth();
+  const [isSeeding, setIsSeeding] = useState(false);
+
+  const handleSeedMocks = async () => {
+    if (!user) return;
+    setIsSeeding(true);
+    let successCount = 0;
+    for (const mock of MOCK_EVENTS) {
+      try {
+        const { error } = await supabase.from("events").insert({
+          user_id: user.id,
+          name: mock.title,
+          slug: mock.slug + "-" + Math.random().toString(36).substring(2, 8),
+          description: "This is a seeded mock event. " + mock.title + " brings together great people for an amazing time.",
+          event_date: mock.date,
+          event_end_date: mock.endDate || new Date(new Date(mock.date).getTime() + 2 * 60 * 60 * 1000).toISOString(),
+          event_type: mock.category,
+          status: mock.status === "past" ? "past" : "live",
+          template: ["minimal", "split", "cards", "landing"][Math.floor(Math.random() * 4)],
+          background_image_url: mock.cover,
+          location_type: mock.location.toLowerCase().includes("online") ? "virtual" : "physical",
+          location_value: mock.location,
+          ticket_price: 0,
+        });
+        if (!error) successCount++;
+        else console.error("Error inserting mock", error);
+      } catch (err) {
+        console.error("Failed to seed", mock.title, err);
+      }
+    }
+    setIsSeeding(false);
+    toast.success(`Seeded ${successCount} mock events successfully!`);
+    refetch();
+  };
 
   const regCounts: Record<string, number> = {};
   registrations?.forEach((r) => {
@@ -126,6 +164,12 @@ const Events = () => {
           <p className="text-sm text-muted-foreground">You do not need to create a company or calendar before publishing an event.</p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2">
+          {events && events.length < 15 && (
+            <Button onClick={handleSeedMocks} disabled={isSeeding} variant="secondary" className="bg-purple-100 text-purple-700 hover:bg-purple-200">
+              {isSeeding ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Plus className="w-4 h-4 mr-2" />}
+              Seed Mocks
+            </Button>
+          )}
           <Button asChild className="bg-primary hover:bg-primary/90">
             <Link to="/dashboard/events/create"><Plus className="w-4 h-4 mr-2" /> New event</Link>
           </Button>

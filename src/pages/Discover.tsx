@@ -36,7 +36,8 @@ import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Card as UICard, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { fetchDiscoverEvents, CATEGORIES, EXPANDED_CATEGORIES, FEATURED_CALENDARS, CITIES_BY_CONTINENT, fetchLocalEventsByCity, MockEvent } from "@/lib/mockEvents";
+import { EXPANDED_CATEGORIES, FEATURED_CALENDARS, CITIES_BY_CONTINENT, MockEvent } from "@/lib/mockEvents";
+import { fetchPublicDiscoverEvents, fetchPublicEventsByCity } from "@/lib/publicEvents";
 
 // Icon mapping for duotone style
 const iconMap: Record<string, any> = {
@@ -121,7 +122,7 @@ function Row({ title, subtitle, items, maxItems = 3 }: { title: string; subtitle
 }
 
 export default function Discover() {
-  const { data: events = [] } = useQuery({ queryKey: ["discover"], queryFn: fetchDiscoverEvents });
+  const { data: events = [] } = useQuery({ queryKey: ["public-discover"], queryFn: fetchPublicDiscoverEvents });
 
   const [activeContinent, setActiveContinent] = useState<string>("North America");
   const [activeCity, setActiveCity] = useState<string>("San Francisco");
@@ -131,7 +132,7 @@ export default function Discover() {
   useEffect(() => {
     let active = true;
     setLoadingEvents(true);
-    fetchLocalEventsByCity(activeCity).then((events) => {
+    fetchPublicEventsByCity(activeCity).then((events) => {
       if (active) {
         setLocalEvents(events);
         setLoadingEvents(false);

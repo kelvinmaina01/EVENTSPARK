@@ -5,7 +5,8 @@ import { Plus, MapPin, Users, CalendarDays as CalIcon } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
 import PublicHeader from "@/components/PublicHeader";
 import Footer from "@/components/layout/Footer";
-import { fetchUpcomingEvents, fetchPastEvents, MockEvent } from "@/lib/mockEvents";
+import { MockEvent } from "@/lib/mockEvents";
+import { fetchPublicPastEvents, fetchPublicUpcomingEvents } from "@/lib/publicEvents";
 
 type Tab = "upcoming" | "past";
 
@@ -99,8 +100,8 @@ const EmptyState = ({ tab }: { tab: Tab }) => (
 
 export default function EventsList() {
   const [tab, setTab] = useState<Tab>("upcoming");
-  const { data: upcoming = [] } = useQuery({ queryKey: ["events-upcoming"], queryFn: fetchUpcomingEvents });
-  const { data: past = [] } = useQuery({ queryKey: ["events-past"], queryFn: fetchPastEvents });
+  const { data: upcoming = [] } = useQuery({ queryKey: ["public-events-upcoming"], queryFn: fetchPublicUpcomingEvents });
+  const { data: past = [] } = useQuery({ queryKey: ["public-events-past"], queryFn: fetchPublicPastEvents });
 
   const list = tab === "upcoming" ? upcoming : past;
   const grouped = useMemo(() => {
