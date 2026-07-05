@@ -461,8 +461,10 @@ const CreateEvent = () => {
   const progressPercent = step === 1 ? 33 : step === 2 ? 66 : 100;
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
-      {/* Back button */}
+    <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+      <div className="grid lg:grid-cols-[minmax(0,1fr)_480px] xl:grid-cols-[minmax(0,1fr)_560px] gap-8 xl:gap-12 items-start">
+        <div className="space-y-6 pt-6">
+          {/* Back button */}
       <Button variant="ghost" className="mb-0" onClick={() => navigate(isEditMode ? `/dashboard/events/${editId}` : "/dashboard/events")}>
         <ArrowLeft className="w-4 h-4 mr-2" /> {isEditMode ? "Back to Event" : "Back to Events"}
       </Button>
@@ -810,7 +812,7 @@ const CreateEvent = () => {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="lg:hidden">
                 <CardContent className="p-6 space-y-4">
                   <div>
                     <h3 className="font-display font-semibold text-base mb-0.5">Live Preview</h3>
@@ -954,7 +956,7 @@ const CreateEvent = () => {
       </AnimatePresence>
 
       {/* ─── Navigation Footer ─── */}
-      <div className="flex flex-col-reverse sm:flex-row justify-between items-stretch sm:items-center gap-3 pt-2 pb-8">
+      <div className="flex flex-col-reverse sm:flex-row justify-between items-stretch sm:items-center gap-3 pt-6 pb-8">
         <Button variant="outline" className="w-full sm:w-auto" onClick={() => { if (step > 1) { setStep(step - 1); window.scrollTo(0, 0); } }} disabled={step === 1}>
           <ArrowLeft className="w-4 h-4 mr-2" /> Back
         </Button>
@@ -973,6 +975,41 @@ const CreateEvent = () => {
             </Button>
           )}
         </div>
+      </div>
+      </div>
+
+      {/* Right Column: Persistent Live Preview */}
+      {!showSuccess && (
+        <div className="hidden lg:block sticky top-6 pt-6 h-[calc(100vh-24px)]">
+          <div className="bg-background border border-border shadow-2xl rounded-2xl overflow-hidden flex flex-col h-full relative">
+            <div className="h-10 bg-muted/40 border-b border-border flex items-center px-4 shrink-0">
+              <div className="flex gap-1.5 mr-4">
+                <div className="w-3 h-3 rounded-full bg-red-400/80" />
+                <div className="w-3 h-3 rounded-full bg-yellow-400/80" />
+                <div className="w-3 h-3 rounded-full bg-green-400/80" />
+              </div>
+              <span className="text-xs font-semibold tracking-wide text-muted-foreground flex items-center gap-1.5"><Eye className="w-3.5 h-3.5" /> Live Preview</span>
+            </div>
+            <div className="flex-1 overflow-hidden relative bg-muted/10">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] origin-top scale-[0.6] xl:scale-[0.7] p-8">
+                <div className="shadow-lg rounded-3xl overflow-hidden border border-border/50 bg-background pointer-events-none">
+                  <TemplatePreview
+                    template={selectedTemplate}
+                    eventName={name || "Your Event Name"}
+                    description={description || "A brief description of your event. What will attendees learn, do, or experience?"}
+                    startDate={startDate}
+                    startTime={startTime}
+                    locationType={locationType}
+                    locationValue={locationValue}
+                    locationAddress={locationAddress}
+                    flyerUrl={flyerUrl}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       </div>
     </div>
   );
