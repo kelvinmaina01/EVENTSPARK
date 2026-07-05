@@ -24,7 +24,7 @@ export default function AgentGuide() {
 
             <h3 className="mt-6 text-lg font-semibold">Files & Routes</h3>
             <ul className="mt-3 list-inside list-disc text-muted-foreground">
-              <li>Rendered pages: <span className="font-semibold">/terms</span> -> <span className="font-mono">src/pages/TermsOfService.tsx</span>, <span className="font-semibold">/privacy</span> -> <span className="font-mono">src/pages/PrivacyPolicy.tsx</span></li>
+              <li>Rendered pages: <span className="font-semibold">/terms</span> {"->"} <span className="font-mono">src/pages/TermsOfService.tsx</span>, <span className="font-semibold">/privacy</span> {"->"} <span className="font-mono">src/pages/PrivacyPolicy.tsx</span></li>
               <li>Public markdown copies: <span className="font-mono">public/terms-of-service.md</span>, <span className="font-mono">public/agent-implementation-guide.md</span></li>
             </ul>
 
