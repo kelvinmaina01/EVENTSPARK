@@ -165,7 +165,7 @@ export default function EventPublicDetail() {
               endDate: dbEvent.event_end_date || undefined,
               location: dbEvent.location_value || "Virtual",
               cover: dbEvent.background_image_url || "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800",
-              category: normalizeCategory(dbEvent.event_type),
+              category: (dbEvent.category as any) || normalizeCategory(dbEvent.event_type),
               attendees: Number(registrationCount || 0),
               capacity: dbEvent.capacity || undefined,
               slug: dbEvent.slug,
@@ -179,6 +179,8 @@ export default function EventPublicDetail() {
               registrationLimit: dbEvent.registration_limit || dbEvent.capacity || null,
               eventStatus: dbEvent.status,
               timezone: dbEvent.timezone,
+              city: dbEvent.city || undefined,
+              videoUrl: dbEvent.video_url || undefined,
               ownerId: dbEvent.user_id,
               hosts: [
                 {

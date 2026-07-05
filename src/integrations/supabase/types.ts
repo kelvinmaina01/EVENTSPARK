@@ -170,6 +170,8 @@ export type Database = {
         Row: {
           background_image_url: string | null
           capacity: number | null
+          category: string | null
+          city: string | null
           color_mode: string | null
           created_at: string
           description: string | null
@@ -192,10 +194,13 @@ export type Database = {
           timezone: string | null
           updated_at: string
           user_id: string
+          video_url: string | null
         }
         Insert: {
           background_image_url?: string | null
           capacity?: number | null
+          category?: string | null
+          city?: string | null
           color_mode?: string | null
           created_at?: string
           description?: string | null
@@ -218,10 +223,13 @@ export type Database = {
           timezone?: string | null
           updated_at?: string
           user_id: string
+          video_url?: string | null
         }
         Update: {
           background_image_url?: string | null
           capacity?: number | null
+          category?: string | null
+          city?: string | null
           color_mode?: string | null
           created_at?: string
           description?: string | null
@@ -244,6 +252,7 @@ export type Database = {
           timezone?: string | null
           updated_at?: string
           user_id?: string
+          video_url?: string | null
         }
         Relationships: []
       }

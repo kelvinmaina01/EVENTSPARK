@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tables } from "@/integrations/supabase/types";
-import { CalendarDays, ImageIcon, Upload, Trash2, MapPin, Type, FileText, Globe } from "lucide-react";
+import { CalendarDays, ImageIcon, Upload, Trash2, MapPin, Type, FileText, Globe, Video, Folder, Building } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -138,6 +138,23 @@ export default function EventQuickInfo({ event, onUpdate }: Props) {
           </div>
           <div className="space-y-1.5">
             <Label className="text-xs flex items-center gap-1">
+              <Folder className="w-3 h-3" /> Category
+            </Label>
+            <Select defaultValue={event.category || "Community"} onValueChange={v => onUpdate({ category: v })}>
+              <SelectTrigger className="h-9 text-sm rounded-full"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Tech">Tech</SelectItem>
+                <SelectItem value="AI">AI</SelectItem>
+                <SelectItem value="Climate">Climate</SelectItem>
+                <SelectItem value="Crypto">Crypto</SelectItem>
+                <SelectItem value="Arts">Arts</SelectItem>
+                <SelectItem value="Wellness">Wellness</SelectItem>
+                <SelectItem value="Community">Community</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs flex items-center gap-1">
               <Globe className="w-3 h-3" /> Event type
             </Label>
             <Select defaultValue={event.event_type || "webinar"} onValueChange={v => onUpdate({ event_type: v })}>
@@ -174,6 +191,28 @@ export default function EventQuickInfo({ event, onUpdate }: Props) {
               placeholder="Zoom link, venue address, etc."
               defaultValue={event.location_value || ""}
               onBlur={(e) => onUpdate({ location_value: e.target.value || null })}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs flex items-center gap-1">
+              <Building className="w-3 h-3" /> City
+            </Label>
+            <Input
+              className="h-9 text-sm rounded-full"
+              placeholder="e.g. San Francisco"
+              defaultValue={event.city || ""}
+              onBlur={(e) => onUpdate({ city: e.target.value || null })}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs flex items-center gap-1">
+              <Video className="w-3 h-3" /> Video URL
+            </Label>
+            <Input
+              className="h-9 text-sm rounded-full"
+              placeholder="YouTube or Vimeo URL"
+              defaultValue={event.video_url || ""}
+              onBlur={(e) => onUpdate({ video_url: e.target.value || null })}
             />
           </div>
         </div>
