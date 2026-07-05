@@ -42,9 +42,9 @@ export function useEventBySlug(slug: string | undefined) {
   return useQuery({
     queryKey: ["event-slug", slug],
     queryFn: async () => {
-      const { data, error } = await supabase.from("events").select("*").eq("slug", slug!).eq("status", "live").single();
+      const { data, error } = await supabase.from("events").select("*").eq("slug", slug!).eq("status", "live").maybeSingle();
       if (error) throw error;
-      return data as Event;
+      return data as Event | null;
     },
     enabled: !!slug,
   });

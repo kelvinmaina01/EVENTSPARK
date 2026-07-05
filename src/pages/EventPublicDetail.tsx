@@ -8,7 +8,7 @@ import Footer from "@/components/layout/Footer";
 import { DoodleIcon } from "@/components/DoodleIcon";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { fetchEventBySlug, fetchUpcomingEvents, MockEvent } from "@/lib/mockEvents";
@@ -656,6 +656,7 @@ export default function EventPublicDetail() {
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-md p-0 rounded-[32px] overflow-hidden gap-0 bg-background border-border shadow-2xl">
+                   <DialogTitle className="sr-only">Share</DialogTitle>
                    <div className="p-6 pb-4 flex flex-col items-center">
                       <h2 className="text-base font-bold mb-6">Share</h2>
                       

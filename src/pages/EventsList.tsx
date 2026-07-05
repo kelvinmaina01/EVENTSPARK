@@ -7,58 +7,9 @@ import PublicHeader from "@/components/PublicHeader";
 import Footer from "@/components/layout/Footer";
 import { MockEvent } from "@/lib/mockEvents";
 import { fetchPublicPastEvents, fetchPublicUpcomingEvents } from "@/lib/publicEvents";
+import { EventRow } from "@/components/events/SharedEventCards";
 
 type Tab = "upcoming" | "past";
-
-const StatusBadge = ({ s }: { s: MockEvent["status"] }) => {
-  if (s === "going") return <span className="inline-flex items-center text-[11px] font-semibold px-2.5 py-1 rounded-full bg-success text-success-foreground">Going</span>;
-  if (s === "invited") return <span className="inline-flex items-center text-[11px] font-semibold px-2.5 py-1 rounded-full bg-primary text-primary-foreground">Invited</span>;
-  if (s === "interested") return <span className="inline-flex items-center text-[11px] font-semibold px-2.5 py-1 rounded-full bg-warning text-warning-foreground">Interested</span>;
-  if (s === "hosting") return <span className="inline-flex items-center text-[11px] font-semibold px-2.5 py-1 rounded-full bg-foreground text-background">Hosting</span>;
-  return null;
-};
-
-function EventRow({ ev }: { ev: MockEvent }) {
-  const time = format(new Date(ev.date), "h:mm a");
-  return (
-    <Link
-      to={`/events/${ev.slug}`}
-      className="group block bg-card hover:bg-muted/40 transition-colors rounded-2xl p-4 sm:p-5"
-    >
-      <div className="flex gap-4">
-        <div className="flex-1 min-w-0">
-          <p className="text-xs font-medium text-muted-foreground mb-1.5">{time}</p>
-          <h3 className="font-display font-bold text-lg sm:text-xl leading-snug group-hover:text-primary transition-colors line-clamp-2">{ev.title}</h3>
-
-          <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
-            <div className="flex -space-x-2">
-              {ev.hosts.slice(0, 2).map((h) => (
-                <img key={h.name} src={h.avatar} alt={h.name} className="w-5 h-5 rounded-full ring-2 ring-card" />
-              ))}
-            </div>
-            <span className="truncate">By {ev.hosts.map((h) => h.name).join(", ")}</span>
-          </div>
-
-          <div className="mt-1.5 flex items-center gap-1.5 text-sm text-muted-foreground">
-            <MapPin className="w-3.5 h-3.5" />
-            <span className="truncate">{ev.location}</span>
-          </div>
-
-          <div className="mt-3 flex items-center gap-2">
-            <StatusBadge s={ev.status} />
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <Users className="w-3 h-3" /> {ev.attendees.toLocaleString()}
-            </div>
-          </div>
-        </div>
-
-        <div className="w-24 sm:w-32 aspect-square rounded-xl overflow-hidden bg-muted shrink-0">
-          <img src={ev.cover} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-        </div>
-      </div>
-    </Link>
-  );
-}
 
 function DayGroup({ date, events }: { date: string; events: MockEvent[] }) {
   const d = new Date(date);

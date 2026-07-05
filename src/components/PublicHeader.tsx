@@ -4,7 +4,7 @@ import { Search, Bell, Plus, Compass, Ticket, Sparkles, Globe } from "lucide-rea
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import {
-  Dialog, DialogContent, DialogTrigger,
+  Dialog, DialogContent, DialogTrigger, DialogTitle
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
@@ -82,6 +82,7 @@ export function PublicHeader() {
 
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent className="p-0 max-w-lg overflow-hidden bg-background border-border">
+              <DialogTitle className="sr-only">Search</DialogTitle>
               <Command>
                 <CommandInput placeholder="Search for events, calendars and more…" />
                 <CommandList>

@@ -12,6 +12,7 @@ import { MOCK_EVENTS } from "@/lib/mockEvents";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { EventCard as SharedEventCard, EventRow as SharedEventRow, UnifiedEvent } from "@/components/events/SharedEventCards";
 
 const statusColors: Record<string, string> = {
   live: "bg-success text-success-foreground",
@@ -81,68 +82,19 @@ const Events = () => {
     .sort((a, b) => new Date(a.event_date!).getTime() - new Date(b.event_date!).getTime())
     .slice(0, 4);
 
-  const EventCard = ({ event, variant = "default" }: { event: NonNullable<typeof events>[number]; variant?: "default" | "upcoming" }) => {
-    const count = regCounts[event.id] || 0;
-    const isUpcoming = variant === "upcoming";
-
-    return (
-      <div
-        className="group cursor-pointer"
-        onClick={() => navigate(`/dashboard/events/${event.id}`)}
-      >
-        {/* Image */}
-        <div className="relative aspect-[16/10] rounded-xl overflow-hidden bg-muted mb-3">
-          {event.background_image_url ? (
-            <img
-              src={event.background_image_url}
-              alt={event.name}
-              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <CalendarDays className="w-8 h-8 text-muted-foreground/30" />
-            </div>
-          )}
-          {/* Price / status badge */}
-          <div className="absolute top-3 left-3">
-            {event.ticket_price && event.ticket_price > 0 ? (
-              <span className="bg-card text-foreground text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
-                ${event.ticket_price}
-              </span>
-            ) : (
-              <span className="bg-card text-foreground text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
-                Free
-              </span>
-            )}
-          </div>
-        </div>
-        {/* Info below image */}
-        <div className="space-y-0.5">
-          <div className="flex items-center gap-2">
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-              {event.event_date ? format(new Date(event.event_date), "EEE, MMM d") : "No date set"}
-            </p>
-            {!isUpcoming && (
-              <Badge className={`${statusColors[event.status] || "bg-muted text-muted-foreground"} border-0 capitalize text-[10px]`}>
-                {event.status}
-              </Badge>
-            )}
-          </div>
-          <h3 className="font-display font-bold text-base leading-snug group-hover:text-primary transition-colors">
-            {event.name}
-          </h3>
-          {!isUpcoming && (
-            <div className="flex flex-col gap-0.5 text-xs text-muted-foreground pt-1">
-              <span className="flex items-center gap-1"><Users className="w-3 h-3" />{count} attending</span>
-              {event.location_value && (
-                <span className="flex items-center gap-1 truncate"><MapPin className="w-3 h-3" />{event.location_value}</span>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  };
+  const mapToUnified = (event: NonNullable<typeof events>[number]): UnifiedEvent => ({
+    id: event.id,
+    title: event.name,
+    date: event.event_date || null,
+    location: event.location_value || null,
+    cover: event.background_image_url || null,
+    status: event.status,
+    category: event.event_type || null,
+    slug: event.slug,
+    attendees: regCounts[event.id] || 0,
+    hosts: [{ name: user?.user_metadata?.full_name || user?.email || "Organizer", avatar: user?.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.id}` }],
+    price: event.ticket_price,
+  });
 
   return (
     <div className="space-y-8">
@@ -185,7 +137,12 @@ const Events = () => {
           <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4">Upcoming</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {upcoming.map((event) => (
-              <EventCard key={event.id} event={event} variant="upcoming" />
+              <div key={event.id} className="relative group">
+                <SharedEventCard ev={mapToUnified(event)} />
+                <Button variant="secondary" size="icon" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10" asChild onClick={(e) => e.stopPropagation()}>
+                  <Link to={`/dashboard/events/${event.id}`}><MapPin className="w-4 h-4" /></Link>
+                </Button>
+              </div>
             ))}
           </div>
         </div>
@@ -254,62 +211,29 @@ const Events = () => {
         viewMode === "list" ? (
           /* LIST VIEW — borderless horizontal cards */
           <div className="space-y-6">
-            {filtered.map((event) => {
-              const count = regCounts[event.id] || 0;
-              const shortDesc = event.description
-                ? event.description.replace(/[*#_~`>]/g, "").split(/(?<=\.)\s+/).filter(Boolean).slice(0, 2).join(" ").slice(0, 250)
-                : "";
-
-              return (
-                <div
-                  key={event.id}
-                  className="group flex flex-col sm:flex-row gap-4 cursor-pointer"
-                  onClick={() => navigate(`/dashboard/events/${event.id}`)}
-                >
-                  <div className="sm:w-56 flex-shrink-0 aspect-video sm:aspect-[16/10] rounded-xl overflow-hidden bg-muted">
-                    {event.background_image_url ? (
-                      <img src={event.background_image_url} alt={event.name} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <CalendarDays className="w-10 h-10 text-muted-foreground/30" />
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex-1 flex flex-col justify-center gap-1.5 py-1">
-                    <div className="flex items-center gap-2">
-                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                        {event.event_date ? format(new Date(event.event_date), "EEE, MMM d") : "No date set"}
-                      </p>
-                      <Badge className={`${statusColors[event.status] || "bg-muted text-muted-foreground"} border-0 capitalize text-[10px]`}>
-                        {event.status}
-                      </Badge>
-                    </div>
-                    <h3 className="font-display font-bold text-xl leading-tight group-hover:text-primary transition-colors">{event.name}</h3>
-                    {shortDesc && <p className="text-sm text-muted-foreground line-clamp-2">{shortDesc}</p>}
-                    <div className="flex items-center gap-4 text-xs text-muted-foreground pt-1">
-                      <span className="flex items-center gap-1"><Users className="w-3 h-3" />{count} attending</span>
-                      {event.location_value && (
-                        <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{event.location_value}</span>
-                      )}
-                    </div>
-                    <div className="flex gap-2 pt-2">
-                      <Button variant="outline" size="sm" className="text-xs rounded-full" asChild onClick={(e) => e.stopPropagation()}>
-                        <Link to={`/register/${event.slug}`}><ExternalLink className="w-3 h-3 mr-1" />View page</Link>
-                      </Button>
-                      <Button variant="outline" size="sm" className="text-xs rounded-full" asChild onClick={(e) => e.stopPropagation()}>
-                        <Link to={`/dashboard/events/${event.id}`}>Manage</Link>
-                      </Button>
-                    </div>
-                  </div>
+            {filtered.map((event) => (
+              <div key={event.id} className="relative group">
+                <SharedEventRow ev={mapToUnified(event)} />
+                <div className="absolute top-4 right-4 sm:top-5 sm:right-5 opacity-0 group-hover:opacity-100 transition-opacity z-10 flex gap-2">
+                  <Button variant="secondary" size="sm" asChild onClick={(e) => e.stopPropagation()}>
+                    <Link to={`/dashboard/events/${event.id}`}>Manage</Link>
+                  </Button>
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
         ) : (
           /* GRID VIEW — lander-style cards */
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filtered.map((event) => (
-              <EventCard key={event.id} event={event} />
+              <div key={event.id} className="relative group">
+                <SharedEventCard ev={mapToUnified(event)} />
+                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                  <Button variant="secondary" size="sm" asChild onClick={(e) => e.stopPropagation()}>
+                    <Link to={`/dashboard/events/${event.id}`}>Manage</Link>
+                  </Button>
+                </div>
+              </div>
             ))}
           </div>
         )

@@ -33,6 +33,7 @@ import {
 import { format } from "date-fns";
 import PublicHeader from "@/components/PublicHeader";
 import Footer from "@/components/layout/Footer";
+import { EventCard } from "@/components/events/SharedEventCards";
 import { Button } from "@/components/ui/button";
 import { Card as UICard, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -89,16 +90,6 @@ const CityCircularIcon = ({ iconName, colorName }: { iconName: string; colorName
   );
 };
 
-const EventCard = ({ ev }: { ev: MockEvent }) => (
-  <Link to={`/events/${ev.slug}`} className="w-full group block">
-    <div className="aspect-[4/3] rounded-xl overflow-hidden bg-muted mb-3">
-      <img src={ev.cover} alt={ev.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-    </div>
-    <p className="text-xs text-muted-foreground mb-1">{format(new Date(ev.date), "EEE, MMM d, h:mm a")}</p>
-    <h3 className="font-display font-bold text-base leading-snug line-clamp-2 group-hover:text-primary transition-colors">{ev.title}</h3>
-    <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1"><MapPin className="w-3 h-3" />{ev.location}</p>
-  </Link>
-);
 
 function Row({ title, subtitle, items, maxItems = 3 }: { title: string; subtitle?: string; items: MockEvent[]; maxItems?: number }) {
   const displayItems = items.slice(0, maxItems);
